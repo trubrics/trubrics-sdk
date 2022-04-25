@@ -1,5 +1,6 @@
 import json
 import pandas as pd
+import requests
 
 
 def save_test_to_json(
@@ -13,5 +14,6 @@ def save_test_to_json(
         }
     )
 
-    with open("assets/data/mlting_test.json", "w") as file:
-        file.write(test_json)
+    url = "http://localhost:5000"
+    headers = {"Content-type": "application/json"}
+    requests.post(url + "/tests/v1/add", data=test_json, headers=headers)
