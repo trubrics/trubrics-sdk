@@ -1,2 +1,2 @@
 # mlting
-An application tool to help businesses adopt Machine Learning
+Test & validate your ML models.
