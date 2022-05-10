@@ -9,6 +9,7 @@ def save_test_to_json(
     description: str,
     prediction: str,
     df: pd.DataFrame,
+    corrected_prediction=None,
     tracking=False,
 ) -> None:
     test_json = json.dumps(
@@ -18,6 +19,7 @@ def save_test_to_json(
                 "description": description,
             },
             "prediction": prediction,
+            "corrected_prediction": corrected_prediction,
             "features": df.to_dict(),
         }
     )

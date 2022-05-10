@@ -31,7 +31,7 @@ def feedback(
             "You are signaling that the combination of all features above is a critical"
             " edge case that we must test for."
         )
-        st.selectbox(
+        corrected_prediction = st.selectbox(
             "The prediction above should be:",
             (
                 "survived",
@@ -46,5 +46,6 @@ def feedback(
             description=description,
             prediction=prediction,
             df=df,
+            corrected_prediction=corrected_prediction,
             tracking=False,
         )
