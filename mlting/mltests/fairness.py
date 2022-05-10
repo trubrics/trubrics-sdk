@@ -1,2 +1,5 @@
-def test_fairness(prediction, desired_output):
+def test_fairness(
+    prediction,
+    desired_output,
+):
     return
