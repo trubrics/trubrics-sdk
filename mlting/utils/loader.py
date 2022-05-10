@@ -1,4 +1,5 @@
 import json
+
 import pandas as pd
 import requests
 
@@ -22,14 +23,7 @@ def save_test_to_json(
             file.write(test_json)
 
 
-def test_single_outlier(prediction, desired_output):
-    if prediction == desired_output:
-        return True
-    else:
-        return False
-
-
-def get_business_test_data(tracking=False):
+def get_business_test_data(tracking: bool = False):
     if tracking:
         raise Exception("to be replaced with read from test tracking API")
     else:

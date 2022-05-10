@@ -1,0 +1,2 @@
+build:
+	python -m build
