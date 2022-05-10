@@ -1,2 +1,2 @@
-build:
-	python -m build
+lint:
+	@pre-commit run --all-files
