@@ -31,3 +31,11 @@ def test_biased_performance_across_category(
     else:
         print("Test passed.")
     return result
+
+
+def test_biased_positive_outcome():
+    """
+    is the positive (survived in titanic UC) outcome of the
+    model more likely to happen to a specific group in a single column?
+    """
+    return None
