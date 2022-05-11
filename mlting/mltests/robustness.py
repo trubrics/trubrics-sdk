@@ -6,7 +6,7 @@ from mlting.utils.loader import baseTester
 from mlting.utils.model import baseModel
 
 
-def single_edge_case(
+def test_single_edge_case(
     model: Callable,
     data: np.array,
     desired_output: Union[int, str],
