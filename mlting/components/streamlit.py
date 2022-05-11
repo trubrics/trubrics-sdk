@@ -26,6 +26,7 @@ def feedback(
             "Send personalized feedback",
             'Model is always predicting "die" for all male passengers?',
         )
+        corrected_prediction = None
     elif test == "Single Edge Case":
         st.write(
             "You are signaling that the combination of all features above is a critical"
@@ -34,18 +35,31 @@ def feedback(
         corrected_prediction = st.selectbox(
             "The prediction above should be:",
             (
-                "survived",
-                "died",
+                0,
+                1,
             ),
         )
         description = "A single edge case."
+    elif test == "Bias":
+        corrected_prediction = None
+        description = "Feedback on bias."
+
     if st.button("Send feedback"):
+        if corrected_prediction:
+            save_test_to_json(
+                test=test,
+                description=description,
+                prediction=prediction,
+                df=df,
+                corrected_prediction=corrected_prediction,
+                tracking=False,
+            )
+        else:
+            save_test_to_json(
+                test=test,
+                description=description,
+                prediction=prediction,
+                df=df,
+                tracking=False,
+            )
         st.balloons()
-        save_test_to_json(
-            test=test,
-            description=description,
-            prediction=prediction,
-            df=df,
-            corrected_prediction=corrected_prediction,
-            tracking=False,
-        )
