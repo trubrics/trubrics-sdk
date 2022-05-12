@@ -1,4 +1,28 @@
+from typing import Callable
+
+
+class BaseModel:
+    """Base class for Models."""
+
+    def __init__(self, model: Callable):
+        self.model = model
+
+    def predict(self, data):
+        try:
+            return self.model.predict(data)
+        except AttributeError as error:
+            raise AttributeError("Model has no .predict() method.") from error
+
+    def predict_proba(self, data):
+        try:
+            return self.model.predict_proba(data)
+        except AttributeError as error:
+            raise AttributeError("Model has no .predict_proba() method.") from error
+
+
 class BaseTester:
+    """Base class for tests."""
+
     def __init__(self, actual, desired):
         self.actual_outcome = actual
         self.desired_outcome = desired

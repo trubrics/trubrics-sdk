@@ -1,8 +1,7 @@
 from sklearn.metrics import accuracy_score
 
-from mlting.utils.model import BaseModel
+from mlting.base import BaseModel, BaseTester
 from mlting.utils.pandas import get_features
-from mlting.utils.tester import BaseTester
 
 
 def test_biased_performance_across_category(

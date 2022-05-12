@@ -2,8 +2,7 @@ from typing import Callable, Union
 
 import numpy as np
 
-from mlting.utils.model import BaseModel
-from mlting.utils.tester import BaseTester
+from mlting.base import BaseModel, BaseTester
 
 
 def test_single_edge_case(
