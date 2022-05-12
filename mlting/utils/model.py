@@ -1,7 +1,7 @@
 from typing import Callable
 
 
-class baseModel:
+class BaseModel:
     def __init__(self, model: Callable):
         self.model = model
 

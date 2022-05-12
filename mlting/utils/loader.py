@@ -4,21 +4,6 @@ import pandas as pd
 import requests
 
 
-class baseTester:
-    # def __init__(self):
-
-    def assert_equals(self, actual_outcome, desired_outcome, runner="notebook"):
-        if runner == "notebook":
-            if actual_outcome == desired_outcome:
-                print("Test passed.")
-            else:
-                print("Test failed.")
-        elif runner == "unit":
-            assert actual_outcome == desired_outcome
-        else:
-            raise NotImplementedError(f"{runner} is not a valid Runner.")
-
-
 def save_test_to_json(
     test: str,
     description: str,
