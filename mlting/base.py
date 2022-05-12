@@ -45,5 +45,11 @@ class BaseTester:
     def greater(self):
         return self.actual_outcome > self.desired_outcome
 
+    def greater_equal(self):
+        return self.actual_outcome >= self.desired_outcome
+
     def less(self):
         return self.actual_outcome < self.desired_outcome
+
+    def less_equal(self):
+        return self.actual_outcome <= self.desired_outcome

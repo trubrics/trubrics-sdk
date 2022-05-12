@@ -32,7 +32,7 @@ def test_biased_performance_across_category(
             result[value] = evaluation_function(filtered_data[target], predictions)
     max_performance_difference = max(result.values()) - min(result.values())
     BaseTester(max_performance_difference, threshold).assertion(type="less", runner=runner)
-    return result
+    # return result
 
 
 def test_biased_positive_outcome():
