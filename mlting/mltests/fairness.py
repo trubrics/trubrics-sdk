@@ -1,3 +1,4 @@
+import numpy as np
 from sklearn.metrics import accuracy_score
 
 from mlting.base import BaseModel, BaseTester
@@ -20,14 +21,15 @@ def test_biased_performance_across_category(
     - Performance plots of results
     """
     model = BaseModel(model)
-    categories = test_data[category].unique()
-    if len(categories) > 20:
+    cat_values = test_data[category].unique()
+    if len(cat_values) > 20:
         raise Exception("Cardinality too high for performance test.")
     result = {}
-    for value in categories:
-        filtered_data = test_data.query(f"`{category}`=='{value}'")
-        predictions = model.predict(filtered_data.loc[:, get_features(filtered_data, target)])
-        result[value] = evaluation_function(filtered_data[target], predictions)
+    for value in cat_values:
+        if value not in [np.nan, None]:
+            filtered_data = test_data.query(f"`{category}`=='{value}'")
+            predictions = model.predict(filtered_data.loc[:, get_features(filtered_data, target)])
+            result[value] = evaluation_function(filtered_data[target], predictions)
     max_performance_difference = max(result.values()) - min(result.values())
     BaseTester(max_performance_difference, threshold).assertion(type="less", runner=runner)
     return result
