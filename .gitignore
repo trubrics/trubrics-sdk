@@ -1,5 +1,5 @@
 __pycache__
 *.egg-info
-assets/data
+demo/data
 .DS_Store
 dist/
