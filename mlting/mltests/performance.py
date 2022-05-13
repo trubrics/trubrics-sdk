@@ -1,8 +1,7 @@
 from typing import Callable
 
 import pandas as pd
-
-from mlting.base import BaseModel, BaseTester
+from trubrics.base import BaseModel, BaseTester
 
 
 def test_performance_against_threshold(

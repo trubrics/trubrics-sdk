@@ -1,4 +1,4 @@
-from mlting.base import BaseTester
+from trubrics.base import BaseTester
 
 
 def test_feature_in_top_n_important_features(

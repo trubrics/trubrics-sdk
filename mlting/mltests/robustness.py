@@ -1,8 +1,7 @@
 from typing import Callable, Union
 
 import numpy as np
-
-from mlting.base import BaseModel, BaseTester
+from trubrics.base import BaseModel, BaseTester
 
 
 def test_single_edge_case(
