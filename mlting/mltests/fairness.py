@@ -23,7 +23,9 @@ def test_biased_performance_across_category(
     model = BaseModel(model)
     cat_values = test_data[category].unique()
     if len(cat_values) > 20:
-        raise Exception("Cardinality too high for performance test.")
+        raise Exception(f"Cardinality of {len(cat_values)} too high for performance test.")
+    if category not in test_data.columns:
+        raise KeyError(f"Column '{category}' not found in dataset.")
     result = {}
     for value in cat_values:
         if value not in [np.nan, None]:
