@@ -33,7 +33,7 @@ def save_test_to_json(
         )
     else:
         with open(
-            "assets/data/trubrics_test.json",
+            "demo/data/trubrics_test.json",
             "w",
         ) as file:
             file.write(test_json)
@@ -46,7 +46,7 @@ def get_business_test_data(
         raise Exception("to be replaced with read from test tracking API")
     else:
         with open(
-            "../assets/data/trubrics_test.json",
+            "../data/trubrics_test.json",
             "r",
         ) as file:
             saved_test = json.load(file)
