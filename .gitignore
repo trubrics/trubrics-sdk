@@ -3,3 +3,4 @@ __pycache__
 demo/data
 .DS_Store
 dist/
+.ipynb_checkpoints
