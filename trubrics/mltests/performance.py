@@ -1,6 +1,7 @@
 from typing import Callable
 
 import pandas as pd
+
 from trubrics.base import BaseModel, BaseTester
 
 

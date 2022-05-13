@@ -1,6 +1,7 @@
 from typing import Callable, Union
 
 import numpy as np
+
 from trubrics.base import BaseModel, BaseTester
 
 

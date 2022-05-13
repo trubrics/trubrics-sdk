@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.metrics import accuracy_score
+
 from trubrics.base import BaseModel, BaseTester
 from trubrics.utils.pandas import get_features
 
