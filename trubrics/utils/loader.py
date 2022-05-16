@@ -1,13 +1,14 @@
 import json
+from typing import Union
 
 import pandas as pd
-import requests
+import requests  # type: ignore
 
 
 def save_test_to_json(
     test: str,
     description: str,
-    prediction: str,
+    prediction: Union[str, int],
     df: pd.DataFrame,
     corrected_prediction=None,
     tracking=False,

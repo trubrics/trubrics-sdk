@@ -16,12 +16,12 @@ def test_performance_against_threshold(
     """
     Compares performance of a model on a dataset to a hard coded threshold value.
     """
-    model = BaseModel(model)
+    trubrics_model = BaseModel(model)
 
     if evaluation_function.__name__ == "accuracy_score":
         type = "greater"
     else:
         NotImplementedError("The evaluation type is not recognized.")
-    predictions = model.predict(test_data)
+    predictions = trubrics_model.predict(test_data)
     result = evaluation_function(test_data[target], predictions)
     BaseTester(result, threshold).assertion(type=type, runner=runner)
