@@ -1,19 +1,21 @@
-from typing import Callable
+from typing import Type, Union
+
+import pandas as pd
 
 
 class BaseModel:
     """Base class for Models."""
 
-    def __init__(self, model: Callable):
+    def __init__(self, model: Type):
         self.model = model
 
-    def predict(self, data):
+    def predict(self, data: pd.DataFrame):
         try:
             return self.model.predict(data)
         except AttributeError as error:
             raise AttributeError("Model has no .predict() method.") from error
 
-    def predict_proba(self, data):
+    def predict_proba(self, data: pd.DataFrame):
         try:
             return self.model.predict_proba(data)
         except AttributeError as error:
@@ -23,12 +25,12 @@ class BaseModel:
 class BaseTester:
     """Base class for tests."""
 
-    def __init__(self, actual, desired):
+    def __init__(self, actual: Union[str, int], desired: Union[str, int]):
         self.actual_outcome = actual
         self.desired_outcome = desired
 
-    def assertion(self, type="equals", runner="notebook"):
-        assertion_function = getattr(self, type)
+    def assertion(self, type: str = "equals", runner: str = "notebook"):
+        assertion_function = getattr(self, f"_{type}")
         if runner == "notebook":
             if assertion_function():
                 print("Test passed.")
@@ -39,17 +41,25 @@ class BaseTester:
         else:
             raise NotImplementedError(f"{runner} is not a valid Runner.")
 
-    def equals(self):
+    def _equals(self):
         return self.actual_outcome == self.desired_outcome
 
-    def greater(self):
+    def _greater(self):
+        self._check_numerical()
         return self.actual_outcome > self.desired_outcome
 
-    def greater_equal(self):
+    def _greater_equal(self):
+        self._check_numerical()
         return self.actual_outcome >= self.desired_outcome
 
-    def less(self):
+    def _less(self):
+        self._check_numerical()
         return self.actual_outcome < self.desired_outcome
 
-    def less_equal(self):
+    def _less_equal(self):
+        self._check_numerical()
         return self.actual_outcome <= self.desired_outcome
+
+    def _check_numerical(self):
+        if not isinstance(self.actual_outcome, (int, float)) or not isinstance(self.desired_outcome, (int, float)):
+            raise TypeError("Values must both be of numerical (int or float) type.")
