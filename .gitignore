@@ -1,7 +1,21 @@
+# pycache
 __pycache__
+
+# local builds
 *.egg-info
-demo/data
-.DS_Store
 dist/
+
+# demo data
+demo/data
+
+# mac stuff
+.DS_Store
+
+# notebook stuff
 .ipynb_checkpoints
+
+# mypy
 .mypy_cache
+
+# my scrap folder
+scrap
