@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Type
 
 import pandas as pd
 
@@ -6,7 +6,7 @@ from trubrics.base import BaseModel, BaseTester
 
 
 def test_performance_against_threshold(
-    model: Callable,
+    model: Type,
     test_data: pd.DataFrame,
     evaluation_function: Callable,
     target: str,

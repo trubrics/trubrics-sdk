@@ -1,4 +1,4 @@
-from typing import Callable, Union
+from typing import Type, Union
 
 import pandas as pd
 
@@ -6,9 +6,9 @@ from trubrics.base import BaseModel, BaseTester
 
 
 def test_single_edge_case(
-    model: Callable,
+    model: Type,
     data: pd.DataFrame,
-    desired_output: Union[int, str],
+    desired_output: Union[int, float],
     runner: str,
 ):
     """
