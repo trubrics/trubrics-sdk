@@ -1,7 +1,8 @@
-from typing import Callable, Optional, Type, Union
+from typing import Callable, Optional, Union
 
 import numpy as np
 import pandas as pd
+from sklearn.base import BaseEstimator
 
 
 class BaseModel:
@@ -9,7 +10,7 @@ class BaseModel:
 
     def __init__(
         self,
-        model: Type,
+        model: BaseEstimator,
         training_data: pd.DataFrame,
         testing_data: pd.DataFrame,
         target_col: str,
