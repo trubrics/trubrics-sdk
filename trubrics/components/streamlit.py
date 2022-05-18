@@ -2,8 +2,39 @@ from typing import Union
 
 import pandas as pd
 import streamlit as st
+from pandas.api.types import is_numeric_dtype
 
 from trubrics.utils.loader import save_test_to_json
+
+
+def get_streamlit_mapping(train_df, categoricals, target):
+    # TODO: check if categoricals are all in train_df, if not warn
+    # TODO: check if total columns > N
+    if not target:
+        raise Exception("No target variable specified.")
+    train_df = train_df.drop(columns=target)
+    df = pd.DataFrame()
+    for col, dtype in train_df.dtypes.to_dict().items():
+        series = train_df[col]
+        if col in categoricals:
+            if is_numeric_dtype(dtype.type):
+                df[col] = [
+                    st.slider(col, min_value=int(series.min()), max_value=int(series.max()), value=round(series.mean()))
+                ]
+            else:
+                df[col] = [st.selectbox(col, tuple(series.dropna().unique()))]
+        elif is_numeric_dtype(dtype.type):
+            df[col] = [
+                st.number_input(
+                    col,
+                    min_value=int(series.min()),
+                    max_value=int(series.max()),
+                    step=round((int(series.max()) - int(series.min())) / 10),
+                )
+            ]
+        else:
+            continue
+    return df
 
 
 def feedback(

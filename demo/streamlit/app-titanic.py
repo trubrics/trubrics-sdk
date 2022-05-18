@@ -2,19 +2,15 @@ import joblib
 import pandas as pd
 import streamlit as st
 
-from trubrics.components.streamlit import feedback
+from trubrics.components.streamlit import feedback, get_streamlit_mapping
 
 # get features from user input and store to df
 st.title("Simulate with different features:")
-df = pd.DataFrame()
-df["Pclass"] = [st.slider("Ticket Class", min_value=1, max_value=3, value=2)]
-df["Sex"] = [st.selectbox("Sex", ("male", "female"))]
-df["Age"] = [st.number_input("Age", min_value=0, max_value=100, value=28)]
-df["SibSp"] = [st.slider("SibSp", min_value=0, max_value=8, value=2)]
-df["Parch"] = [st.slider("Parch", min_value=0, max_value=9, value=2)]
-df["Fare"] = [st.number_input("Fare", min_value=0, max_value=1000, value=2)]
-df["Embarked"] = [st.selectbox("Embarked", ("Q", "S", "C"))]
-df["Title"] = [st.selectbox("Title", ("Mr", "Mrs", "Miss", "Master", "Ms", "Col", "Rev", "Dr", "Dona"))]
+train_df = pd.read_csv("demo/data/preprocessed_train.csv")
+target = "Survived"
+categoricals = ["Pclass", "Sex", "SubSp", "Parch", "Embarked", "Title"]
+
+df = get_streamlit_mapping(train_df, categoricals, target)
 
 # make predictions
 rf_model = joblib.load("demo/models/rf_model.pkl")
