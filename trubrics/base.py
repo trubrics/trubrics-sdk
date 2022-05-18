@@ -39,7 +39,7 @@ class BaseModel:
         except AttributeError as error:
             raise AttributeError("Model has no .predict_proba() method.") from error
 
-    def test_single_edge_case(self, edge_case_data: pd.DataFrame, desired_output: Union[int, float]):
+    def test_single_edge_case(self, edge_case_data: pd.DataFrame, desired_output: Union[int, float]) -> bool:
         """
         Single edge case test that:
             - reads the test config about the schema & data (features and expected output)
@@ -49,10 +49,7 @@ class BaseModel:
         prediction = self.predict(edge_case_data)[0]
         return prediction == desired_output
 
-    def test_performance_against_threshold(
-        self,
-        threshold: float,
-    ):
+    def test_performance_against_threshold(self, threshold: float) -> bool:
         """
         Compares performance of a model on a dataset to a hard coded threshold value.
         """
@@ -61,9 +58,9 @@ class BaseModel:
             result = self.evaluation_function(self.testing_data[self.target_col], predictions)
             return result > threshold
         else:
-            NotImplementedError("The evaluation type is not recognized.")
+            raise NotImplementedError("The evaluation type is not recognized.")
 
-    def test_biased_performance_across_category(self, category: str, threshold: float):
+    def test_biased_performance_across_category(self, category: str, threshold: float) -> bool:
         """
         Calculates various performance for all values in a category and tests for
         the maximum difference in performance inferior to the threshold value.
@@ -91,11 +88,8 @@ class BaseModel:
         return max_performance_difference < threshold
 
     def test_feature_in_top_n_important_features(
-        self,
-        feature: str,
-        feature_importance: dict,
-        top_n_features: int,
-    ):
+        self, feature: str, feature_importance: dict, top_n_features: int
+    ) -> bool:
         """
         Verifies that a given feature is in the top n most important features.
         """
@@ -105,6 +99,6 @@ class BaseModel:
                 count += 1
         return count < top_n_features
 
-    def list_model_features(self, data: pd.DataFrame):
+    def list_model_features(self, data: pd.DataFrame) -> list:
         """Get features column names excluding the target feature."""
         return [col for col in data.columns if col != self.target_col]
