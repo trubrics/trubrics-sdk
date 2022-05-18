@@ -1,5 +1,5 @@
-from trubrics.base import BaseModel
+from trubrics.base import BaseTester
 
 
-class SklearnModel(BaseModel):
+class SklearnTester(BaseTester):
     pass
