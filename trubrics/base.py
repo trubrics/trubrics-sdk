@@ -91,5 +91,5 @@ class BaseTester:
     def list_model_features(self, data: Optional[pd.DataFrame] = None) -> list:
         """Get features column names excluding the target feature."""
         if data is None:
-            return [col for col in self.data.training_data.columns if col != self.data.target_col]
+            return [col for col in self.data.testing_data.columns if col != self.data.target_col]
         return [col for col in data.columns if col != self.data.target_col]
