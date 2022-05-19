@@ -23,7 +23,7 @@ model_context = ModelContext(
     estimator=rf_model,
     evaluation_function=accuracy_score
 )
-from trubrics.models.sklearn import SklearnTester
+from trubrics.testers.sklearn import SklearnTester
 model_tester = SklearnTester(data=data_context, model=model_context)
 
 # example of performance test
