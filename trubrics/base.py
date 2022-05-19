@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -13,19 +13,19 @@ class BaseTester:
         self.model = model
         self.data = data
 
-    def _predict(self, data: Optional[pd.DataFrame] = None) -> np.ndarray:
+    def _predict(self, data: Optional[pd.DataFrame] = None) -> pd.Series:
         if data is None:
             data = self.data.testing_data
         try:
-            return self.model.estimator.predict(data)
+            return self.model.estimator.predict(data)  # type: ignore
         except AttributeError as error:
             raise AttributeError("Model has no .predict() method.") from error
 
-    def _predict_proba(self, data: pd.DataFrame = None) -> np.ndarray:
+    def _predict_proba(self, data: Optional[pd.DataFrame] = None) -> pd.Series:
         if data is None:
             data = self.data.testing_data
         try:
-            return self.model.estimator.predict_proba(data)
+            return self.model.estimator.predict_proba(data)  # type: ignore
         except AttributeError as error:
             raise AttributeError("Model has no .predict_proba() method.") from error
 
@@ -45,7 +45,9 @@ class BaseTester:
         """
         predictions = self._predict()
         if self.model.evaluation_function.__name__ == "accuracy_score":
-            result = self.model.evaluation_function(self.data.testing_data[self.data.target_col], predictions)
+            result = self.model.evaluation_function(  # type: ignore
+                self.data.testing_data[self.data.target_col], predictions
+            )
             return result > threshold
         else:
             raise NotImplementedError("The evaluation type is not recognized.")
@@ -63,32 +65,36 @@ class BaseTester:
         - Show distributions of category variables
         - Performance plots of results
         """
-        cat_values = self.data.testing_data[category].unique()
+        cat_values = list(self.data.testing_data[category].unique())  # type: ignore
         if len(cat_values) > 20:
             raise Exception(f"Cardinality of {len(cat_values)} too high for performance test.")
         if category not in self.data.testing_data.columns:
             raise KeyError(f"Column '{category}' not found in dataset.")
-        result = {}
+        result: Dict[str, Union[int, float]] = {}
         for value in cat_values:
             if value not in [np.nan, None]:
                 filtered_data = self.data.testing_data.query(f"`{category}`=='{value}'")
                 predictions = self._predict(filtered_data.loc[:, self.list_model_features(filtered_data)])
-                result[value] = self.model.evaluation_function(filtered_data[self.data.target_col], predictions)
+                result[value] = self.model.evaluation_function(  # type: ignore
+                    filtered_data[self.data.target_col], predictions
+                )
         max_performance_difference = max(result.values()) - min(result.values())
         return max_performance_difference < threshold
 
     @staticmethod
-    def test_feature_in_top_n_important_features(feature: str, feature_importance: dict, top_n_features: int) -> bool:
+    def test_feature_in_top_n_important_features(
+        feature: str, feature_importance: Dict[str, float], top_n_features: int
+    ) -> bool:
         """
         Verifies that a given feature is in the top n most important features.
         """
         count = 0
         for importance in feature_importance.values():
-            if importance > feature_importance.get(feature):
+            if importance > feature_importance[feature]:
                 count += 1
         return count < top_n_features
 
-    def list_model_features(self, data: Optional[pd.DataFrame] = None) -> list:
+    def list_model_features(self, data: Optional[pd.DataFrame] = None) -> List[str]:
         """Get features column names excluding the target feature."""
         if data is None:
             return [col for col in self.data.testing_data.columns if col != self.data.target_col]

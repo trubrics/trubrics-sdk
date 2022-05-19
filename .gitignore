@@ -17,6 +17,7 @@ demo/data
 
 # mypy
 .mypy_cache
+typings/
 
 # my scrap folder
 scrap
