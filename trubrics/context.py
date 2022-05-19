@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn.base import BaseEstimator
 
 
-@dataclass
+@dataclass(frozen=True)
 class ModelContext:
     """Context for models."""
 
@@ -15,7 +15,7 @@ class ModelContext:
     evaluation_function: Callable
 
 
-@dataclass
+@dataclass(frozen=True)
 class DataContext:
     """Context for data."""
 
