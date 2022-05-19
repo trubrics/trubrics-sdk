@@ -1,4 +1,4 @@
-from typing import Callable, Union
+from typing import Callable, Optional, Union
 
 import pandas as pd
 from pydantic import BaseModel
@@ -21,7 +21,7 @@ class DataContext(BaseModel):
     """Context for data."""
 
     name: str
-    training_data: pd.DataFrame
+    training_data: Optional[pd.DataFrame]
     testing_data: pd.DataFrame
     target_col: str
 
