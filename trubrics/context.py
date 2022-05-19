@@ -15,6 +15,7 @@ class ModelContext(BaseModel):
 
     class Config:
         allow_mutation = False
+        arbitrary_types_allowed = True
 
 
 class DataContext(BaseModel):
@@ -27,3 +28,4 @@ class DataContext(BaseModel):
 
     class Config:
         allow_mutation = False
+        arbitrary_types_allowed = True
