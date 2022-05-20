@@ -1,5 +1,5 @@
 import json
-from typing import Union
+from typing import Optional, Union
 
 import pandas as pd
 import requests  # type: ignore
@@ -7,11 +7,11 @@ import requests  # type: ignore
 
 def save_test_to_json(
     test: str,
-    description: str,
+    description: Optional[str],
     prediction: Union[str, int],
     df: pd.DataFrame,
-    corrected_prediction=None,
-    tracking=False,
+    corrected_prediction: Union[str, int, float, None] = None,
+    tracking: bool = False,
 ) -> None:
     test_json = json.dumps(
         {

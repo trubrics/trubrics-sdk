@@ -1,4 +1,4 @@
-from typing import Union
+from typing import List, Optional, Union
 
 import pandas as pd
 import streamlit as st
@@ -7,7 +7,7 @@ from pandas.api.types import is_numeric_dtype
 from trubrics.utils.loader import save_test_to_json
 
 
-def get_streamlit_mapping(train_df, categoricals, target):
+def get_streamlit_mapping(train_df: pd.DataFrame, categoricals: List[str], target: str) -> pd.DataFrame:
     # TODO: check if categoricals are all in train_df, if not warn
     # TODO: check if total columns > N
     if not target:
@@ -51,13 +51,13 @@ def feedback(
             "Other",
         ),
     )
-
+    corrected_prediction: Union[str, int, float, None] = None
+    description: Optional[str] = None
     if test == "Other":
         description = st.text_input(
             "Send personalized feedback",
             'Model is always predicting "die" for all male passengers?',
         )
-        corrected_prediction = None
     elif test == "Single Edge Case":
         st.write(
             "You are signaling that the combination of all features above is a critical"
@@ -72,11 +72,10 @@ def feedback(
         )
         description = "A single edge case."
     elif test == "Bias":
-        corrected_prediction = None
         description = "Feedback on bias."
 
     if st.button("Send feedback"):
-        if corrected_prediction:
+        if corrected_prediction is None:
             save_test_to_json(
                 test=test,
                 description=description,
