@@ -46,7 +46,7 @@ class BaseTester:
         predictions = self._predict()
         if self.model.evaluation_function.__name__ == "accuracy_score":
             result = self.model.evaluation_function(  # type: ignore
-                self.data.testing_data[self.data.target_col], predictions
+                self.data.testing_data[self.data.target_column], predictions
             )
             return result > threshold
         else:
@@ -76,7 +76,7 @@ class BaseTester:
                 filtered_data = self.data.testing_data.query(f"`{category}`=='{value}'")
                 predictions = self._predict(filtered_data.loc[:, self.list_model_features(filtered_data)])
                 result[value] = self.model.evaluation_function(  # type: ignore
-                    filtered_data[self.data.target_col], predictions
+                    filtered_data[self.data.target_column], predictions
                 )
         max_performance_difference = max(result.values()) - min(result.values())
         return max_performance_difference < threshold
@@ -97,5 +97,5 @@ class BaseTester:
     def list_model_features(self, data: Optional[pd.DataFrame] = None) -> List[str]:
         """Get features column names excluding the target feature."""
         if data is None:
-            return [col for col in self.data.testing_data.columns if col != self.data.target_col]
-        return [col for col in data.columns if col != self.data.target_col]
+            return [col for col in self.data.testing_data.columns if col != self.data.target_column]
+        return [col for col in data.columns if col != self.data.target_column]
