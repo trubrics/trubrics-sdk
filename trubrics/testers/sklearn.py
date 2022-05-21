@@ -1,4 +1,4 @@
-from trubrics.base import BaseTester
+from trubrics.testers.base import BaseTester
 
 
 class SklearnTester(BaseTester):
