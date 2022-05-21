@@ -21,3 +21,6 @@ typings/
 
 # my scrap folder
 scrap
+
+# IDE
+.vscode
