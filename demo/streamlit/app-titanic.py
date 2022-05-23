@@ -2,23 +2,37 @@ import joblib
 import pandas as pd
 import streamlit as st
 
-from trubrics.components.streamlit import feedback, get_streamlit_mapping
+from demo.streamlit import config
+from trubrics.components.streamlit import StreamlitComponent
+from trubrics.context import DataContext, ModelContext
 
-# get features from user input and store to df
-st.title("Simulate with different features:")
-train_df = pd.read_csv("demo/data/preprocessed_train.csv")
-target = "Survived"
-categoricals = ["Pclass", "Sex", "SubSp", "Parch", "Embarked", "Title"]
+# init data
+TRAINING_DATA = pd.read_csv(config.LOCAL_TRAIN_FILENAME)
+data_context = DataContext(
+    testing_data=TRAINING_DATA,
+    target_column=config.TARGET,
+    categorical_columns=config.CATEGORICAL_COLUMNS,
+    business_columns=config.BUSINESS_COLUMNS,
+)
 
-df = get_streamlit_mapping(train_df, categoricals, target)
+# init model
+RF_MODEL = joblib.load(config.LOCAL_MODEL_FILENAME)
+model_context = ModelContext(estimator=RF_MODEL, evaluation_function=lambda x, y: x.min() - y.min())
+
+# create streamlit component
+st_component = StreamlitComponent(model=model_context, data=data_context)
+
+
+with st.sidebar:
+    df = st_component.generate_what_if(TRAINING_DATA.head(20))
 
 # make predictions
-rf_model = joblib.load("demo/models/rf_model.pkl")
-raw_prediction = rf_model.predict(df)[0]
+raw_prediction = RF_MODEL.predict(df)[0]
 if raw_prediction:
-    prediction = "survived"
+    prediction = '<p style="color:Green;">This passenger would have survived.</p>'
 else:
-    prediction = "died"
-st.title(f"The model prediction is: {prediction}.")
+    prediction = '<p style="color:Red;">This passenger would have died.</p>'
+st.title("Model prediction:")
+st.markdown(prediction, unsafe_allow_html=True)
 
-feedback(prediction=prediction, df=df)
+st_component.feedback(prediction=prediction, df=df)

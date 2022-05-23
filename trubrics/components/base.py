@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseComponent:
-    """Base class for Models."""
+    """Base class for UI components."""
 
     def __init__(self, model: ModelContext, data: DataContext):
         self.model = model
@@ -38,21 +38,28 @@ class BaseComponent:
         out_df = pd.DataFrame()
         for col, dtype in wi_data.dtypes.to_dict().items():
             series = wi_data[col]
+            if self.data.business_columns is not None and col in self.data.business_columns.keys():
+                renamed_col = self.data.business_columns[col]
+            else:
+                renamed_col = col
             if self.data.categorical_columns is None:
                 raise ValueError("Categorical columns must be specified for the What-If tool.")
             if col in self.data.categorical_columns:
                 if is_numeric_dtype(dtype.type):
                     out_df[col] = [
                         st.slider(
-                            col, min_value=int(series.min()), max_value=int(series.max()), value=round(series.mean())
+                            renamed_col,
+                            min_value=int(series.min()),
+                            max_value=int(series.max()),
+                            value=round(series.mean()),
                         )
                     ]
                 else:
-                    out_df[col] = [st.selectbox(col, tuple(series.dropna().unique()))]
+                    out_df[col] = [st.selectbox(renamed_col, tuple(series.dropna().unique()))]
             elif is_numeric_dtype(dtype.type):
                 out_df[col] = [
                     st.number_input(
-                        col,
+                        renamed_col,
                         min_value=int(series.min()),
                         max_value=int(series.max()),
                         step=round((int(series.max()) - int(series.min())) / 10),
@@ -64,7 +71,7 @@ class BaseComponent:
 
     def feedback(self, prediction: Union[str, int], df: pd.DataFrame, tracking: bool = False):
         """Get user feedback and save"""
-        st.title("Send feedback to the data team:")
+        st.title("Send model feedback:")
         test = st.selectbox(
             "Choose Feedback type:",
             (
@@ -76,10 +83,7 @@ class BaseComponent:
         corrected_prediction: Union[str, int, float, None] = None
         description: Optional[str] = None
         if test == "Other":
-            description = st.text_input(
-                "Send personalized feedback",
-                'Model is always predicting "die" for all male passengers?',
-            )
+            description = st.text_input(label="", value="Send free text feedback here")
         elif test == "Single Edge Case":
             st.write(
                 "You are signaling that the combination of all features above is a critical"

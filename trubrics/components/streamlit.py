@@ -2,4 +2,5 @@ from trubrics.components.base import BaseComponent
 
 
 class StreamlitComponent(BaseComponent):
-    pass
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)

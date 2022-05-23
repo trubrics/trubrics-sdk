@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 import pandas as pd
 from jsonschema import SchemaError
@@ -29,6 +29,7 @@ class DataContext(BaseModel):
     training_data: Optional[pd.DataFrame] = None
     testing_data: pd.DataFrame
     categorical_columns: Optional[List[str]] = None
+    business_columns: Optional[Dict[str, str]] = None
     target_column: str
 
     class Config:
@@ -52,6 +53,12 @@ class DataContext(BaseModel):
     def categorical_columns_must_be_in_data(cls, v: str, values: List[Any]):
         if not set(v).issubset(values["testing_data"].columns):  # type: ignore
             raise KeyError("All categorical columns must be in testing_data column names.")
+        return v
+
+    @validator("business_columns")
+    def business_columns_must_be_in_data(cls, v: str, values: List[Any]):
+        if not set(v.keys()).issubset(values["testing_data"].columns):  # type: ignore
+            raise KeyError("All business columns must be in testing_data column names.")
         return v
 
     @validator("target_column")
