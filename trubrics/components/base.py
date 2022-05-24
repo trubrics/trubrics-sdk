@@ -20,6 +20,12 @@ class BaseComponent:
         self.model = model
         self.data = data
 
+    def _get_renamed_test_data(self):
+        """
+        Get test DataFrame with renamed business columns.
+        """
+        return self.data.testing_data.rename(columns=self.data.business_columns)
+
     def generate_what_if(self, wi_data: Optional[pd.DataFrame] = None) -> pd.DataFrame:
         """
         Generate a what-if tool based on a DataFrame input.

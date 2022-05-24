@@ -8,13 +8,14 @@ from trubrics.context import DataContext, ModelContext
 
 # init data
 TRAINING_DATA = pd.read_csv(config.LOCAL_TRAIN_FILENAME)
+TESTING_DATA = pd.read_csv(config.LOCAL_TRAIN_FILENAME)
 data_context = DataContext(
-    testing_data=TRAINING_DATA,
+    training_data=TRAINING_DATA,
+    testing_data=TESTING_DATA,
     target_column=config.TARGET,
     categorical_columns=config.CATEGORICAL_COLUMNS,
     business_columns=config.BUSINESS_COLUMNS,
 )
-
 # init model
 RF_MODEL = joblib.load(config.LOCAL_MODEL_FILENAME)
 model_context = ModelContext(estimator=RF_MODEL, evaluation_function=lambda x, y: x.min() - y.min())
@@ -24,7 +25,11 @@ st_component = StreamlitComponent(model=model_context, data=data_context)
 
 
 with st.sidebar:
-    df = st_component.generate_what_if(TRAINING_DATA.head(20))
+    df = st_component.generate_what_if(TESTING_DATA)
+
+# Show example of test data
+st.title("Example of test data:")
+st.dataframe(st_component._get_renamed_test_data())
 
 # make predictions
 raw_prediction = RF_MODEL.predict(df)[0]
