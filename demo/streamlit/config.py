@@ -2,7 +2,7 @@ LOCAL_TRAIN_FILENAME = "demo/data/preprocessed_train.csv"
 LOCAL_TEST_FILENAME = "demo/data/preprocessed_test.csv"
 LOCAL_MODEL_FILENAME = "demo/models/rf_model.pkl"
 TARGET = "Survived"
-CATEGORICAL_COLUMNS = ["Pclass", "Sex", "SibSp", "Parch", "Embarked", "Title"]
+CATEGORICAL_COLUMNS = ["Sex", "Embarked", "Title"]
 BUSINESS_COLUMNS = {
     "Pclass": "Ticket class",
     "SibSp": "Number of siblings / spouses aboard the Titanic",

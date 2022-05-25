@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Union
+from typing import Optional, Tuple, Union
 
 import pandas as pd
 import streamlit as st
@@ -81,8 +81,9 @@ class BaseComponent:
         test = st.selectbox(
             "Choose Feedback type:",
             (
-                "Single Edge Case",
+                "Single prediction error",
                 "Bias",
+                "Important features",
                 "Other",
             ),
         )
@@ -90,21 +91,18 @@ class BaseComponent:
         description: Optional[str] = None
         if test == "Other":
             description = st.text_input(label="", value="Send free text feedback here")
-        elif test == "Single Edge Case":
-            st.write(
-                "You are signaling that the combination of all features above is a critical"
-                " edge case that we must test for."
-            )
-            corrected_prediction = st.selectbox(
-                "The prediction above should be:",
-                (
-                    0,
-                    1,
-                ),
-            )
-            description = "A single edge case."
+
+        elif test == "Single prediction error":
+            corrected_prediction, description = self._collect_single_edge_case()
+
+        elif test == "Important features":
+            corrected_prediction, description = self._collect_important_features_feedback()
+
         elif test == "Bias":
             description = "Feedback on bias."
+
+        else:
+            raise NotImplementedError()
 
         if st.button("Send feedback"):
             if corrected_prediction is None:
@@ -126,3 +124,25 @@ class BaseComponent:
                 )
             logger.info(f"Predictions saved {'to Trubrics UI' if tracking else 'locally'}.")
             st.balloons()
+
+    @staticmethod
+    def _collect_single_edge_case() -> Tuple[Union[str, int, None], str]:
+        st.write(
+            "You are signaling that the combination of all features above is a critical"
+            " edge case that we must test for."
+        )
+        corrected_prediction = st.selectbox(
+            "The prediction above should be:",
+            (
+                0,
+                1,
+            ),
+        )
+        description = "A single edge case."
+        return corrected_prediction, description
+
+    @staticmethod
+    def _collect_important_features_feedback() -> Tuple[Union[str, int, None], str]:
+        corrected_prediction = None
+        description = "Most important features."
+        return corrected_prediction, description
