@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union
+from typing import Dict, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -74,7 +74,7 @@ class BaseTester:
         for value in cat_values:
             if value not in [np.nan, None]:
                 filtered_data = self.data.testing_data.query(f"`{category}`=='{value}'")
-                predictions = self._predict(filtered_data.loc[:, self.list_model_features(filtered_data)])
+                predictions = self._predict(filtered_data.loc[:, self.data.list_features(filtered_data)])
                 result[value] = self.model.evaluation_function(  # type: ignore
                     filtered_data[self.data.target_column], predictions
                 )
@@ -93,9 +93,3 @@ class BaseTester:
             if importance > feature_importance[feature]:
                 count += 1
         return count < top_n_features
-
-    def list_model_features(self, data: Optional[pd.DataFrame] = None) -> List[str]:
-        """Get features column names excluding the target feature."""
-        if data is None:
-            return [col for col in self.data.testing_data.columns if col != self.data.target_column]
-        return [col for col in data.columns if col != self.data.target_column]

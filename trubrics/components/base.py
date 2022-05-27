@@ -68,18 +68,19 @@ class BaseComponent:
                         renamed_col,
                         min_value=int(series.min()),
                         max_value=int(series.max()),
-                        step=round((int(series.max()) - int(series.min())) / 10),
+                        value=int(series.mean()),
+                        step=None,
                     )
                 ]
             else:
                 raise NotImplementedError(f"Columns '{col}' type is not recognised.")
         return out_df
 
-    def feedback(self, prediction: Union[str, int], df: pd.DataFrame, tracking: bool = False):
+    def feedback(self, prediction: Union[str, int], what_if_df: pd.DataFrame, tracking: bool = False):
         """Get user feedback and save"""
         st.title("Send model feedback:")
         test = st.selectbox(
-            "Choose Feedback type:",
+            "Choose feedback type:",
             (
                 "Single prediction error",
                 "Bias",
@@ -96,7 +97,8 @@ class BaseComponent:
             corrected_prediction, description = self._collect_single_edge_case()
 
         elif test == "Important features":
-            corrected_prediction, description = self._collect_important_features_feedback()
+            selected_feature, top_n_feature, description = self._collect_important_features_feedback()
+            description = f"{description}_{selected_feature}_{top_n_feature}"  # TODO: fix save variables
 
         elif test == "Bias":
             description = "Feedback on bias."
@@ -110,7 +112,7 @@ class BaseComponent:
                     test=test,
                     description=description,
                     prediction=prediction,
-                    df=df,
+                    df=what_if_df,
                     corrected_prediction=corrected_prediction,
                     tracking=tracking,
                 )
@@ -119,30 +121,42 @@ class BaseComponent:
                     test=test,
                     description=description,
                     prediction=prediction,
-                    df=df,
+                    df=what_if_df,
                     tracking=tracking,
                 )
             logger.info(f"Predictions saved {'to Trubrics UI' if tracking else 'locally'}.")
             st.balloons()
 
-    @staticmethod
-    def _collect_single_edge_case() -> Tuple[Union[str, int, None], str]:
+    def _collect_single_edge_case(self) -> Tuple[Union[str, int, None], str]:
+        """
+        Collect correct prediction for the single edge case flag.
+        """
         st.write(
-            "You are signaling that the combination of all features above is a critical"
-            " edge case that we must test for."
+            self.__feedback_type_description(
+                "you are signalling that the combination of all features is a critical edge case that we must test for."
+            )
         )
         corrected_prediction = st.selectbox(
-            "The prediction above should be:",
-            (
-                0,
-                1,
-            ),
+            "The model prediction for this edge case should be:",
+            tuple(self.data.testing_data[self.data.target_column].unique()),
         )
         description = "A single edge case."
         return corrected_prediction, description
 
-    @staticmethod
-    def _collect_important_features_feedback() -> Tuple[Union[str, int, None], str]:
-        corrected_prediction = None
+    def _collect_important_features_feedback(self) -> Tuple[str, int, str]:
+        st.write(
+            self.__feedback_type_description(
+                "you are signalling that a given feature must be in the top N most important features."
+            )
+        )
+        features = self.data.list_features()
+        selected_feature = st.selectbox("Choose model feature:", (features))
+        top_n_feature = st.slider(
+            "The selected feature should be in the top ... features:", min_value=1, max_value=len(features)
+        )
         description = "Most important features."
-        return corrected_prediction, description
+        return selected_feature, top_n_feature, description
+
+    @staticmethod
+    def __feedback_type_description(error_description: str) -> str:
+        return f"Feedback type description: {error_description}"

@@ -68,3 +68,9 @@ class DataContext(BaseModel):
                 "Target column should not feature as a categorical column. Categorical columns only refer to features."
             )
         return v
+
+    def list_features(self, data: Optional[pd.DataFrame] = None) -> List[str]:
+        """Get features column names excluding the target feature."""
+        if data is None:
+            return [col for col in self.testing_data.columns if col != self.target_column]
+        return [col for col in data.columns if col != self.target_column]
