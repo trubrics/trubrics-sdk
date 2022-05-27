@@ -74,3 +74,10 @@ class DataContext(BaseModel):
         if data is None:
             return [col for col in self.testing_data.columns if col != self.target_column]
         return [col for col in data.columns if col != self.target_column]
+
+
+class TrubricContext(BaseModel):
+    """Context for a Trubric set of tests."""
+
+    test_type: Optional[str]
+    metadata: Dict[str, Union[List[Any], str, int, float, dict]]

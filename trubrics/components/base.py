@@ -6,7 +6,7 @@ import streamlit as st
 from jsonschema import SchemaError
 from pandas.api.types import is_numeric_dtype
 
-from trubrics.context import DataContext, ModelContext
+from trubrics.context import DataContext, ModelContext, TrubricContext
 from trubrics.utils.loader import save_test_to_json
 from trubrics.utils.pandas import schema_is_equal
 
@@ -76,10 +76,10 @@ class BaseComponent:
                 raise NotImplementedError(f"Columns '{col}' type is not recognised.")
         return out_df
 
-    def feedback(self, prediction: Union[str, int], what_if_df: pd.DataFrame, tracking: bool = False):
+    def feedback(self, what_if_df: pd.DataFrame, tracking: bool = False):
         """Get user feedback and save"""
         st.title("Send model feedback:")
-        test = st.selectbox(
+        test_type: str = st.selectbox(
             "Choose feedback type:",
             (
                 "Single prediction error",
@@ -88,42 +88,32 @@ class BaseComponent:
                 "Other",
             ),
         )
-        corrected_prediction: Union[str, int, float, None] = None
-        description: Optional[str] = None
-        if test == "Other":
-            description = st.text_input(label="", value="Send free text feedback here")
 
-        elif test == "Single prediction error":
-            corrected_prediction, description = self._collect_single_edge_case()
+        # reinitialise metadata
+        metadata = {}
+        if test_type == "Other":
+            metadata["description"] = st.text_input(label="", value="Send free text feedback here")
 
-        elif test == "Important features":
-            selected_feature, top_n_feature, description = self._collect_important_features_feedback()
-            description = f"{description}_{selected_feature}_{top_n_feature}"  # TODO: fix save variables
+        elif test_type == "Single prediction error":
+            metadata["corrected_prediction"], metadata["description"] = self._collect_single_edge_case()
+            metadata["input"] = what_if_df.to_dict()
 
-        elif test == "Bias":
-            description = "Feedback on bias."
+        elif test_type == "Important features":
+            (
+                metadata["selected_feature"],
+                metadata["top_n_feature"],
+                metadata["description"],
+            ) = self._collect_important_features_feedback()
+
+        elif test_type == "Bias":
+            metadata["description"] = "Feedback on bias."
 
         else:
             raise NotImplementedError()
 
+        t_ctx = TrubricContext(test_type=test_type, metadata=metadata)
         if st.button("Send feedback"):
-            if corrected_prediction is None:
-                save_test_to_json(
-                    test=test,
-                    description=description,
-                    prediction=prediction,
-                    df=what_if_df,
-                    corrected_prediction=corrected_prediction,
-                    tracking=tracking,
-                )
-            else:
-                save_test_to_json(
-                    test=test,
-                    description=description,
-                    prediction=prediction,
-                    df=what_if_df,
-                    tracking=tracking,
-                )
+            save_test_to_json(trubric_context=t_ctx)
             logger.info(f"Predictions saved {'to Trubrics UI' if tracking else 'locally'}.")
             st.balloons()
 

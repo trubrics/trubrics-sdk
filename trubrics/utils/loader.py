@@ -1,29 +1,13 @@
 import json
-from typing import Optional, Union
 
 import pandas as pd
 import requests  # type: ignore
 
+from trubrics.context import TrubricContext
 
-def save_test_to_json(
-    test: str,
-    description: Optional[str],
-    prediction: Union[str, int],
-    df: pd.DataFrame,
-    corrected_prediction: Union[str, int, float, None] = None,
-    tracking: bool = False,
-) -> None:
-    test_json = json.dumps(
-        {
-            "test": {
-                "name": test,
-                "description": description,
-            },
-            "prediction": prediction,
-            "corrected_prediction": corrected_prediction,
-            "features": df.to_dict(),
-        }
-    )
+
+def save_test_to_json(trubric_context: TrubricContext, tracking: bool = False) -> None:
+    test_json = trubric_context.json()
     if tracking:
         url = "http://localhost:5000"
         headers = {"Content-type": "application/json"}
@@ -34,7 +18,7 @@ def save_test_to_json(
         )
     else:
         with open(
-            "demo/data/trubrics_test.json",
+            "demo/data/trubrics_single_edge_test.json",
             "w",
         ) as file:
             file.write(test_json)
@@ -47,8 +31,8 @@ def get_business_test_data(
         raise Exception("to be replaced with read from test tracking API")
     else:
         with open(
-            "../data/trubrics_test.json",
+            "../data/trubrics_single_edge_test.json",
             "r",
         ) as file:
             saved_test = json.load(file)
-            return pd.DataFrame(saved_test.get("features")), saved_test.get("corrected_prediction")
+            return pd.DataFrame(saved_test["metadata"].get("input")), saved_test["metadata"].get("corrected_prediction")

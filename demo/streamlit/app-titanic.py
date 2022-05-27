@@ -40,4 +40,4 @@ else:
 st.title("Model prediction:")
 st.markdown(prediction, unsafe_allow_html=True)
 
-st_component.feedback(prediction=prediction, what_if_df=what_if_df)
+st_component.feedback(what_if_df=what_if_df)
