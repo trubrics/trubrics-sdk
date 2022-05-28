@@ -28,8 +28,8 @@ with st.sidebar:
     what_if_df = st_component.generate_what_if(TESTING_DATA)
 
 # Show example of test data
-st.title("Example of test data:")
-st.dataframe(st_component.get_renamed_test_data())
+st.title("Zoom on test set prediction errors:")
+st.dataframe(st_component.explore_test_set_errors(business_columns=True))
 
 # make predictions
 raw_prediction = st_component.predict(what_if_df)[0]
