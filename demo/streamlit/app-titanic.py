@@ -29,10 +29,10 @@ with st.sidebar:
 
 # Show example of test data
 st.title("Example of test data:")
-st.dataframe(st_component._get_renamed_test_data())
+st.dataframe(st_component.get_renamed_test_data())
 
 # make predictions
-raw_prediction = RF_MODEL.predict(what_if_df)[0]
+raw_prediction = st_component.predict(what_if_df)[0]
 if raw_prediction:
     prediction = '<p style="color:Green;">This passenger would have survived.</p>'
 else:
