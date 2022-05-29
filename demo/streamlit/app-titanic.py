@@ -23,21 +23,33 @@ model_context = ModelContext(estimator=RF_MODEL, evaluation_function=lambda x, y
 # create streamlit component
 st_component = StreamlitComponent(model=model_context, data=data_context)
 
-
 with st.sidebar:
     what_if_df = st_component.generate_what_if(TESTING_DATA)
 
-# Show example of test data
-st.title("Zoom on test set prediction errors:")
-st.dataframe(st_component.explore_test_set_errors(business_columns=True))
 
-# make predictions
-raw_prediction = st_component.predict(what_if_df)[0]
-if raw_prediction:
-    prediction = '<p style="color:Green;">This passenger would have survived.</p>'
-else:
-    prediction = '<p style="color:Red;">This passenger would have died.</p>'
-st.title("Model prediction:")
+st.title("View model prediction")
+
+
+def get_what_if_prediction(what_if_df):
+    raw_prediction = st_component.predict(what_if_df)[0]
+    if raw_prediction:
+        prediction = '<p style="color:Green;">This passenger would have survived.</p>'
+    else:
+        prediction = '<p style="color:Red;">This passenger would have died.</p>'
+    return prediction
+
+
+prediction = get_what_if_prediction(what_if_df)
 st.markdown(prediction, unsafe_allow_html=True)
 
+st.title("Send model feedback")
 st_component.feedback(what_if_df=what_if_df)
+
+st.title("View data")
+data_view = st.selectbox(label="", options=("View full test set", "View test set errors"))
+if data_view == "View full test set":
+    st.dataframe(st_component.get_renamed_test_data())
+elif data_view == "View test set errors":
+    st.dataframe(st_component.explore_test_set_errors(business_columns=True))
+else:
+    raise NotImplementedError("The data_view must be one of the selectbox options")

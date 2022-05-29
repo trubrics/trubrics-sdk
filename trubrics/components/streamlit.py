@@ -70,7 +70,6 @@ class StreamlitComponent(BaseModeller):
 
     def feedback(self, what_if_df: pd.DataFrame, tracking: bool = False):
         """Get user feedback and save"""
-        st.title("Send model feedback:")
         test_type: str = st.selectbox(
             "Choose feedback type:",
             (
@@ -81,7 +80,6 @@ class StreamlitComponent(BaseModeller):
             ),
         )
 
-        # reinitialise metadata
         metadata = {}
         if test_type == "Other":
             metadata["description"] = st.text_input(label="", value="Send free text feedback here")
