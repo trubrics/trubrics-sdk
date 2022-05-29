@@ -52,3 +52,8 @@ class BaseModeller:
             )
         else:
             raise NotImplementedError("Todo")
+
+    def compute_performance_on_test_set(self):
+        """Calculate the performance on the test set with evaluation function."""
+        predictions = self.predict()
+        return self.model.evaluation_function(predictions, self.data.testing_data[self.data.target_column])
