@@ -42,16 +42,18 @@ class BaseModeller:
         """
         Return the testing dataset errors with a prediction column.
         """
+        predict_col = f"{self.data.target_column}_predictions"
+        assign_kwargs = {predict_col: self.predict()}
         if business_columns:
-            predict_col = f"{self.data.target_column}_predictions"
-            assign_kwargs = {predict_col: self.predict()}
             return (
                 self.get_renamed_test_data()
                 .assign(**assign_kwargs)
                 .loc[lambda x: x[self.data.target_column] != x[predict_col], :]
             )
         else:
-            raise NotImplementedError("Todo")
+            return self.data.testing_data.assign(**assign_kwargs).loc[
+                lambda x: x[self.data.target_column] != x[predict_col], :
+            ]
 
     def compute_performance_on_test_set(self):
         """Calculate the performance on the test set with evaluation function."""

@@ -83,10 +83,11 @@ class StreamlitComponent(BaseModeller):
         metadata = {}
         if test_type == "Other":
             metadata["description"] = st.text_input(label="", value="Send free text feedback here")
+            metadata["what_if_input"] = what_if_df.to_dict()
 
         elif test_type == "Single prediction error":
             metadata["corrected_prediction"], metadata["description"] = self._collect_single_edge_case()
-            metadata["input"] = what_if_df.to_dict()
+            metadata["what_if_input"] = what_if_df.to_dict()
 
         elif test_type == "Important features":
             (
