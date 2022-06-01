@@ -7,7 +7,7 @@ from jsonschema import SchemaError
 from pandas.api.types import is_numeric_dtype
 
 from trubrics.base import BaseModeller
-from trubrics.context import TrubricContext
+from trubrics.context import FeedbackContext
 from trubrics.utils.loader import save_test_to_json
 from trubrics.utils.pandas import schema_is_equal
 
@@ -70,7 +70,7 @@ class StreamlitComponent(BaseModeller):
 
     def feedback(self, what_if_df: pd.DataFrame, tracking: bool = False):
         """Get user feedback and save"""
-        test_type: str = st.selectbox(
+        feedback_type: str = st.selectbox(
             "Choose feedback type:",
             (
                 "Single prediction error",
@@ -81,30 +81,30 @@ class StreamlitComponent(BaseModeller):
         )
 
         metadata = {}
-        if test_type == "Other":
+        if feedback_type == "Other":
             metadata["description"] = st.text_input(label="", value="Send free text feedback here")
             metadata["what_if_input"] = what_if_df.to_dict()
 
-        elif test_type == "Single prediction error":
+        elif feedback_type == "Single prediction error":
             metadata["corrected_prediction"], metadata["description"] = self._collect_single_edge_case()
             metadata["what_if_input"] = what_if_df.to_dict()
 
-        elif test_type == "Important features":
+        elif feedback_type == "Important features":
             (
                 metadata["selected_feature"],
                 metadata["top_n_feature"],
                 metadata["description"],
             ) = self._collect_important_features_feedback()
 
-        elif test_type == "Bias":
+        elif feedback_type == "Bias":
             metadata["description"] = "Feedback on bias."
 
         else:
             raise NotImplementedError()
 
-        t_ctx = TrubricContext(test_type=test_type, metadata=metadata)
+        single_test = FeedbackContext(feedback_type=feedback_type, metadata=metadata)
         if st.button("Send feedback"):
-            save_test_to_json(trubric_context=t_ctx)
+            save_test_to_json(trubric_context=single_test)
             logger.info(f"Predictions saved {'to Trubrics UI' if tracking else 'locally'}.")
             st.balloons()
 

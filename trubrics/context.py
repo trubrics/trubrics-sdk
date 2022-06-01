@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Union
 
 import pandas as pd
@@ -76,8 +77,31 @@ class DataContext(BaseModel):
         return [col for col in data.columns if col != self.target_column]
 
 
-class TrubricContext(BaseModel):
-    """Context for a Trubric set of tests."""
+class FeedbackContext(BaseModel):
+    """Context for feedback given by a user from a UI component."""
 
-    test_type: Optional[str]
+    feedback_type: Optional[str]
     metadata: Dict[str, Union[List[Any], str, int, float, dict]]
+
+
+class ValidationContext(BaseModel):
+    """Context for a single validation point of a model."""
+
+    validation_type: str
+    validation_kwargs: Dict[str, Optional[Any]]
+    outcome: str
+    result: Optional[Dict[str, Any]]
+
+
+class TrubricContext(BaseModel):
+    """Context for a Trubric, or set of validation points."""
+
+    name: str = "trubric"
+    file_path: str
+    model_context: Optional[ModelContext]
+    data_context: Optional[DataContext]
+    validations: List[ValidationContext]
+
+    def save(self):
+        with open(Path(self.file_path) / f"{self.name}.json", "w") as file:
+            file.write(self.json())
