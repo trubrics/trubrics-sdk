@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 import pandas as pd
 from jsonschema import SchemaError
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, Field, validator
 from sklearn.base import BaseEstimator
 
 from trubrics.utils.pandas import schema_is_equal
@@ -16,11 +16,16 @@ class ModelContext(BaseModel):
     version: Optional[float] = None
     estimator: BaseEstimator
     evaluation_function: Callable[[pd.Series, pd.Series], Union[int, float]]
+    evaluation_function_name: Optional[str]
 
     class Config:
         allow_mutation = False
         arbitrary_types_allowed = True
         extra = "forbid"
+
+    @validator("evaluation_function_name", pre=True, always=True)
+    def get_evaluation_function_name(cls, v, values: Any):
+        return values["evaluation_function"].__name__
 
 
 class DataContext(BaseModel):
@@ -97,11 +102,12 @@ class TrubricContext(BaseModel):
     """Context for a Trubric, or set of validation points."""
 
     name: str = "trubric"
-    file_path: str
-    model_context: Optional[ModelContext]
-    data_context: Optional[DataContext]
+    model_context: Optional[ModelContext] = Field(exclude={"estimator", "evaluation_function"})
+    data_context: Optional[DataContext] = Field(exclude={"training_data", "testing_data", "business_columns"})
     validations: List[ValidationContext]
 
-    def save(self):
-        with open(Path(self.file_path) / f"{self.name}.json", "w") as file:
+    def save(self, path: str):
+        if path is None:
+            raise Exception("Specify the local path where you would like to save your Trubric json.")
+        with open(Path(path) / f"{self.name}.json", "w") as file:
             file.write(self.json())

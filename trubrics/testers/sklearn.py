@@ -1,56 +1,50 @@
-from typing import Dict, Union
+from typing import Dict, Tuple, Union
 
 import numpy as np
 import pandas as pd
 
 from trubrics.base import BaseModeller
-from trubrics.context import ValidationContext
+from trubrics.utils.validation import validation_output
 
 
 class SklearnTester(BaseModeller):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+    @validation_output
     def test_single_edge_case(
         self, edge_case_data: pd.DataFrame, desired_output: Union[int, float]
-    ) -> ValidationContext:
+    ) -> Tuple[bool, Dict[str, Union[int, float]]]:
         """
         Single edge case test that:
             - reads the test config about the schema & data (features and expected output)
             - calls .predict() on the model with the stored data
             - tests the output of that model versus the desired output
         """
-        prediction = self.predict(edge_case_data)[0]
-        outcome = pass_or_fail(prediction == desired_output)
+        prediction = self.predict(edge_case_data)[
+            0
+        ].item()  # .item() converts numpy to python type, in order to be serialised to json
 
-        return ValidationContext(
-            validation_type=self.test_single_edge_case.__name__,
-            validation_kwargs={"edge_case_data": edge_case_data.to_dict(), "desired_output": desired_output},
-            outcome=outcome,
-            result=None,
-        )
+        return prediction == desired_output, {"prediction": prediction}
 
-    def test_performance_against_threshold(self, threshold: float) -> ValidationContext:
+    @validation_output
+    def test_performance_against_threshold(self, threshold: float) -> Tuple[bool, Dict[str, Union[int, float]]]:
         """
         Compares performance of a model on a dataset to a hard coded threshold value.
         """
         predictions = self.predict()
         if self.model.evaluation_function.__name__ == "accuracy_score":
-            result = self.model.evaluation_function(  # type: ignore
+            performance = self.model.evaluation_function(  # type: ignore
                 self.data.testing_data[self.data.target_column], predictions
             )
-            outcome = pass_or_fail(result > threshold)
-
-            return ValidationContext(
-                validation_type=self.test_performance_against_threshold.__name__,
-                validation_kwargs={"threshold": threshold},
-                outcome=outcome,
-                result={"performance": result},
-            )
+            return performance > threshold, {"performance": performance}
         else:
             raise NotImplementedError("The evaluation type is not recognized.")
 
-    def test_biased_performance_across_category(self, category: str, threshold: float) -> ValidationContext:
+    @validation_output
+    def test_biased_performance_across_category(
+        self, category: str, threshold: float
+    ) -> Tuple[bool, Dict[str, Union[int, float]]]:
         """
         Calculates various performance for all values in a category and tests for
         the maximum difference in performance inferior to the threshold value.
@@ -77,18 +71,13 @@ class SklearnTester(BaseModeller):
                     filtered_data[self.data.target_column], predictions
                 )
         max_performance_difference = max(result.values()) - min(result.values())
-        outcome = pass_or_fail(max_performance_difference < threshold)
 
-        return ValidationContext(
-            validation_type=self.test_biased_performance_across_category.__name__,
-            validation_kwargs={"category": category, "threshold": threshold},
-            outcome=outcome,
-            result=None,
-        )
+        return max_performance_difference < threshold, {"max_performance_difference": max_performance_difference}
 
+    @validation_output
     def test_feature_in_top_n_important_features(
         self, feature: str, feature_importance: Dict[str, float], top_n_features: int
-    ) -> ValidationContext:
+    ) -> Tuple[bool, Dict[str, Union[int, float]]]:
         """
         Verifies that a given feature is in the top n most important features.
         """
@@ -96,19 +85,5 @@ class SklearnTester(BaseModeller):
         for importance in feature_importance.values():
             if importance > feature_importance[feature]:
                 count += 1
-        outcome = pass_or_fail(count < top_n_features)
 
-        return ValidationContext(
-            validation_type=self.test_feature_in_top_n_important_features.__name__,
-            validation_kwargs={
-                "feature": feature,
-                "feature_importance": feature_importance,
-                "top_n_features": top_n_features,
-            },
-            outcome=outcome,
-            result=None,
-        )
-
-
-def pass_or_fail(condition: bool) -> str:
-    return "pass" if condition else "fail"
+        return count < top_n_features, {"feature_importance_ranking": count}
