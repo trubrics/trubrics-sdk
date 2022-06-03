@@ -24,3 +24,6 @@ scrap
 
 # IDE
 .vscode
+
+# docs
+docs/build
