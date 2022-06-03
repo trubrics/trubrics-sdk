@@ -7,3 +7,4 @@ setuptools==62.2.0
 mypy==0.950
 pandas-stubs==1.2.0.58
 types-requests==2.27.25
+sphinx==4.3.0
