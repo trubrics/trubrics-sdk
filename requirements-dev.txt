@@ -9,3 +9,4 @@ pandas-stubs==1.2.0.58
 types-requests==2.27.25
 sphinx==4.3.0
 myst-parser==0.17.2
+furo==2022.4.7

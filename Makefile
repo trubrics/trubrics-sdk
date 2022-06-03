@@ -6,3 +6,6 @@ local-build:
 
 streamlit-demo:
 	@streamlit run demo/streamlit/app-titanic.py
+
+auto-docs:
+	@sphinx-autobuild docs/source docs/build/html
