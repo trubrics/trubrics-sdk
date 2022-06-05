@@ -2,7 +2,7 @@ import joblib
 import pandas as pd
 import streamlit as st
 
-from demo.streamlit import config
+from examples.streamlit import config
 from trubrics.components.streamlit import StreamlitComponent
 from trubrics.context import DataContext, ModelContext
 

@@ -17,7 +17,7 @@ def save_test_to_json(trubric_context: FeedbackContext, tracking: bool = False) 
         )
     else:
         with open(
-            "demo/data/feedback.json",
+            "examples/data/feedback.json",
             "w",
         ) as file:
             file.write(test_json)

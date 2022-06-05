@@ -5,7 +5,7 @@ local-build:
 	@pip install -e .
 
 streamlit-demo:
-	@streamlit run demo/streamlit/app-titanic.py
+	@streamlit run examples/streamlit/app-titanic.py
 
 auto-docs:
 	@sphinx-autobuild docs/source docs/build/html

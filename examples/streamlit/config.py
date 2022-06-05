@@ -1,6 +1,6 @@
-LOCAL_TRAIN_FILENAME = "demo/data/preprocessed_train.csv"
-LOCAL_TEST_FILENAME = "demo/data/preprocessed_test.csv"
-LOCAL_MODEL_FILENAME = "demo/models/rf_model.pkl"
+LOCAL_TRAIN_FILENAME = "examples/data/preprocessed_train.csv"
+LOCAL_TEST_FILENAME = "examples/data/preprocessed_test.csv"
+LOCAL_MODEL_FILENAME = "examples/models/rf_model.pkl"
 TARGET = "Survived"
 CATEGORICAL_COLUMNS = ["Sex", "Embarked", "Title"]
 BUSINESS_COLUMNS = {
