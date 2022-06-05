@@ -16,12 +16,9 @@ class SklearnTester(BaseModeller):
         self, edge_case_data: pd.DataFrame, desired_output: Union[int, float]
     ) -> Tuple[bool, Dict[str, Union[int, float]]]:
         """
-        Single edge case test that:
-            - reads the test config about the schema & data (features and expected output)
-            - calls .predict() on the model with the stored data
-            - tests the output of that model versus the desired output
+        Single edge case test.
         """
-        prediction = self.predict(edge_case_data)[
+        prediction = self.model.estimator.predict(edge_case_data)[  # type: ignore
             0
         ].item()  # .item() converts numpy to python type, in order to be serialised to json
 
@@ -66,7 +63,9 @@ class SklearnTester(BaseModeller):
         for value in cat_values:
             if value not in [np.nan, None]:
                 filtered_data = self.data.testing_data.query(f"`{category}`=='{value}'")
-                predictions = self.predict(filtered_data.loc[:, self.data.list_features(filtered_data)])
+                predictions = self.model.estimator.predict(  # type: ignore
+                    filtered_data.loc[:, self.data.list_features()]
+                )
                 result[value] = self.model.evaluation_function(  # type: ignore
                     filtered_data[self.data.target_column], predictions
                 )

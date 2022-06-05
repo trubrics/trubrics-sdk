@@ -8,6 +8,8 @@ dist/
 # example data
 examples/data
 !examples/data/.gitkeep
+!examples/data/raw
+!examples/data/.gitkeep
 examples/models
 !examples/models/.gitkeep
 
@@ -29,3 +31,5 @@ scrap
 
 # docs
 docs/build
+docs/examples/data
+docs/examples/models

@@ -10,6 +10,9 @@
 ```
 
 ```{toctree}
-:caption: 'Contents:'
+:caption: 'CONTENTS'
 :maxdepth: 2
+
+examples/examples.md
+trubrics/trubrics.md
 ```

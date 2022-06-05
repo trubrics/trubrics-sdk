@@ -48,7 +48,7 @@ st_component.feedback(what_if_df=what_if_df)
 st.title("View data")
 data_view = st.selectbox(label="", options=("View full test set", "View test set errors", "View split by target"))
 if data_view == "View full test set":
-    st.dataframe(st_component.get_renamed_test_data())
+    st.dataframe(st_component.rename_test_data())
 elif data_view == "View test set errors":
     st.dataframe(st_component.explore_test_set_errors(business_columns=True))
 elif data_view == "View split by target":

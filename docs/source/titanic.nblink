@@ -1,0 +1,7 @@
+{
+    "path": "../../examples/notebooks/titanic-demo.ipynb",
+    "extra-media": [
+        "../../examples/data",
+        "../../examples/models"
+      ]
+}

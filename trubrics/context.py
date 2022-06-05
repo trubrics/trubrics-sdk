@@ -75,11 +75,9 @@ class DataContext(BaseModel):
             )
         return v
 
-    def list_features(self, data: Optional[pd.DataFrame] = None) -> List[str]:
+    def list_features(self) -> List[str]:
         """Get features column names excluding the target feature."""
-        if data is None:
-            return [col for col in self.testing_data.columns if col != self.target_column]
-        return [col for col in data.columns if col != self.target_column]
+        return [col for col in self.testing_data.columns if col != self.target_column]
 
 
 class FeedbackContext(BaseModel):

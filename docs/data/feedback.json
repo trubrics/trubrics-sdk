@@ -1,0 +1,1 @@
+{"feedback_type": "Other", "metadata": {"description": "model seems to have more errors for passengers who paid less - is this normal?", "what_if_input": {"Sex": {"0": "male"}, "Embarked": {"0": "S"}, "Title": {"0": "Master"}, "Pclass": {"0": 2}, "Age": {"0": 28}, "SibSp": {"0": 0}, "Parch": {"0": 0}, "Fare": {"0": 37}}}}
