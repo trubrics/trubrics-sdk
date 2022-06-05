@@ -6,7 +6,7 @@ import streamlit as st
 from jsonschema import SchemaError
 from pandas.api.types import is_numeric_dtype
 
-from trubrics.base import BaseModeller
+from trubrics.base import BaseClassifier
 from trubrics.context import FeedbackContext
 from trubrics.utils.loader import save_test_to_json
 from trubrics.utils.pandas import schema_is_equal
@@ -14,7 +14,7 @@ from trubrics.utils.pandas import schema_is_equal
 logger = logging.getLogger(__name__)
 
 
-class StreamlitComponent(BaseModeller):
+class StreamlitComponent(BaseClassifier):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -81,13 +81,14 @@ class StreamlitComponent(BaseModeller):
         )
 
         metadata = {}
+        what_if_input = what_if_df.to_dict("records")[0]
         if feedback_type == "Other":
             metadata["description"] = st.text_input(label="", value="Send free text feedback here")
-            metadata["what_if_input"] = what_if_df.to_dict()
+            metadata["what_if_input"] = what_if_input
 
         elif feedback_type == "Single prediction error":
             metadata["corrected_prediction"], metadata["description"] = self._collect_single_edge_case()
-            metadata["what_if_input"] = what_if_df.to_dict()
+            metadata["what_if_input"] = what_if_input
 
         elif feedback_type == "Important features":
             (
@@ -130,7 +131,7 @@ class StreamlitComponent(BaseModeller):
                 "you are signalling that a given feature must be in the top N most important features."
             )
         )
-        features = self.data.list_features()
+        features = self.data.features
         selected_feature = st.selectbox("Choose model feature:", (features))
         top_n_feature = st.slider(
             "The selected feature should be in the top ... features:", min_value=1, max_value=len(features)

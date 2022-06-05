@@ -1,23 +1,30 @@
+from abc import ABC, abstractmethod
+
 import pandas as pd
 
 from trubrics.context import DataContext, ModelContext
 
 
-class BaseModeller:
-    """Base class with methods combining data and model contexts."""
+class BaseModeller(ABC):
+    @abstractmethod
+    def predict(self):
+        """Use the estimator to predict on the test data."""
+
+    @abstractmethod
+    def explore_test_set_errors(self):
+        """Filter the testing data on errors."""
+
+    @abstractmethod
+    def compute_performance_on_test_set(self):
+        """Calculate the performance on the test set with the evaluation function."""
+
+
+class BaseClassifier(BaseModeller):
+    """Base classifier class with methods combining data and model contexts."""
 
     def __init__(self, model: ModelContext, data: DataContext):
         self.model = model
         self.data = data
-
-    def rename_test_data(self) -> pd.DataFrame:
-        """Rename test data columns with business columns specified in data context.
-
-        TODO: fix errors due to self.data.target_column and self.data.categorical_columns
-        """
-        if self.data.business_columns is None:
-            raise TypeError("Business columns not set in DataContext.")
-        return self.data.testing_data.rename(columns=self.data.business_columns)
 
     def predict(self) -> pd.Series:
         """Predict function called on model from model context."""
@@ -54,7 +61,7 @@ class BaseModeller:
             return df.assign(**assign_kwargs).loc[lambda x: x[self.data.target_column] != x[predict_col], :]
 
         if business_columns:
-            return _filter_errors(self.rename_test_data())
+            return _filter_errors(self.data.renamed_testing_data)
         else:
             return _filter_errors(self.data.testing_data)
 

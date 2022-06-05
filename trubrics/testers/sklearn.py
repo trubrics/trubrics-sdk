@@ -3,21 +3,22 @@ from typing import Dict, Tuple, Union
 import numpy as np
 import pandas as pd
 
-from trubrics.base import BaseModeller
+from trubrics.base import BaseClassifier
 from trubrics.utils.validation import validation_output
 
 
-class SklearnTester(BaseModeller):
+class SklearnTester(BaseClassifier):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     @validation_output
     def test_single_edge_case(
-        self, edge_case_data: pd.DataFrame, desired_output: Union[int, float]
+        self, edge_case_data: Dict[str, str], desired_output: Union[int, float]
     ) -> Tuple[bool, Dict[str, Union[int, float]]]:
         """
         Single edge case test.
         """
+        edge_case_data = pd.DataFrame.from_records(edge_case_data, index=[0])  # type: ignore
         prediction = self.model.estimator.predict(edge_case_data)[  # type: ignore
             0
         ].item()  # .item() converts numpy to python type, in order to be serialised to json
@@ -63,9 +64,7 @@ class SklearnTester(BaseModeller):
         for value in cat_values:
             if value not in [np.nan, None]:
                 filtered_data = self.data.testing_data.query(f"`{category}`=='{value}'")
-                predictions = self.model.estimator.predict(  # type: ignore
-                    filtered_data.loc[:, self.data.list_features()]
-                )
+                predictions = self.model.estimator.predict(filtered_data.loc[:, self.data.features])  # type: ignore
                 result[value] = self.model.evaluation_function(  # type: ignore
                     filtered_data[self.data.target_column], predictions
                 )

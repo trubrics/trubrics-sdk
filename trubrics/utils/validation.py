@@ -1,6 +1,7 @@
 import json
 from typing import Any, Callable
 
+from trubrics.base import BaseClassifier
 from trubrics.context import ValidationContext
 
 
@@ -10,8 +11,8 @@ def validation_output(func: Callable) -> Callable:
     def inner(*args, **kwargs) -> ValidationContext:
         outcome, result = func(*args, **kwargs)
         outcome = _pass_or_fail(outcome)
-        jsonable_args = [arg for arg in args if _is_jsonable(arg)]
-        jsonable_kwargs = {key: val for key, val in kwargs.items() if _is_jsonable(val)}
+        jsonable_args = [arg for arg in args if _is_jsonable(arg, raise_error=True)]
+        jsonable_kwargs = {key: val for key, val in kwargs.items() if _is_jsonable(val, raise_error=True)}
         _is_jsonable(result, raise_error=True)
 
         return ValidationContext(
@@ -29,9 +30,12 @@ def _is_jsonable(x: Any, raise_error: bool = False) -> bool:
         json.dumps(x)
         return True
     except (OverflowError, TypeError) as e:
-        if raise_error:
+        if isinstance(x, BaseClassifier):
+            return False
+        elif raise_error:
             raise e
-        return False
+        else:
+            return False
 
 
 def _pass_or_fail(condition: bool) -> str:

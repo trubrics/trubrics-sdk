@@ -16,16 +16,15 @@ class ModelContext(BaseModel):
     version: Optional[float] = None
     estimator: BaseEstimator
     evaluation_function: Callable[[pd.Series, pd.Series], Union[int, float]]
-    evaluation_function_name: Optional[str]
 
     class Config:
         allow_mutation = False
         arbitrary_types_allowed = True
         extra = "forbid"
 
-    @validator("evaluation_function_name", pre=True, always=True)
-    def get_evaluation_function_name(cls, v, values: Any):
-        return values["evaluation_function"].__name__
+    @property
+    def evaluation_function_name(self) -> str:
+        return self.evaluation_function.__name__
 
 
 class DataContext(BaseModel):
@@ -42,6 +41,18 @@ class DataContext(BaseModel):
         allow_mutation = False
         arbitrary_types_allowed = True
         extra = "forbid"
+
+    @property
+    def features(self) -> List[str]:
+        """Features defined as all testing column names excluding the target feature."""
+        return [col for col in self.testing_data.columns if col != self.target_column]
+
+    @property
+    def renamed_testing_data(self) -> pd.DataFrame:
+        """Renamed testing data with business columns."""
+        if self.business_columns is None:
+            raise TypeError("Business columns must be set to rename testing features.")
+        return self.testing_data.rename(columns=self.business_columns)
 
     @validator("testing_data")
     def testing_and_training_must_have_same_schema(cls, v: pd.DataFrame, values: List[Any]):
@@ -74,10 +85,6 @@ class DataContext(BaseModel):
                 "Target column should not feature as a categorical column. Categorical columns only refer to features."
             )
         return v
-
-    def list_features(self) -> List[str]:
-        """Get features column names excluding the target feature."""
-        return [col for col in self.testing_data.columns if col != self.target_column]
 
 
 class FeedbackContext(BaseModel):

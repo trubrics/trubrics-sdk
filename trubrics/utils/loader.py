@@ -30,7 +30,7 @@ def get_business_test_data(
         raise Exception("to be replaced with read from test tracking API")
     else:
         with open(
-            "../data/feedback.json",
+            "../data/feedback_demo.json",
             "r",
         ) as file:
             saved_test = json.load(file)
