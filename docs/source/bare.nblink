@@ -1,3 +1,7 @@
 {
-    "path": "../../examples/notebooks/bare-bones.ipynb"
+    "path": "../../examples/notebooks/bare-bones.ipynb",
+    "extra-media": [
+        "../../examples/data",
+        "../../examples/models"
+      ]
 }
