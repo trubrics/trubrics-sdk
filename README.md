@@ -30,7 +30,6 @@ model_context = ModelContext(
 from trubrics.validators.sklearn import SklearnValidator
 model_validator = SklearnValidator(data=data_context, model=model_context)
 
-# example of performance test
 model_validator.validate_performance_against_threshold(threshold=0.75)
 ```
 
