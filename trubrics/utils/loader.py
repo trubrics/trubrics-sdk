@@ -5,7 +5,7 @@ import requests  # type: ignore
 from trubrics.context import FeedbackContext
 
 
-def save_test_to_json(trubric_context: FeedbackContext, tracking: bool = False) -> None:
+def save_validation_to_json(trubric_context: FeedbackContext, tracking: bool = False) -> None:
     test_json = trubric_context.json()
     if tracking:
         url = "http://localhost:5000"
@@ -23,7 +23,7 @@ def save_test_to_json(trubric_context: FeedbackContext, tracking: bool = False) 
             file.write(test_json)
 
 
-def get_business_test_data(
+def get_business_feedback_data(
     tracking: bool = False,
 ) -> FeedbackContext:
     if tracking:

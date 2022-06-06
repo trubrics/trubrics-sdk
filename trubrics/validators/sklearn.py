@@ -7,16 +7,16 @@ from trubrics.base import BaseClassifier
 from trubrics.utils.validation import validation_output
 
 
-class SklearnTester(BaseClassifier):
+class Validator(BaseClassifier):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     @validation_output
-    def test_single_edge_case(
+    def validate_single_edge_case(
         self, edge_case_data: Dict[str, str], desired_output: Union[int, float]
     ) -> Tuple[bool, Dict[str, Union[int, float]]]:
         """
-        Single edge case test.
+        Single edge case validation.
         """
         edge_case_data = pd.DataFrame.from_records(edge_case_data, index=[0])  # type: ignore
         prediction = self.model.estimator.predict(edge_case_data)[  # type: ignore
@@ -26,7 +26,7 @@ class SklearnTester(BaseClassifier):
         return prediction == desired_output, {"prediction": prediction}
 
     @validation_output
-    def test_performance_against_threshold(self, threshold: float) -> Tuple[bool, Dict[str, Union[int, float]]]:
+    def validate_performance_against_threshold(self, threshold: float) -> Tuple[bool, Dict[str, Union[int, float]]]:
         """
         Compares performance of a model on a dataset to a hard coded threshold value.
         """
@@ -40,11 +40,11 @@ class SklearnTester(BaseClassifier):
             raise NotImplementedError("The evaluation type is not recognized.")
 
     @validation_output
-    def test_biased_performance_across_category(
+    def validate_biased_performance_across_category(
         self, category: str, threshold: float
     ) -> Tuple[bool, Dict[str, Union[int, float]]]:
         """
-        Calculates various performance for all values in a category and tests for
+        Calculates various performance for all values in a category and validates for
         the maximum difference in performance inferior to the threshold value.
 
         TODO:
@@ -73,7 +73,7 @@ class SklearnTester(BaseClassifier):
         return max_performance_difference < threshold, {"max_performance_difference": max_performance_difference}
 
     @validation_output
-    def test_feature_in_top_n_important_features(
+    def validate_feature_in_top_n_important_features(
         self, feature: str, feature_importance: Dict[str, float], top_n_features: int
     ) -> Tuple[bool, Dict[str, Union[int, float]]]:
         """

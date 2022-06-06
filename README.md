@@ -1,7 +1,7 @@
 # Trubrics SDK
 
 Trubrics is a collaborative ML validation platform that allows data scientists and domain experts to define test cases for models. This python SDK allows ML model tests to be explored, developed and saved to the Trubrics UI. There are two main parts to the package:
-1. testers: Ready-to-go tests to implement on your models, with connection to the Trubrics API
+1. validators: Ready-to-go ML tests to implement on your models, with connection to the Trubrics API
 2. components: Plugins to your favorite python web app tool (Streamlit) to collect feedback on your model from domain experts and translate these into tests
 
 ## Try it out
@@ -25,11 +25,11 @@ model_context = ModelContext(
 
 ### Test your model
 ```
-from trubrics.testers.sklearn import SklearnTester
-model_tester = SklearnTester(data=data_context, model=model_context)
+from trubrics.validators.sklearn import SklearnValidator
+model_validator = SklearnValidator(data=data_context, model=model_context)
 
 # example of performance test
-model_tester.test_performance_against_threshold(threshold=0.75)
+model_validator.validate_performance_against_threshold(threshold=0.75)
 ```
 
 ## Contribute

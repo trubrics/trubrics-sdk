@@ -8,7 +8,7 @@ from pandas.api.types import is_numeric_dtype
 
 from trubrics.base import BaseClassifier
 from trubrics.context import FeedbackContext
-from trubrics.utils.loader import save_test_to_json
+from trubrics.utils.loader import save_validation_to_json
 from trubrics.utils.pandas import schema_is_equal
 
 logger = logging.getLogger(__name__)
@@ -105,7 +105,7 @@ class StreamlitComponent(BaseClassifier):
 
         single_test = FeedbackContext(feedback_type=feedback_type, metadata=metadata)
         if st.button("Send feedback"):
-            save_test_to_json(trubric_context=single_test)
+            save_validation_to_json(trubric_context=single_test)
             logger.info(f"Predictions saved {'to Trubrics UI' if tracking else 'locally'}.")
             st.balloons()
 

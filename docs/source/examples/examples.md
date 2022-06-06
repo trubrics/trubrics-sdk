@@ -1,7 +1,7 @@
 # Examples
 ## Bare Bones Example
 ```{toctree}
-:caption: 'Example Notebook of basic test:'
+:caption: 'Example Notebook of basic validation:'
 :maxdepth: 1
 
 ../bare
