@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 from trubrics.base import BaseClassifier
-from trubrics.utils.validation import validation_output
+from trubrics.validators.validation_output import validation_output
 
 
 class Validator(BaseClassifier):
