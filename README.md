@@ -10,11 +10,12 @@ Trubrics is a collaborative ML validation platform that allows data scientists a
 (venv)$ pip install --upgrade pip
 (venv)$ pip install -r requirements.txt && make local-build
 ```
-### Test our example
+### Test our example...
 Open up `(venv)$ jupyter lab` and run titanic-demo.ipynb.
 
-### Instantiate data and model contexts
+### ... or try with your own model & data
 ```
+# Instantiate data and model contexts
 from trubrics.context import DataContext, ModelContext
 data_context = DataContext(
     testing_data=test_df, # the dataframe for all tests
@@ -24,10 +25,8 @@ model_context = ModelContext(
     estimator=model, # your saved model
     evaluation_function=accuracy_score # an evaluation function
 )
-```
 
-### Test your model
-```
+# Test your model
 from trubrics.validators.sklearn import SklearnValidator
 model_validator = SklearnValidator(data=data_context, model=model_context)
 
