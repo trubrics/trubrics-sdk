@@ -7,8 +7,11 @@ Trubrics is a collaborative ML validation platform that allows data scientists a
 ## Try it out
 ### Install trubrics
 ```
-(venv) $ pip install -r requirements.txt && make local-build
+(venv)$ pip install --upgrade pip
+(venv)$ pip install -r requirements.txt && make local-build
 ```
+### Test our example
+Open up `(venv)$ jupyter lab` and run titanic-demo.ipynb.
 
 ### Instantiate data and model contexts
 ```
