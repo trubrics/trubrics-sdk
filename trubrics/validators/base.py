@@ -1,10 +1,13 @@
-from typing import Dict, Tuple, Union
+from typing import Dict, Union
 
 import numpy as np
 import pandas as pd
 
 from trubrics.base import BaseClassifier
-from trubrics.validators.validation_output import validation_output
+from trubrics.validators.validation_output import (
+    validation_output,
+    validation_output_type,
+)
 
 
 class Validator(BaseClassifier):
@@ -14,7 +17,7 @@ class Validator(BaseClassifier):
     @validation_output
     def validate_single_edge_case(
         self, edge_case_data: Dict[str, str], desired_output: Union[int, float]
-    ) -> Tuple[bool, Dict[str, Union[int, float]]]:
+    ) -> validation_output_type:
         """
         Single edge case validation.
         """
@@ -26,23 +29,23 @@ class Validator(BaseClassifier):
         return prediction == desired_output, {"prediction": prediction}
 
     @validation_output
-    def validate_performance_against_threshold(self, threshold: float) -> Tuple[bool, Dict[str, Union[int, float]]]:
+    def validate_performance_against_threshold(self, threshold: float) -> validation_output_type:
         """
         Compares performance of a model on a dataset to a hard coded threshold value.
         """
         predictions = self.predict()
         if self.model.evaluation_function.__name__ == "accuracy_score":
-            performance = self.model.evaluation_function(  # type: ignore
-                self.data.testing_data[self.data.target_column], predictions
+            performance = float(
+                self.model.evaluation_function(  # type: ignore
+                    self.data.testing_data[self.data.target_column], predictions
+                )
             )
             return performance > threshold, {"performance": performance}
         else:
             raise NotImplementedError("The evaluation type is not recognized.")
 
     @validation_output
-    def validate_biased_performance_across_category(
-        self, category: str, threshold: float
-    ) -> Tuple[bool, Dict[str, Union[int, float]]]:
+    def validate_biased_performance_across_category(self, category: str, threshold: float) -> validation_output_type:
         """
         Calculates various performance for all values in a category and validates for
         the maximum difference in performance inferior to the threshold value.
@@ -65,8 +68,8 @@ class Validator(BaseClassifier):
             if value not in [np.nan, None]:
                 filtered_data = self.data.testing_data.query(f"`{category}`=='{value}'")
                 predictions = self.model.estimator.predict(filtered_data.loc[:, self.data.features])  # type: ignore
-                result[value] = self.model.evaluation_function(  # type: ignore
-                    filtered_data[self.data.target_column], predictions
+                result[value] = float(
+                    self.model.evaluation_function(filtered_data[self.data.target_column], predictions)  # type: ignore
                 )
         max_performance_difference = max(result.values()) - min(result.values())
 
@@ -75,7 +78,7 @@ class Validator(BaseClassifier):
     @validation_output
     def validate_feature_in_top_n_important_features(
         self, feature: str, feature_importance: Dict[str, float], top_n_features: int
-    ) -> Tuple[bool, Dict[str, Union[int, float]]]:
+    ) -> validation_output_type:
         """
         Verifies that a given feature is in the top n most important features.
         """

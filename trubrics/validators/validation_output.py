@@ -1,15 +1,33 @@
 import json
-from typing import Any, Callable
+from typing import Any, Callable, Dict, Tuple, Union
+
+from typeguard import check_type
 
 from trubrics.base import BaseClassifier
 from trubrics.context import ValidationContext
+
+validation_output_type = Tuple[bool, Dict[str, Union[str, int, float]]]
+
+
+class ValidationOutputError(BaseException):
+    """An exception signalling that the output from a validation function is invalid."""
 
 
 def validation_output(func: Callable) -> Callable:
     """Decorative function for validation point outputs."""
 
     def inner(*args, **kwargs) -> ValidationContext:
-        outcome, result = func(*args, **kwargs)
+        output = func(*args, **kwargs)
+
+        try:
+            check_type("output", output, validation_output_type)
+        except TypeError:
+            raise ValidationOutputError(
+                f"Each validation should return an outcome and a result with type: {validation_output_type}"
+            )
+
+        outcome, result = output
+
         outcome = _pass_or_fail(outcome)
         jsonable_args = [arg for arg in args if _is_jsonable(arg, raise_error=True)]
         jsonable_kwargs = {key: val for key, val in kwargs.items() if _is_jsonable(val, raise_error=True)}
