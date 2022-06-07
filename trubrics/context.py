@@ -109,7 +109,7 @@ class TrubricContext(BaseModel):
     name: str = "trubric"
     model_context: Optional[ModelContext] = Field(exclude={"estimator", "evaluation_function"})
     data_context: Optional[DataContext] = Field(exclude={"training_data", "testing_data", "business_columns"})
-    metadata: Optional[Dict[str, str]]
+    metadata: Optional[Dict[str, str]] = None
     validations: List[ValidationContext]
 
     def save(self, path: str):
