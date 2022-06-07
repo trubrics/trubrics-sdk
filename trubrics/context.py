@@ -100,7 +100,8 @@ class ValidationContext(BaseModel):
     validation_type: str
     validation_kwargs: Dict[str, Optional[Any]]
     outcome: str
-    result: Optional[Dict[str, Any]]
+    result: Optional[Dict[str, Union[str, int, float]]]
+    metadata: Optional[Dict[str, str]]
 
 
 class TrubricContext(BaseModel):
@@ -110,6 +111,7 @@ class TrubricContext(BaseModel):
     model_context: Optional[ModelContext] = Field(exclude={"estimator", "evaluation_function"})
     data_context: Optional[DataContext] = Field(exclude={"training_data", "testing_data", "business_columns"})
     validations: List[ValidationContext]
+    metadata: Optional[Dict[str, str]]
 
     def save(self, path: str):
         if path is None:
