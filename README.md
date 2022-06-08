@@ -10,8 +10,10 @@ Trubrics is a collaborative ML validation platform that allows data scientists a
 (venv)$ pip install --upgrade pip
 (venv)$ pip install -r requirements.txt && make local-build
 ```
-### Test our example...
-Open up `(venv)$ jupyter lab` and run titanic-demo.ipynb.
+### Test our example on the titanic dataset...
+1. Run `make train-titanic` to train a model on the titanic dataset.
+2. Then open up `(venv)$ jupyter lab` and run the cells in the titanic-demo.ipynb.
+3. Finally, run `make streamlit-demo` to collect user feedback on your model.
 
 ### ... or try with your own model & data
 ```
