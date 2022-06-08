@@ -2,13 +2,18 @@ import joblib
 import pandas as pd
 import streamlit as st
 
-from examples.streamlit import config
-from trubrics.components.streamlit import StreamlitComponent
+from examples.training import config
 from trubrics.context import DataContext, ModelContext
+from trubrics.feedback_components.streamlit import StreamlitComponent
 
-# init data
-TRAINING_DATA = pd.read_csv(config.LOCAL_TRAIN_FILENAME)
-TESTING_DATA = pd.read_csv(config.LOCAL_TEST_FILENAME)
+try:
+    TRAINING_DATA = pd.read_csv(config.LOCAL_TRAIN_FILENAME)
+    TESTING_DATA = pd.read_csv(config.LOCAL_TEST_FILENAME)
+    RF_MODEL = joblib.load(config.LOCAL_MODEL_FILENAME)
+except FileNotFoundError:
+    raise FileNotFoundError("To generate these files, run `make train-titanic`")
+
+# init data context
 data_context = DataContext(
     training_data=TRAINING_DATA,
     testing_data=TESTING_DATA,
@@ -16,8 +21,7 @@ data_context = DataContext(
     categorical_columns=config.CATEGORICAL_COLUMNS,
     business_columns=config.BUSINESS_COLUMNS,
 )
-# init model
-RF_MODEL = joblib.load(config.LOCAL_MODEL_FILENAME)
+# init model context
 model_context = ModelContext(estimator=RF_MODEL, evaluation_function=lambda x, y: x.min() - y.min())
 
 # create streamlit component
@@ -25,7 +29,6 @@ st_component = StreamlitComponent(model=model_context, data=data_context)
 
 with st.sidebar:
     what_if_df = st_component.generate_what_if(TESTING_DATA)
-
 
 st.title("View model prediction")
 

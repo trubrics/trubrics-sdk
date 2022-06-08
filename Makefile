@@ -4,6 +4,9 @@ lint:
 local-build:
 	@pip install -e .
 
+train-titanic:
+	@python examples/training/titanic.py
+
 streamlit-demo:
 	@streamlit run examples/streamlit/app-titanic.py
 
