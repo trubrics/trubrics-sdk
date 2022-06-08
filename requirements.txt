@@ -4,3 +4,4 @@ streamlit==1.9.0
 scikit-learn==1.0.2
 jupyterlab==3.4.2
 typeguard==2.13.3
+pydantic==1.9.1
