@@ -17,6 +17,7 @@ Open up `(venv)$ jupyter lab` and run titanic-demo.ipynb.
 ```
 # Instantiate data and model contexts
 from trubrics.context import DataContext, ModelContext
+from sklearn.metrics import accuracy_score
 data_context = DataContext(
     testing_data=test_df, # the dataframe for all tests
     target_column="Survived"
