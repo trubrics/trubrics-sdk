@@ -2,10 +2,10 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Union
 
 import pandas as pd
-from jsonschema import SchemaError
 from pydantic import BaseModel, Field, validator
 from sklearn.base import BaseEstimator
 
+from trubrics.exceptions import PandasSchemaError
 from trubrics.utils.pandas import schema_is_equal
 
 
@@ -57,7 +57,7 @@ class DataContext(BaseModel):
     @validator("testing_data")
     def testing_and_training_must_have_same_schema(cls, v: pd.DataFrame, values: List[Any]):
         if values["training_data"] is not None and not schema_is_equal(v, values["training_data"]):  # type: ignore
-            raise SchemaError("Testing and training data must have identical schemas.")
+            raise PandasSchemaError("Testing and training data must have identical schemas.")
         return v
 
     @validator("target_column")

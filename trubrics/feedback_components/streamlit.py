@@ -3,11 +3,11 @@ from typing import Optional, Tuple, Union
 
 import pandas as pd
 import streamlit as st
-from jsonschema import SchemaError
 from pandas.api.types import is_numeric_dtype
 
 from trubrics.base import BaseClassifier
 from trubrics.context import FeedbackContext
+from trubrics.exceptions import PandasSchemaError
 from trubrics.utils.loader import save_validation_to_json
 from trubrics.utils.pandas import schema_is_equal
 
@@ -29,7 +29,7 @@ class StreamlitComponent(BaseClassifier):
             wi_data = self.data.testing_data.drop(columns=[self.data.target_column])
         else:
             if not schema_is_equal(wi_data, self.data.testing_data):
-                raise SchemaError("Schemas of provided data and DataContext testing data are different.")
+                raise PandasSchemaError("Schemas of provided data and DataContext testing data are different.")
             else:
                 wi_data = wi_data.drop(columns=[self.data.target_column])
 

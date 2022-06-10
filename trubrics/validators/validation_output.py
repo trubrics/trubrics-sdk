@@ -5,12 +5,9 @@ from typeguard import check_type
 
 from trubrics.base import BaseClassifier
 from trubrics.context import ValidationContext
+from trubrics.exceptions import ValidationOutputError
 
 validation_output_type = Tuple[bool, Dict[str, Union[str, int, float]]]
-
-
-class ValidationOutputError(BaseException):
-    """An exception signalling that the output from a validation function is invalid."""
 
 
 def validation_output(func: Callable) -> Callable:
