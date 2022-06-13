@@ -102,6 +102,16 @@ class ValidationContext(BaseModel):
     outcome: str
     result: Optional[Dict[str, Union[str, int, float]]]
 
+    class Config:
+        schema_extra = {
+            "example": {
+                "validation_type": "validate_performance_against_threshold",
+                "validation_kwargs": {"args": [], "kwargs": {"threshold": 0.8}},
+                "outcome": "fail",
+                "result": {"performance": "0.79"},
+            }
+        }
+
 
 class TrubricContext(BaseModel):
     """Context for a Trubric, or set of validation points."""
