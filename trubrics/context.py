@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Type, Union
 
 import pandas as pd
 from pydantic import BaseModel, Field, validator
@@ -13,7 +13,7 @@ class ModelContext(BaseModel):
 
     name: Optional[str] = None
     version: Optional[float] = None
-    estimator: Callable[..., Union[str, int, float]]
+    estimator: Type
     evaluation_function: Callable[[pd.Series, pd.Series], Union[int, float]]
 
     class Config:
