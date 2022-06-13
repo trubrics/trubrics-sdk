@@ -134,7 +134,7 @@ class TrubricContext(BaseModel):
                         "validation_type": "validate_performance_against_threshold",
                         "validation_kwargs": {"args": [], "kwargs": {"threshold": 0.8}},
                         "outcome": "fail",
-                        "result": {"performance": "0.7966101694915254"},
+                        "result": {"performance": "0.79"},
                     }
                 ],
             }
