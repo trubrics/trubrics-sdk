@@ -122,6 +122,24 @@ class TrubricContext(BaseModel):
     metadata: Optional[Dict[str, str]] = None
     validations: List[ValidationContext]
 
+    class Config:
+        schema_extra = {
+            "example": {
+                "name": "my_first_trubric",
+                "model_context": {"name": "my_model", "version": 0.1},
+                "data_context": {"name": "my_dataset", "categorical_columns": None, "target_column": "Survived"},
+                "metadata": None,
+                "validations": [
+                    {
+                        "validation_type": "validate_performance_against_threshold",
+                        "validation_kwargs": {"args": [], "kwargs": {"threshold": 0.8}},
+                        "outcome": "fail",
+                        "result": {"performance": "0.7966101694915254"},
+                    }
+                ],
+            }
+        }
+
     def save(self, path: str):
         if path is None:
             raise Exception("Specify the local path where you would like to save your Trubric json.")
