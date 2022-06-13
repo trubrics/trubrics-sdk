@@ -3,7 +3,6 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 import pandas as pd
 from pydantic import BaseModel, Field, validator
-from sklearn.base import BaseEstimator
 
 from trubrics.exceptions import PandasSchemaError
 from trubrics.utils.pandas import schema_is_equal
@@ -14,7 +13,7 @@ class ModelContext(BaseModel):
 
     name: Optional[str] = None
     version: Optional[float] = None
-    estimator: BaseEstimator
+    estimator: Callable[..., Union[str, int, float]]
     evaluation_function: Callable[[pd.Series, pd.Series], Union[int, float]]
 
     class Config:
@@ -128,7 +127,7 @@ class TrubricContext(BaseModel):
                 "name": "my_first_trubric",
                 "model_context": {"name": "my_model", "version": 0.1},
                 "data_context": {"name": "my_dataset", "categorical_columns": None, "target_column": "Survived"},
-                "metadata": None,
+                "metadata": {},
                 "validations": [
                     {
                         "validation_type": "validate_performance_against_threshold",
