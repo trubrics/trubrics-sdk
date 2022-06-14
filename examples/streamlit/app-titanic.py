@@ -28,25 +28,19 @@ model_context = ModelContext(estimator=RF_MODEL, evaluation_function=lambda x, y
 st_component = StreamlitComponent(model=model_context, data=data_context)
 
 with st.sidebar:
+    st.title("Modify features to test the model...")
     what_if_df = st_component.generate_what_if(TESTING_DATA)
 
 st.title("View model prediction")
-
-
-def get_what_if_prediction(what_if_df):
-    raw_prediction = st_component.model.estimator.predict(what_if_df)[0]  # type: ignore
-    if raw_prediction:
-        prediction = '<p style="color:Green;">This passenger would have survived.</p>'
-    else:
-        prediction = '<p style="color:Red;">This passenger would have died.</p>'
-    return prediction
-
-
-prediction = get_what_if_prediction(what_if_df)
+raw_prediction = st_component.model.estimator.predict(what_if_df)[0]  # type: ignore
+if raw_prediction:
+    prediction = '<p style="color:Green;">This passenger would have survived.</p>'
+else:
+    prediction = '<p style="color:Red;">This passenger would have died.</p>'
 st.markdown(prediction, unsafe_allow_html=True)
 
 st.title("Send model feedback")
-st_component.feedback(what_if_df=what_if_df)
+st_component.feedback(what_if_df=what_if_df, model_prediction=raw_prediction, tracking=True)
 
 st.title("View data")
 data_view = st.selectbox(label="", options=("View full test set", "View test set errors", "View split by target"))

@@ -68,7 +68,9 @@ class StreamlitComponent(BaseClassifier):
                 raise NotImplementedError(f"Columns '{col}' type is not recognised.")
         return out_df
 
-    def feedback(self, what_if_df: pd.DataFrame, tracking: bool = False):
+    def feedback(
+        self, what_if_df: pd.DataFrame, model_prediction: Union[str, int, bool, float], tracking: bool = False
+    ):
         """Get user feedback and save"""
         feedback_type: str = st.selectbox(
             "Choose feedback type:",
@@ -85,6 +87,7 @@ class StreamlitComponent(BaseClassifier):
         if feedback_type == "Other":
             metadata["description"] = st.text_input(label="", value="Send free text feedback here")
             metadata["what_if_input"] = what_if_input
+            metadata["model_prediction"] = model_prediction
 
         elif feedback_type == "Single prediction error":
             metadata["corrected_prediction"], metadata["description"] = self._collect_single_edge_case()
@@ -105,7 +108,7 @@ class StreamlitComponent(BaseClassifier):
 
         single_test = FeedbackContext(feedback_type=feedback_type, metadata=metadata)
         if st.button("Send feedback"):
-            save_validation_to_json(trubric_context=single_test)
+            save_validation_to_json(trubric_context=single_test, tracking=tracking)
             logger.info(f"Predictions saved {'to Trubrics UI' if tracking else 'locally'}.")
             st.balloons()
 

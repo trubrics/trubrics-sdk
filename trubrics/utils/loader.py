@@ -8,10 +8,10 @@ from trubrics.context import FeedbackContext
 def save_validation_to_json(trubric_context: FeedbackContext, tracking: bool = False) -> None:
     test_json = trubric_context.json()
     if tracking:
-        url = "http://localhost:5000"
+        url = "http://localhost:8000"
         headers = {"Content-type": "application/json"}
         requests.post(
-            url + "/tests/v1/add",
+            url + "/api/feedback/",
             data=test_json,
             headers=headers,
         )
