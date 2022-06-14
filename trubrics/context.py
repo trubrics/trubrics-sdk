@@ -2,7 +2,8 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Union
 
 import pandas as pd
-from pydantic import BaseModel, Field, validator
+import requests  # type: ignore
+from pydantic import BaseModel, validator
 
 from trubrics.exceptions import PandasSchemaError
 from trubrics.utils.pandas import schema_is_equal
@@ -11,8 +12,8 @@ from trubrics.utils.pandas import schema_is_equal
 class ModelContext(BaseModel):
     """Context for models."""
 
-    name: Optional[str] = None
-    version: Optional[float] = None
+    name: str = "my_model"
+    version: float = 0.1
     estimator: Any
     evaluation_function: Callable[[pd.Series, pd.Series], Union[int, float]]
 
@@ -29,7 +30,8 @@ class ModelContext(BaseModel):
 class DataContext(BaseModel):
     """Context for data."""
 
-    name: Optional[str] = None
+    name: str = "my_dataset"
+    version: float = 0.1
     training_data: Optional[pd.DataFrame] = None
     testing_data: pd.DataFrame
     categorical_columns: Optional[List[str]] = None
@@ -116,8 +118,10 @@ class TrubricContext(BaseModel):
     """Context for a Trubric, or set of validation points."""
 
     name: str = "trubric"
-    model_context: Optional[ModelContext] = Field(exclude={"estimator", "evaluation_function"})
-    data_context: Optional[DataContext] = Field(exclude={"training_data", "testing_data", "business_columns"})
+    model_context_name: str
+    model_context_version: float
+    data_context_name: str
+    data_context_version: float
     metadata: Optional[Dict[str, str]] = None
     validations: List[ValidationContext]
 
@@ -125,8 +129,10 @@ class TrubricContext(BaseModel):
         schema_extra = {
             "example": {
                 "name": "my_first_trubric",
-                "model_context": {"name": "my_model", "version": 0.1},
-                "data_context": {"name": "my_dataset", "categorical_columns": None, "target_column": "Survived"},
+                "model_context_name": "my_model",
+                "model_context_version": 0.1,
+                "data_context_name": "my_dataset",
+                "data_context_version": 0.1,
                 "metadata": {},
                 "validations": [
                     {
@@ -139,8 +145,17 @@ class TrubricContext(BaseModel):
             }
         }
 
-    def save(self, path: str):
+    def save_local(self, path: str):
         if path is None:
             raise Exception("Specify the local path where you would like to save your Trubric json.")
         with open(Path(path) / f"{self.name}.json", "w") as file:
             file.write(self.json())
+
+    def save_ui(self, local_port: int):
+        url = f"http://localhost:{local_port}"
+        headers = {"Content-type": "application/json"}
+        requests.post(
+            url + "/api/trubrics/",
+            data=self.json(),
+            headers=headers,
+        )
