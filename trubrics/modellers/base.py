@@ -20,7 +20,7 @@ class BaseModeller(ABC):
         """Filter the testing data on errors."""
 
     @abstractmethod
-    def compute_performance_on_test_set(self):
+    def compute_performance_on_test_set(self) -> float:
         """Calculate the performance on the test set with the evaluation function."""
 
 
@@ -40,7 +40,7 @@ class Modeller(BaseModeller):
         """Filter the testing data on errors."""
         raise NotImplementedError()
 
-    def compute_performance_on_test_set(self):
+    def compute_performance_on_test_set(self) -> float:
         """Calculate the performance on the test set with evaluation function."""
         predictions = self.predict()
         actuals = self.data.testing_data[self.data.target_column]

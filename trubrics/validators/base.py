@@ -33,14 +33,11 @@ class Validator:
         """
         Compares performance of a model on a dataset to a hard coded threshold value.
         """
-        predictions = self.trubrics_model.predict()
+        performance = self.trubrics_model.compute_performance_on_test_set()
         if self.trubrics_model.model.evaluation_function.__name__ == "accuracy_score":
-            performance = float(
-                self.trubrics_model.model.evaluation_function(  # type: ignore
-                    self.trubrics_model.data.testing_data[self.trubrics_model.data.target_column], predictions
-                )
-            )
-            return performance > threshold, {"performance": performance}
+            return bool(performance > threshold), {"performance": performance}
+        elif self.trubrics_model.model.evaluation_function.__name__ == "mean_squared_error":
+            return bool(performance < threshold), {"performance": performance}
         else:
             raise NotImplementedError("The evaluation type is not recognized.")
 

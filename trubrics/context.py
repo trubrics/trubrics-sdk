@@ -15,7 +15,7 @@ class ModelContext(BaseModel):
     name: str = "my_model"
     version: float = 0.1
     estimator: Any
-    evaluation_function: Callable[[pd.Series, pd.Series], Union[int, float]]
+    evaluation_function: Callable[[pd.Series, pd.Series, Any], Union[int, float]]
     evaluation_kwargs: Optional[Dict[str, Union[bool, str, int, float, None]]] = None
 
     class Config:
