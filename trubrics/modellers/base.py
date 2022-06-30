@@ -1,7 +1,14 @@
 from abc import ABC, abstractmethod
 
+from trubrics.context import DataContext, ModelContext
+
 
 class BaseModeller(ABC):
+    @abstractmethod
+    def __init__(self, data: DataContext, model: ModelContext):
+        self.data = data
+        self.model = model
+
     @abstractmethod
     def predict(self):
         """Use the estimator to predict on the test data."""

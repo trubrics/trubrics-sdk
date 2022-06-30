@@ -7,14 +7,14 @@ from pandas.api.types import is_numeric_dtype
 
 from trubrics.context import FeedbackContext
 from trubrics.exceptions import PandasSchemaError
-from trubrics.modellers.classifier import BaseClassifier
+from trubrics.modellers.classifier import Classifier
 from trubrics.utils.loader import save_validation_to_json
 from trubrics.utils.pandas import schema_is_equal
 
 logger = logging.getLogger(__name__)
 
 
-class StreamlitComponent(BaseClassifier):
+class StreamlitComponent(Classifier):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 

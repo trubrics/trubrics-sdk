@@ -4,8 +4,8 @@ from trubrics.context import DataContext, ModelContext
 from trubrics.modellers.base import BaseModeller
 
 
-class BaseClassifier(BaseModeller):
-    """Base classifier class with methods combining data and model contexts."""
+class Classifier(BaseModeller):
+    """Classifier class with methods combining data and model contexts."""
 
     def __init__(self, model: ModelContext, data: DataContext):
         self.model = model

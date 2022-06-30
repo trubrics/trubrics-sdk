@@ -3,16 +3,16 @@ from typing import Dict, Union
 import numpy as np
 import pandas as pd
 
-from trubrics.modellers.classifier import BaseClassifier
+from trubrics.modellers.base import BaseModeller
 from trubrics.validators.validation_output import (
     validation_output,
     validation_output_type,
 )
 
 
-class Validator(BaseClassifier):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+class Validator:
+    def __init__(self, trubrics_model: BaseModeller):
+        self.trubrics_model = trubrics_model
 
     @validation_output
     def validate_single_edge_case(
@@ -22,7 +22,7 @@ class Validator(BaseClassifier):
         Single edge case validation.
         """
         edge_case_data = pd.DataFrame.from_records(edge_case_data, index=[0])  # type: ignore
-        prediction = self.model.estimator.predict(edge_case_data)[  # type: ignore
+        prediction = self.trubrics_model.model.estimator.predict(edge_case_data)[  # type: ignore
             0
         ].item()  # .item() converts numpy to python type, in order to be serialised to json
 
@@ -33,11 +33,11 @@ class Validator(BaseClassifier):
         """
         Compares performance of a model on a dataset to a hard coded threshold value.
         """
-        predictions = self.predict()
-        if self.model.evaluation_function.__name__ == "accuracy_score":
+        predictions = self.trubrics_model.predict()
+        if self.trubrics_model.model.evaluation_function.__name__ == "accuracy_score":
             performance = float(
-                self.model.evaluation_function(  # type: ignore
-                    self.data.testing_data[self.data.target_column], predictions
+                self.trubrics_model.model.evaluation_function(  # type: ignore
+                    self.trubrics_model.data.testing_data[self.trubrics_model.data.target_column], predictions
                 )
             )
             return performance > threshold, {"performance": performance}
@@ -58,18 +58,22 @@ class Validator(BaseClassifier):
         - Show distributions of category variables
         - Performance plots of results
         """
-        cat_values = list(self.data.testing_data[category].unique())  # type: ignore
+        cat_values = list(self.trubrics_model.data.testing_data[category].unique())  # type: ignore
         if len(cat_values) > 20:
             raise Exception(f"Cardinality of {len(cat_values)} too high for performance test.")
-        if category not in self.data.testing_data.columns:
+        if category not in self.trubrics_model.data.testing_data.columns:
             raise KeyError(f"Column '{category}' not found in dataset.")
         result: Dict[str, Union[int, float]] = {}
         for value in cat_values:
             if value not in [np.nan, None]:
-                filtered_data = self.data.testing_data.query(f"`{category}`=='{value}'")
-                predictions = self.model.estimator.predict(filtered_data.loc[:, self.data.features])  # type: ignore
+                filtered_data = self.trubrics_model.data.testing_data.query(f"`{category}`=='{value}'")
+                predictions = self.trubrics_model.model.estimator.predict(
+                    filtered_data.loc[:, self.trubrics_model.data.features]
+                )  # type: ignore
                 result[value] = float(
-                    self.model.evaluation_function(filtered_data[self.data.target_column], predictions)  # type: ignore
+                    self.trubrics_model.model.evaluation_function(  # type: ignore
+                        filtered_data[self.trubrics_model.data.target_column], predictions
+                    )
                 )
         max_performance_difference = max(result.values()) - min(result.values())
 
