@@ -1,9 +1,9 @@
 import json
 import logging
 
-import config
 import joblib
 import pandas as pd
+import titanic_config
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import SimpleImputer
@@ -16,18 +16,20 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main():
-    train_df = pd.read_csv(config.LOCAL_RAW_TRAIN_FILENAME)
+    train_df = pd.read_csv(titanic_config.LOCAL_RAW_TRAIN_FILENAME)
     preprocessed_train = train_df.pipe(preprocess)
     logging.info("Training data has been preprocessed.")
 
     numerical_cols = [
-        col for col in preprocessed_train.columns if col not in config.CATEGORICAL_COLUMNS + [config.TARGET]
+        col
+        for col in preprocessed_train.columns
+        if col not in titanic_config.CATEGORICAL_COLUMNS + [titanic_config.TARGET]
     ]
 
-    training_pipeline = init_training(config.CATEGORICAL_COLUMNS, numerical_cols)
+    training_pipeline = init_training(titanic_config.CATEGORICAL_COLUMNS, numerical_cols)
     X_train, X_test, y_train, y_test = train_test_split(
-        preprocessed_train[config.CATEGORICAL_COLUMNS + numerical_cols],
-        preprocessed_train[config.TARGET],
+        preprocessed_train[titanic_config.CATEGORICAL_COLUMNS + numerical_cols],
+        preprocessed_train[titanic_config.TARGET],
         test_size=0.33,
         random_state=88,
     )
@@ -37,12 +39,12 @@ def main():
     )
 
     # save
-    X_train.assign(Survived=y_train).to_csv(config.LOCAL_TRAIN_FILENAME, index=False)
-    X_test.assign(Survived=y_test).to_csv(config.LOCAL_TEST_FILENAME, index=False)
-    joblib.dump(rf_model, config.LOCAL_MODEL_FILENAME)
+    X_train.assign(Survived=y_train).to_csv(titanic_config.LOCAL_TRAIN_FILENAME, index=False)
+    X_test.assign(Survived=y_test).to_csv(titanic_config.LOCAL_TEST_FILENAME, index=False)
+    joblib.dump(rf_model, titanic_config.LOCAL_MODEL_FILENAME)
 
     feature_importance = get_feature_importance(rf_model, numerical_cols)
-    with open(config.LOCAL_FI_FILENAME, "w") as file:
+    with open(titanic_config.LOCAL_FI_FILENAME, "w") as file:
         file.write(json.dumps(feature_importance))
 
 

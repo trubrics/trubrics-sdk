@@ -2,14 +2,14 @@ import joblib
 import pandas as pd
 import streamlit as st
 
-from examples.training import config
+from examples.training import titanic_config
 from trubrics.context import DataContext, ModelContext
 from trubrics.feedback_components.streamlit import StreamlitComponent
 
 try:
-    TRAINING_DATA = pd.read_csv(config.LOCAL_TRAIN_FILENAME)
-    TESTING_DATA = pd.read_csv(config.LOCAL_TEST_FILENAME)
-    RF_MODEL = joblib.load(config.LOCAL_MODEL_FILENAME)
+    TRAINING_DATA = pd.read_csv(titanic_config.LOCAL_TRAIN_FILENAME)
+    TESTING_DATA = pd.read_csv(titanic_config.LOCAL_TEST_FILENAME)
+    RF_MODEL = joblib.load(titanic_config.LOCAL_MODEL_FILENAME)
 except FileNotFoundError:
     raise FileNotFoundError("To generate these files, run `make train-titanic`")
 
@@ -17,9 +17,9 @@ except FileNotFoundError:
 data_context = DataContext(
     training_data=TRAINING_DATA,
     testing_data=TESTING_DATA,
-    target_column=config.TARGET,
-    categorical_columns=config.CATEGORICAL_COLUMNS,
-    business_columns=config.BUSINESS_COLUMNS,
+    target_column=titanic_config.TARGET,
+    categorical_columns=titanic_config.CATEGORICAL_COLUMNS,
+    business_columns=titanic_config.BUSINESS_COLUMNS,
 )
 # init model context
 model_context = ModelContext(estimator=RF_MODEL, evaluation_function=lambda x, y: x.min() - y.min())

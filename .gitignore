@@ -8,6 +8,8 @@ dist/
 # example data
 examples/data
 !examples/data/.gitkeep
+!examples/data/titanic_train.csv
+!examples/data/house_prices_train.csv
 examples/models
 !examples/models/.gitkeep
 

@@ -16,6 +16,7 @@ class ModelContext(BaseModel):
     version: float = 0.1
     estimator: Any
     evaluation_function: Callable[[pd.Series, pd.Series], Union[int, float]]
+    evaluation_kwargs: Optional[Dict[str, Union[bool, str, int, float, None]]] = None
 
     class Config:
         allow_mutation = False
