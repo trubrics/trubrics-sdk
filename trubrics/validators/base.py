@@ -3,7 +3,7 @@ from typing import Dict, Union
 import numpy as np
 import pandas as pd
 
-from trubrics.base import BaseClassifier
+from trubrics.modellers.classifier import BaseClassifier
 from trubrics.validators.validation_output import (
     validation_output,
     validation_output_type,

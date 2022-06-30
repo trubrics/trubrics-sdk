@@ -10,6 +10,6 @@ data and models to be validated.
 
 ## Base Modeller
 ```{eval-rst}
-.. automodule:: trubrics.base
+.. automodule:: trubrics.modellers.classifier
     :members:
 ```

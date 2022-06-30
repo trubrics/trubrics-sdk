@@ -3,9 +3,9 @@ from typing import Any, Callable, Dict, Tuple, Union
 
 from typeguard import check_type
 
-from trubrics.base import BaseClassifier
 from trubrics.context import ValidationContext
 from trubrics.exceptions import ValidationOutputError
+from trubrics.modellers.classifier import BaseClassifier
 
 validation_output_type = Tuple[bool, Dict[str, Union[str, int, float]]]
 
