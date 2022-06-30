@@ -69,7 +69,7 @@ class Validator:
                 filtered_data = self.trubrics_model.data.testing_data.query(f"`{category}`=='{value}'")
                 predictions = self.trubrics_model.model.estimator.predict(
                     filtered_data.loc[:, self.trubrics_model.data.features]
-                )  # type: ignore
+                )
                 result[value] = float(
                     self.trubrics_model.model.evaluation_function(  # type: ignore
                         filtered_data[self.trubrics_model.data.target_column], predictions
