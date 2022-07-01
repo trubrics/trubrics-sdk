@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 import requests  # type: ignore
@@ -15,7 +15,7 @@ class ModelContext(BaseModel):
     name: str = "my_model"
     version: float = 0.1
     estimator: Any
-    evaluation_function: Callable[[pd.Series, pd.Series, Any], Union[int, float]]
+    evaluation_function: Any
     evaluation_kwargs: Optional[Dict[str, Union[bool, str, int, float, None]]] = None
 
     class Config:

@@ -68,7 +68,7 @@ class Validator:
                     filtered_data.loc[:, self.trubrics_model.data.features]
                 )
                 result[value] = float(
-                    self.trubrics_model.model.evaluation_function(  # type: ignore
+                    self.trubrics_model.model.evaluation_function(
                         filtered_data[self.trubrics_model.data.target_column], predictions
                     )
                 )
