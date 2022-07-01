@@ -102,17 +102,27 @@ class ValidationContext(BaseModel):
     validation_type: str
     validation_kwargs: Dict[str, Optional[Any]]
     outcome: str
+    severity: str = "error"
     result: Optional[Dict[str, Union[str, int, float]]]
 
     class Config:
+        validate_assignment = True
         schema_extra = {
             "example": {
                 "validation_type": "validate_performance_against_threshold",
                 "validation_kwargs": {"args": [], "kwargs": {"threshold": 0.8}},
                 "outcome": "fail",
+                "severity": "error",
                 "result": {"performance": "0.79"},
             }
         }
+
+    @validator("severity")
+    def severity_must_be(cls, v: str):
+        severity_values = ["error", "warning", "experiment"]
+        if v not in severity_values:
+            raise KeyError(f"Severity must be set to: {severity_values}.")
+        return v
 
 
 class TrubricContext(BaseModel):
