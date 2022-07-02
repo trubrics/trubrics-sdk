@@ -10,6 +10,7 @@ class BaseModeller(ABC):
     def __init__(self, data: DataContext, model: ModelContext):
         self.data = data
         self.model = model
+        self.model_type = "general"
 
     @abstractmethod
     def predict(self):
@@ -25,9 +26,10 @@ class BaseModeller(ABC):
 
 
 class Modeller(BaseModeller):
-    def __init__(self, model: ModelContext, data: DataContext):
-        self.model = model
+    def __init__(self, data: DataContext, model: ModelContext):
         self.data = data
+        self.model = model
+        self.model_type = "general"
 
     def predict(self) -> pd.Series:
         """Predict function called on model from model context."""
