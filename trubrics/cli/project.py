@@ -1,6 +1,6 @@
 import typer
 
-app = typer.Typer()
+app = typer.Typer(help="Manage your projects.")
 
 
 @app.command()

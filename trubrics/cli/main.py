@@ -11,8 +11,19 @@ app.add_typer(project.app, name="project")
 
 
 @app.command()
-def run(module_path: str):
-    tc = _import_module(module_path=module_path)
+def run(trubric_init_path: str):
+    """
+    Specify the TRUBRIC_INIT_PATH that points to your initialisation file.
+
+    For example: trubrics run examples/trubrics_config.py
+
+    This file must contain constant values with:
+
+        - TRUBRIC_PATH: the path towards your .json trubric file that you want to run \n
+        - MODEL_CONTEXT: your model context object with the model you would like to test \n
+        - DATA_CONTEXT: your data context object with the data you would like to test
+    """
+    tc = _import_module(module_path=trubric_init_path)
     typer.echo(
         typer.style(
             f"Running trubric from '{tc.TRUBRIC_PATH} with model '{tc.MODEL_CONTEXT.name} and dataset"
