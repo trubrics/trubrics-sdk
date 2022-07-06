@@ -96,6 +96,18 @@ class FeedbackContext(BaseModel):
     metadata: Dict[str, Union[List[Any], str, int, float, dict]]
 
 
+def _validation_context_example():
+    return {
+        "example": {
+            "validation_type": "validate_performance_against_threshold",
+            "validation_kwargs": {"args": [], "kwargs": {"threshold": 0.8}},
+            "outcome": "fail",
+            "severity": "error",
+            "result": {"performance": "0.79"},
+        }
+    }
+
+
 class ValidationContext(BaseModel):
     """Context for a single validation point of a model."""
 
@@ -106,16 +118,9 @@ class ValidationContext(BaseModel):
     result: Optional[Dict[str, Union[str, int, float]]]
 
     class Config:
+        extra = "forbid"
         validate_assignment = True
-        schema_extra = {
-            "example": {
-                "validation_type": "validate_performance_against_threshold",
-                "validation_kwargs": {"args": [], "kwargs": {"threshold": 0.8}},
-                "outcome": "fail",
-                "severity": "error",
-                "result": {"performance": "0.79"},
-            }
-        }
+        schema_extra = _validation_context_example()
 
     @validator("severity")
     def severity_must_be(cls, v: str):
@@ -137,6 +142,7 @@ class TrubricContext(BaseModel):
     validations: List[ValidationContext]
 
     class Config:
+        extra = "forbid"
         schema_extra = {
             "example": {
                 "name": "my_first_trubric",
@@ -145,14 +151,7 @@ class TrubricContext(BaseModel):
                 "data_context_name": "my_dataset",
                 "data_context_version": 0.1,
                 "metadata": {},
-                "validations": [
-                    {
-                        "validation_type": "validate_performance_against_threshold",
-                        "validation_kwargs": {"args": [], "kwargs": {"threshold": 0.8}},
-                        "outcome": "fail",
-                        "result": {"performance": "0.79"},
-                    }
-                ],
+                "validations": [_validation_context_example()],
             }
         }
 
