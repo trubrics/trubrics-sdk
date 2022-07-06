@@ -26,7 +26,7 @@ def run(trubric_init_path: str):
     tc = _import_module(module_path=trubric_init_path)
     typer.echo(
         typer.style(
-            f"Running trubric from '{tc.TRUBRIC_PATH} with model '{tc.MODEL_CONTEXT.name} and dataset"
+            f"Running trubric from '{tc.TRUBRIC_PATH}' with model '{tc.MODEL_CONTEXT.name}' and dataset"
             f" '{tc.DATA_CONTEXT.name}'.",
             fg=typer.colors.BLUE,
         )
