@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from trubrics.context import DataContext
+from trubrics.context import DataContext, ModelContext
 from trubrics.exceptions import PandasSchemaError
 
 
@@ -41,3 +41,15 @@ def test_data_context_raises(testing_data, training_data_rename_cols, kwargs, er
     training_data = testing_data.rename(columns=training_data_rename_cols)
     with pytest.raises(error_type):
         DataContext(testing_data=testing_data, training_data=training_data, **kwargs)
+
+
+def test_model_context():
+    class Estimator:
+        pass
+
+    class EvalFunction:
+        def __name__(self):
+            return "EvalFunction"
+
+    mc = ModelContext(estimator=Estimator, evaluation_function=EvalFunction)
+    assert mc.evaluation_function_name == "EvalFunction"
