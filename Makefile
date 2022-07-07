@@ -12,3 +12,14 @@ streamlit-demo:
 
 auto-docs:
 	@sphinx-autobuild docs/source docs/build/html
+
+install:
+	@python -m pip install --upgrade pip
+	@pip install -r requirements.txt
+
+install-dev:
+	@python -m pip install --upgrade pip
+	@pip install -r requirements-dev.txt
+
+test:
+	@pytest
