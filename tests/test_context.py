@@ -19,6 +19,7 @@ def testing_data():
 def test_data_context_attributes(testing_data):
     business_columns = {"feature 2": "feature 3"}
     dc = DataContext(testing_data=testing_data, target_column="target", business_columns=business_columns)
+
     assert dc.name == "my_dataset"
     assert dc.version == 0.1
     assert dc.features == ["feature_1", "feature 2"]
@@ -51,5 +52,8 @@ def test_model_context():
         def __name__(self):
             return "EvalFunction"
 
-    mc = ModelContext(estimator=Estimator, evaluation_function=EvalFunction)
+    mc = ModelContext(name="my_new_model", estimator=Estimator, evaluation_function=EvalFunction)
+
+    assert mc.name == "my_new_model"
+    assert mc.version == 0.1
     assert mc.evaluation_function_name == "EvalFunction"
