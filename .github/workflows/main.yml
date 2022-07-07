@@ -1,0 +1,23 @@
+name: Build & test trubrics package
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.7", "3.8"]
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}
+      - run: echo "🍏 This job's status is ${{ job.status }}."
