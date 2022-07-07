@@ -129,6 +129,13 @@ class ValidationContext(BaseModel):
             raise KeyError(f"Severity must be set to: {severity_values}.")
         return v
 
+    @validator("outcome")
+    def outcome_must_be(cls, v: str):
+        outcome_values = ["pass", "fail"]
+        if v not in outcome_values:
+            raise KeyError(f"Outcome must be set to: {outcome_values}.")
+        return v
+
 
 class TrubricContext(BaseModel):
     """Context for a Trubric, or set of validation points."""

@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from trubrics.context import DataContext, ModelContext
+from trubrics.context import DataContext, ModelContext, ValidationContext
 from trubrics.exceptions import PandasSchemaError
 
 
@@ -57,3 +57,15 @@ def test_model_context():
     assert mc.name == "my_new_model"
     assert mc.version == 0.1
     assert mc.evaluation_function_name == "EvalFunction"
+
+
+@pytest.mark.parametrize(
+    "kwargs,error_type",
+    [
+        ({"outcome": "wrong_outcome", "severity": "experiment"}, KeyError),
+        ({"outcome": "pass", "severity": "wrong_severity"}, KeyError),
+    ],
+)
+def test_validation_context_raises(kwargs, error_type):
+    with pytest.raises(error_type):
+        ValidationContext(validation_type="validate_something", validation_kwargs={"a kwarg": None}, **kwargs)
