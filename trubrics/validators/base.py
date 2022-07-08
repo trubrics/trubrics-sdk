@@ -86,12 +86,18 @@ class Validator:
         cat_values = list(self.trubrics_model.data.testing_data[category].unique())
         if len(cat_values) > 20:
             raise Exception(f"Cardinality of {len(cat_values)} too high for performance test.")
+        if len(cat_values) < 1:
+            raise Exception(f"Category '{category}' has a single value.")
         if category not in self.trubrics_model.data.testing_data.columns:
+            # TODO: check when categorical columns are specified
             raise KeyError(f"Column '{category}' not found in dataset.")
         result: Dict[str, Union[int, float]] = {}
         for value in cat_values:
             if value not in [np.nan, None]:
-                filtered_data = self.trubrics_model.data.testing_data.query(f"`{category}`=='{value}'")
+                if isinstance(value, str):
+                    filtered_data = self.trubrics_model.data.testing_data.query(f"`{category}`=='{value}'")
+                else:
+                    filtered_data = self.trubrics_model.data.testing_data.query(f"`{category}`=={value}")
                 predictions = self.trubrics_model.model.estimator.predict(
                     filtered_data.loc[:, self.trubrics_model.data.features]
                 )

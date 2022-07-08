@@ -1,0 +1,7 @@
+Sex,Embarked,Title,Pclass,Age,SibSp,Parch,Fare,Survived
+male,S,Master,3,6.0,0,1,12.48,1
+male,S,Mr,3,29.0,0,0,8.05,0
+female,C,Miss,3,9.0,1,1,15.25,0
+male,Q,Mr,3,,0,0,15.5,0
+male,C,Mr,3,,0,0,7.23,1
+male,C,Mr,1,28.0,1,0,82.17,0

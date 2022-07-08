@@ -20,24 +20,24 @@ def testing_data():
 
 @pytest.fixture
 def data_context():
-    testing_data = pd.read_csv("assets/tests/validator_test_data.csv")
+    testing_data = pd.read_csv("assets/tests/classifier_test_data.csv")
     return DataContext(testing_data=testing_data, target_column="Survived")
 
 
 @pytest.fixture
-def model_context():
+def classifier_model_context():
     from sklearn.metrics import accuracy_score
 
-    model = joblib.load("assets/tests/validator_test_model.pkl")
+    model = joblib.load("assets/tests/classifier_test_model.pkl")
     return ModelContext(estimator=model, evaluation_function=accuracy_score)
 
 
 @pytest.fixture
-def validator(data_context, model_context):
-    trubrics_model = Classifier(data=data_context, model=model_context)
+def validator_classifier(data_context, classifier_model_context):
+    trubrics_model = Classifier(data=data_context, model=classifier_model_context)
     return Validator(trubrics_model=trubrics_model)
 
 
 @pytest.fixture
 def trubric():
-    return TrubricContext.parse_file("assets/tests/validator_test_trubric.json")
+    return TrubricContext.parse_file("assets/tests/classifier_test_trubric.json")
