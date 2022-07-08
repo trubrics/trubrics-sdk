@@ -1,0 +1,210 @@
+{
+    "name": "my_first_trubric",
+    "model_context_name": "my_first_model",
+    "model_context_version": 0.1,
+    "data_context_name": "my_first_dataset",
+    "data_context_version": 0.1,
+    "metadata": null,
+    "validations": [
+        {
+            "validation_type": "validate_single_edge_case",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "edge_case_data": {
+                        "Sex": "male",
+                        "Embarked": "S",
+                        "Title": "Master",
+                        "Pclass": 2,
+                        "Age": 28,
+                        "SibSp": 0,
+                        "Parch": 0,
+                        "Fare": 37
+                    },
+                    "desired_output": 0
+                }
+            },
+            "outcome": "fail",
+            "severity": "warning",
+            "result": {
+                "prediction": "1"
+            }
+        },
+        {
+            "validation_type": "validate_single_edge_case",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "edge_case_data": {
+                        "Sex": "male",
+                        "Embarked": "S",
+                        "Title": "Master",
+                        "Pclass": 2,
+                        "Age": 28,
+                        "SibSp": 0,
+                        "Parch": 0,
+                        "Fare": 37
+                    },
+                    "desired_output": 1
+                }
+            },
+            "outcome": "pass",
+            "severity": "experiment",
+            "result": {
+                "prediction": "1"
+            }
+        },
+        {
+            "validation_type": "validate_performance_against_threshold",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "threshold": 0.8
+                }
+            },
+            "outcome": "pass",
+            "severity": "error",
+            "result": {
+                "performance": "True"
+            }
+        },
+        {
+            "validation_type": "validate_performance_against_threshold",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "threshold": 0.75
+                }
+            },
+            "outcome": "pass",
+            "severity": "error",
+            "result": {
+                "performance": "True"
+            }
+        },
+        {
+            "validation_type": "validate_biased_performance_across_category",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "category": "Embarked",
+                    "threshold": 0.1
+                }
+            },
+            "outcome": "fail",
+            "severity": "error",
+            "result": {
+                "max_performance_difference": "0.15235267245317496"
+            }
+        },
+        {
+            "validation_type": "validate_biased_performance_across_category",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "category": "Sex",
+                    "threshold": 0.05
+                }
+            },
+            "outcome": "pass",
+            "severity": "error",
+            "result": {
+                "max_performance_difference": "0.0361426429642322"
+            }
+        },
+        {
+            "validation_type": "validate_feature_in_top_n_important_features",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "feature": "Sex_female",
+                    "feature_importance": {
+                        "Pclass": 0.08027485982957666,
+                        "Age": 0.2109814530574326,
+                        "SibSp": 0.0537446367930372,
+                        "Parch": 0.036290576979770735,
+                        "Fare": 0.23012234475361906,
+                        "Sex_female": 0.0923012684295021,
+                        "Sex_male": 0.08321571192982573,
+                        "Embarked_C": 0.01263434518233411,
+                        "Embarked_Q": 0.007338584769864529,
+                        "Embarked_S": 0.015720887116309576,
+                        "Title_Capt": 0.000784360481368511,
+                        "Title_Col": 0.0012917613604970604,
+                        "Title_Dr": 0.0017767470075199022,
+                        "Title_Major": 0.0007732933748357258,
+                        "Title_Master": 0.009336584354394672,
+                        "Title_Miss": 0.02496022744830678,
+                        "Title_Mlle": 0.00014551965218339622,
+                        "Title_Mme": 0.00008535494893915394,
+                        "Title_Mr": 0.11288027520793507,
+                        "Title_Mrs": 0.021862741975250895,
+                        "Title_Ms": 0.00027664450523918956,
+                        "Title_Rev": 0.002315642203376659,
+                        "Title_Sir": 0.0008861786388808405
+                    },
+                    "top_n_features": 3
+                }
+            },
+            "outcome": "fail",
+            "severity": "error",
+            "result": {
+                "feature_importance_ranking": "3"
+            }
+        },
+        {
+            "validation_type": "validate_feature_in_top_n_important_features",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "feature": "Age",
+                    "feature_importance": {
+                        "Pclass": 0.08027485982957666,
+                        "Age": 0.2109814530574326,
+                        "SibSp": 0.0537446367930372,
+                        "Parch": 0.036290576979770735,
+                        "Fare": 0.23012234475361906,
+                        "Sex_female": 0.0923012684295021,
+                        "Sex_male": 0.08321571192982573,
+                        "Embarked_C": 0.01263434518233411,
+                        "Embarked_Q": 0.007338584769864529,
+                        "Embarked_S": 0.015720887116309576,
+                        "Title_Capt": 0.000784360481368511,
+                        "Title_Col": 0.0012917613604970604,
+                        "Title_Dr": 0.0017767470075199022,
+                        "Title_Major": 0.0007732933748357258,
+                        "Title_Master": 0.009336584354394672,
+                        "Title_Miss": 0.02496022744830678,
+                        "Title_Mlle": 0.00014551965218339622,
+                        "Title_Mme": 0.00008535494893915394,
+                        "Title_Mr": 0.11288027520793507,
+                        "Title_Mrs": 0.021862741975250895,
+                        "Title_Ms": 0.00027664450523918956,
+                        "Title_Rev": 0.002315642203376659,
+                        "Title_Sir": 0.0008861786388808405
+                    },
+                    "top_n_features": 2
+                }
+            },
+            "outcome": "pass",
+            "severity": "error",
+            "result": {
+                "feature_importance_ranking": "1"
+            }
+        },
+        {
+            "validation_type": "validate_performance_for_different_fares",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "fare_cutoff": 25
+                }
+            },
+            "outcome": "pass",
+            "severity": "warning",
+            "result": {
+                "number_of_errors_by_fare_ratio": "1.308"
+            }
+        }
+    ]
+}

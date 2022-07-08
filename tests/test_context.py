@@ -1,19 +1,7 @@
-import pandas as pd
 import pytest
 
 from trubrics.context import DataContext, ModelContext, ValidationContext
 from trubrics.exceptions import PandasSchemaError
-
-
-@pytest.fixture
-def testing_data():
-    return pd.DataFrame(
-        {
-            "target": [1, 2, 3],
-            "feature_1": [10, 20, 30],
-            "feature 2": ["a", "b", "c"],
-        }
-    )
 
 
 def test_data_context_attributes(testing_data):
