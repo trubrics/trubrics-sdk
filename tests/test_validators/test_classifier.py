@@ -37,3 +37,11 @@ def test__validate_biased_performance_across_category(validator_classifier):
     result = validator_classifier._validate_biased_performance_across_category("Sex", threshold)
     actual = False, {"max_performance_difference": 0.6}
     assert result == actual
+
+
+def test__validate_feature_in_top_n_important_features(validator_classifier, feature_importance):
+    result = validator_classifier._validate_feature_in_top_n_important_features(
+        feature="Age", feature_importance=feature_importance, top_n_features=2
+    )
+    actual = True, {"feature_importance_ranking": 1}
+    assert result == actual

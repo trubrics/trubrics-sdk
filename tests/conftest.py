@@ -1,3 +1,5 @@
+import json
+
 import joblib
 import pandas as pd
 import pytest
@@ -16,6 +18,12 @@ def testing_data():
             "feature 2": ["a", "b", "c"],
         }
     )
+
+
+@pytest.fixture
+def feature_importance():
+    with open("assets/tests/test_feature_importance.json", "r") as file:
+        return json.loads(file.read())
 
 
 @pytest.fixture
