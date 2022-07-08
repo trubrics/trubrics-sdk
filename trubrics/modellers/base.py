@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 import pandas as pd
 
@@ -13,7 +14,7 @@ class BaseModeller(ABC):
         self.model_type = "general"
 
     @abstractmethod
-    def predict(self):
+    def predict(self, data: Optional[pd.DataFrame] = None) -> pd.Series:
         """Use the estimator to predict on the test data."""
 
     @abstractmethod
@@ -31,10 +32,12 @@ class Modeller(BaseModeller):
         self.model = model
         self.model_type = "general"
 
-    def predict(self) -> pd.Series:
+    def predict(self, data: Optional[pd.DataFrame] = None) -> pd.Series:
         """Predict function called on model from model context."""
         try:
-            return self.model.estimator.predict(self.data.testing_data[self.data.features])  # type: ignore
+            if data is not None:
+                return self.model.estimator.predict(data)
+            return self.model.estimator.predict(self.data.testing_data[self.data.features])
         except AttributeError as error:
             raise AttributeError("Model has no .predict() method.") from error
 

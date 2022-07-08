@@ -16,22 +16,27 @@ class Validator:
         self.trubrics_model = trubrics_model
 
     @validation_output
-    def validate_single_edge_case(
-        self, edge_case_data: Dict[str, str], desired_output: Union[int, float]
+    def validate_single_edge_case(self, edge_case_data, desired_output):
+        return self._validate_single_edge_case(edge_case_data, desired_output)
+
+    def _validate_single_edge_case(
+        self, edge_case_data: Dict[str, Union[str, int, float]], desired_output: Union[int, float]
     ) -> validation_output_type:
         """
         Single edge case validation.
         """
-        edge_case_data = pd.DataFrame.from_records(edge_case_data, index=[0])  # type: ignore
-        prediction = self.trubrics_model.model.estimator.predict(edge_case_data)[
-            0
-        ].item()  # .item() converts numpy to python type, in order to be serialised to json
-
+        prediction = self._predict_from_dict(edge_case_data=edge_case_data)
         return prediction == desired_output, {"prediction": prediction}
 
     @validation_output
-    def validate_single_edge_case_in_range(
-        self, edge_case_data: Dict[str, str], lower_output: Union[int, float], upper_output: Union[int, float]
+    def validate_single_edge_case_in_range(self, edge_case_data, lower_output, upper_output):
+        return self._validate_single_edge_case_in_range(edge_case_data, lower_output, upper_output)
+
+    def _validate_single_edge_case_in_range(
+        self,
+        edge_case_data: Dict[str, Union[str, int, float]],
+        lower_output: Union[int, float],
+        upper_output: Union[int, float],
     ) -> validation_output_type:
         """
         Single edge case validation in range.
@@ -40,28 +45,32 @@ class Validator:
             raise ValueError("lower_output must be strictly inferior to upper_output.")
         if self.trubrics_model.model_type == "classifier":
             raise ClassifierNotSupportedError("Model type 'classifier' not supported for a range output.")
-        edge_case_data = pd.DataFrame.from_records(edge_case_data, index=[0])  # type: ignore
-        prediction = self.trubrics_model.model.estimator.predict(edge_case_data)[
-            0
-        ].item()  # .item() converts numpy to python type, in order to be serialised to json
+        prediction = self._predict_from_dict(edge_case_data=edge_case_data)
 
         return prediction > lower_output and prediction < upper_output, {"prediction": prediction}
 
     @validation_output
-    def validate_performance_against_threshold(self, threshold: float) -> validation_output_type:
+    def validate_performance_against_threshold(self, threshold):
+        return self._validate_performance_against_threshold(threshold)
+
+    def _validate_performance_against_threshold(self, threshold: float) -> validation_output_type:
         """
         Compares performance of a model on a dataset to a hard coded threshold value.
         """
-        performance = bool(self.trubrics_model.compute_performance_on_test_set())
+        performance = self.trubrics_model.compute_performance_on_test_set()
+
         if self.trubrics_model.model.evaluation_function.__name__ == "accuracy_score":
-            return performance > threshold, {"performance": performance}
+            return bool(performance > threshold), {"performance": performance}
         elif self.trubrics_model.model.evaluation_function.__name__ == "mean_squared_error":
-            return performance < threshold, {"performance": performance}
+            return bool(performance < threshold), {"performance": performance}
         else:
             raise NotImplementedError("The evaluation type is not recognized.")
 
     @validation_output
-    def validate_biased_performance_across_category(self, category: str, threshold: float) -> validation_output_type:
+    def validate_biased_performance_across_category(self, category, threshold):
+        return self._validate_biased_performance_across_category(category, threshold)
+
+    def _validate_biased_performance_across_category(self, category: str, threshold: float) -> validation_output_type:
         """
         Calculates various performance for all values in a category and validates for
         the maximum difference in performance inferior to the threshold value.
@@ -96,7 +105,10 @@ class Validator:
         return max_performance_difference < threshold, {"max_performance_difference": max_performance_difference}
 
     @validation_output
-    def validate_feature_in_top_n_important_features(
+    def validate_feature_in_top_n_important_features(self, feature, feature_importance, top_n_features):
+        return self._validate_feature_in_top_n_important_features(feature, feature_importance, top_n_features)
+
+    def _validate_feature_in_top_n_important_features(
         self, feature: str, feature_importance: Dict[str, float], top_n_features: int
     ) -> validation_output_type:
         """
@@ -108,3 +120,12 @@ class Validator:
                 count += 1
 
         return count < top_n_features, {"feature_importance_ranking": count}
+
+    def _predict_from_dict(self, edge_case_data: Dict[str, Union[str, int, float]]) -> Union[int, float]:
+        edge_case_data_df = pd.DataFrame.from_records(
+            edge_case_data, index=["0"], columns=self.trubrics_model.data.features
+        )
+        prediction = self.trubrics_model.predict(data=edge_case_data_df)[
+            0
+        ].item()  # .item() converts numpy to python type, in order to be serialised to json
+        return prediction
