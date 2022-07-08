@@ -23,3 +23,6 @@ install-dev:
 
 test:
 	@pytest
+
+test-coverage:
+	@pytest --cov=trubrics tests

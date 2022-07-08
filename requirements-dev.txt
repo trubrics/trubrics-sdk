@@ -21,3 +21,4 @@ nbsphinx_link==1.3.0
 
 #tests
 pytest==7.1.2
+pytest-cov==3.0.0

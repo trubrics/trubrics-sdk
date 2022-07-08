@@ -33,3 +33,6 @@ scrap
 docs/build
 docs/data
 docs/models
+
+# tests
+.coverage
