@@ -11,7 +11,6 @@ class BaseModeller(ABC):
     def __init__(self, data: DataContext, model: ModelContext):
         self.data = data
         self.model = model
-        self.model_type = "general"
 
     @abstractmethod
     def predict(self, data: Optional[pd.DataFrame] = None) -> pd.Series:
@@ -30,7 +29,6 @@ class Modeller(BaseModeller):
     def __init__(self, data: DataContext, model: ModelContext):
         self.data = data
         self.model = model
-        self.model_type = "general"
 
     def predict(self, data: Optional[pd.DataFrame] = None) -> pd.Series:
         """Predict function called on model from model context."""

@@ -3,8 +3,10 @@ from typing import Dict, Union
 import numpy as np
 import pandas as pd
 
-from trubrics.exceptions import ClassifierNotSupportedError
-from trubrics.modellers.base import BaseModeller
+from trubrics.context import DataContext, ModelContext
+from trubrics.exceptions import ClassifierNotSupportedError, UnknownEstimatorType
+from trubrics.modellers.classifier import Classifier
+from trubrics.modellers.regressor import Regressor
 from trubrics.validators.validation_output import (
     validation_output,
     validation_output_type,
@@ -12,8 +14,22 @@ from trubrics.validators.validation_output import (
 
 
 class Validator:
-    def __init__(self, trubrics_model: BaseModeller):
-        self.trubrics_model = trubrics_model
+    def __init__(self, data: DataContext, model: ModelContext):
+        self.trubrics_model: Union[Classifier, Regressor]
+        if model.estimator_type == "classifier":
+            self.trubrics_model = Classifier(data=data, model=model)
+        elif model.estimator_type == "regressor":
+            self.trubrics_model = Regressor(data=data, model=model)
+        else:
+            UnknownEstimatorType(
+                f"Estimator type {model.estimator_type} not supported. Please use a 'regressor' or 'classifier'"
+                " estimator."
+            )
+        self.trubrics_model_type = model.estimator_type
+        self.trubrics_model_eval_func = model.evaluation_function
+        self.test_data = data.testing_data
+        self.features = data.features
+        self.target = data.target_column
 
     @validation_output
     def validate_single_edge_case(self, edge_case_data, desired_output):
@@ -43,7 +59,7 @@ class Validator:
         """
         if lower_output >= upper_output:
             raise ValueError("lower_output must be strictly inferior to upper_output.")
-        if self.trubrics_model.model_type == "classifier":
+        if self.trubrics_model_type == "classifier":
             raise ClassifierNotSupportedError("Model type 'classifier' not supported for a range output.")
         prediction = self._predict_from_dict(edge_case_data=edge_case_data)
 
@@ -59,9 +75,9 @@ class Validator:
         """
         performance = self.trubrics_model.compute_performance_on_test_set()
 
-        if self.trubrics_model.model.evaluation_function.__name__ == "accuracy_score":
+        if self.trubrics_model_eval_func.__name__ == "accuracy_score":
             return bool(performance > threshold), {"performance": performance}
-        elif self.trubrics_model.model.evaluation_function.__name__ == "mean_squared_error":
+        elif self.trubrics_model_eval_func.__name__ == "mean_squared_error":
             return bool(performance < threshold), {"performance": performance}
         else:
             raise NotImplementedError("The evaluation type is not recognized.")
@@ -83,29 +99,23 @@ class Validator:
         - Show distributions of category variables
         - Performance plots of results
         """
-        cat_values = list(self.trubrics_model.data.testing_data[category].unique())
+        cat_values = list(self.test_data[category].unique())
         if len(cat_values) > 20:
             raise Exception(f"Cardinality of {len(cat_values)} too high for performance test.")
         if len(cat_values) < 1:
             raise Exception(f"Category '{category}' has a single value.")
-        if category not in self.trubrics_model.data.testing_data.columns:
+        if category not in self.test_data.columns:
             # TODO: check when categorical columns are specified
             raise KeyError(f"Column '{category}' not found in dataset.")
         result: Dict[str, Union[int, float]] = {}
         for value in cat_values:
             if value not in [np.nan, None]:
                 if isinstance(value, str):
-                    filtered_data = self.trubrics_model.data.testing_data.query(f"`{category}`=='{value}'")
+                    filtered_data = self.test_data.query(f"`{category}`=='{value}'")
                 else:
-                    filtered_data = self.trubrics_model.data.testing_data.query(f"`{category}`=={value}")
-                predictions = self.trubrics_model.model.estimator.predict(
-                    filtered_data.loc[:, self.trubrics_model.data.features]
-                )
-                result[value] = float(
-                    self.trubrics_model.model.evaluation_function(
-                        filtered_data[self.trubrics_model.data.target_column], predictions
-                    )
-                )
+                    filtered_data = self.test_data.query(f"`{category}`=={value}")
+                predictions = self.trubrics_model.predict(filtered_data.loc[:, self.features])
+                result[value] = float(self.trubrics_model_eval_func(filtered_data[self.target], predictions))
         max_performance_difference = max(result.values()) - min(result.values())
 
         return max_performance_difference < threshold, {"max_performance_difference": max_performance_difference}
@@ -114,8 +124,9 @@ class Validator:
     def validate_feature_in_top_n_important_features(self, feature, feature_importance, top_n_features):
         return self._validate_feature_in_top_n_important_features(feature, feature_importance, top_n_features)
 
+    @staticmethod
     def _validate_feature_in_top_n_important_features(
-        self, feature: str, feature_importance: Dict[str, float], top_n_features: int
+        feature: str, feature_importance: Dict[str, float], top_n_features: int
     ) -> validation_output_type:
         """
         Verifies that a given feature is in the top n most important features.
@@ -128,9 +139,7 @@ class Validator:
         return count < top_n_features, {"feature_importance_ranking": count}
 
     def _predict_from_dict(self, edge_case_data: Dict[str, Union[str, int, float]]) -> Union[int, float]:
-        edge_case_data_df = pd.DataFrame.from_records(
-            edge_case_data, index=["0"], columns=self.trubrics_model.data.features
-        )
+        edge_case_data_df = pd.DataFrame.from_records(edge_case_data, index=["0"], columns=self.features)
         prediction = self.trubrics_model.predict(data=edge_case_data_df)[
             0
         ].item()  # .item() converts numpy to python type, in order to be serialised to json

@@ -7,7 +7,6 @@ class Regressor(Modeller):
 
     def __init__(self, data: DataContext, model: ModelContext):
         super().__init__(data, model)
-        self.model_type = "regressor"
 
     def explore_test_set_errors(self):
         """Filter the testing data on errors."""

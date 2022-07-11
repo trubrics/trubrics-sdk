@@ -10,7 +10,11 @@ from trubrics.utils.pandas import schema_is_equal
 
 
 class ModelContext(BaseModel):
-    """Context for models."""
+    """
+    Context for models.
+
+    Estimator: defined using scikit-learn: https://scikit-learn.org/stable/developers/develop.html
+    """
 
     name: str = "my_model"
     version: float = 0.1
@@ -26,6 +30,10 @@ class ModelContext(BaseModel):
     @property
     def evaluation_function_name(self) -> str:
         return self.evaluation_function.__name__
+
+    @property
+    def estimator_type(self) -> str:
+        return self.estimator._estimator_type
 
 
 class DataContext(BaseModel):

@@ -8,3 +8,7 @@ class PandasSchemaError(BaseException):
 
 class ClassifierNotSupportedError(BaseException):
     """An exception signalling that the output from a validation function is invalid."""
+
+
+class UnknownEstimatorType(BaseException):
+    """An exception signalling that an estimator type is not recognised."""

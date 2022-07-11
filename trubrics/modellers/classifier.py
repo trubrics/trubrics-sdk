@@ -9,7 +9,6 @@ class Classifier(Modeller):
 
     def __init__(self, data: DataContext, model: ModelContext):
         super().__init__(data, model)
-        self.model_type = "classifier"
 
     def explore_test_set_errors(self, business_columns: bool = False) -> pd.DataFrame:
         """Filter the testing data on errors.

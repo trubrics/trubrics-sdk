@@ -5,7 +5,6 @@ import pandas as pd
 import pytest
 
 from trubrics.context import DataContext, ModelContext, TrubricContext
-from trubrics.modellers.classifier import Classifier
 from trubrics.validators.base import Validator
 
 
@@ -42,8 +41,7 @@ def classifier_model_context():
 
 @pytest.fixture
 def validator_classifier(data_context, classifier_model_context):
-    trubrics_model = Classifier(data=data_context, model=classifier_model_context)
-    return Validator(trubrics_model=trubrics_model)
+    return Validator(data=data_context, model=classifier_model_context)
 
 
 @pytest.fixture
