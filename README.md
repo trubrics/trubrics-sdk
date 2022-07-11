@@ -20,23 +20,19 @@ Trubrics is a collaborative ML validation platform that allows data scientists a
 # Instantiate data and model contexts
 from trubrics.context import DataContext, ModelContext
 from sklearn.metrics import accuracy_score
-from trubrics.context import DataContext, ModelContext
 data_context = DataContext(
-    name="my_dataset",
-    testing_data=test_df,
-    target_column="Survived"
+    testing_data=test_df,  # pandas dataframe of data to test against a model
+    target_column="Survived"  # name of target column to predict
 )
 model_context = ModelContext(
-    name="my_model",
-    version="0.1",
-    estimator=model,
-    evaluation_function=accuracy_score
+    estimator=model,  # model to validate
+    evaluation_function=accuracy_score  # evaluation function
 )
 
 # Test your model
 from trubrics.validators.base import Validator
 model_validator = Validator(data=data_context, model=model_context)
-my_first_validation = model_validator.validate_performance_against_threshold(threshold=0.8)
+model_validator.validate_performance_against_threshold(threshold=0.8)
 ```
 
 ## Contribute
