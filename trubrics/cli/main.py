@@ -32,7 +32,10 @@ def run(trubric_init_path: str):
         )
     )
     all_validation_results = run_trubric(
-        data_context=tc.DATA_CONTEXT, model_context=tc.MODEL_CONTEXT, trubric_path=tc.TRUBRIC_PATH
+        data_context=tc.DATA_CONTEXT,
+        model_context=tc.MODEL_CONTEXT,
+        trubric_path=tc.TRUBRIC_PATH,
+        custom_validator=tc.CUSTOM_VALIDATOR,
     )
     for validation_result in all_validation_results:
         validation_type, severity, outcome = validation_result

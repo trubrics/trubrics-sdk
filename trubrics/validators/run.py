@@ -11,7 +11,7 @@ def run_trubric(
     custom_validator: Optional[Validator] = None,
 ):
     if custom_validator is not None:
-        model_validator = custom_validator(data=data_context, model=model_context)  # type: ignore
+        model_validator = custom_validator
     else:
         model_validator = Validator(data=data_context, model=model_context)
     trubric = TrubricContext.parse_file(trubric_path)

@@ -45,5 +45,11 @@ def validator_classifier(data_context, classifier_model_context):
 
 
 @pytest.fixture
+def custom_validator_classifier(data_context, classifier_model_context):
+    return Validator(data=data_context, model=classifier_model_context)
+
+
+@pytest.fixture
 def trubric():
-    return TrubricContext.parse_file("assets/tests/classifier_test_trubric.json")
+    trubric_filename = "assets/tests/classifier_test_trubric.json"
+    return trubric_filename, TrubricContext.parse_file(trubric_filename)
