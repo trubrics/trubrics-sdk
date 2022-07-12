@@ -26,3 +26,6 @@ test:
 
 test-coverage:
 	@pytest --cov=trubrics tests
+
+example-trubric:
+	@trubrics run examples/trubrics_config.py
