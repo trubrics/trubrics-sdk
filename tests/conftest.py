@@ -4,6 +4,7 @@ import joblib
 import pandas as pd
 import pytest
 
+from examples.custom_validator import CustomValidator
 from trubrics.context import DataContext, ModelContext, TrubricContext
 from trubrics.validators.base import Validator
 
@@ -46,10 +47,10 @@ def validator_classifier(data_context, classifier_model_context):
 
 @pytest.fixture
 def custom_validator_classifier(data_context, classifier_model_context):
-    return Validator(data=data_context, model=classifier_model_context)
+    return CustomValidator(data=data_context, model=classifier_model_context)
 
 
 @pytest.fixture
 def trubric():
     trubric_filename = "assets/tests/classifier_test_trubric.json"
-    return trubric_filename, TrubricContext.parse_file(trubric_filename)
+    return TrubricContext.parse_file(trubric_filename)

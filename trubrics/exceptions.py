@@ -12,3 +12,7 @@ class ClassifierNotSupportedError(BaseException):
 
 class UnknownEstimatorType(BaseException):
     """An exception signalling that an estimator type is not recognised."""
+
+
+class UnknownValidationError(BaseException):
+    """An exception signalling that validation is not recognised by a given validator."""
