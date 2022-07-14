@@ -3,12 +3,10 @@ import sys
 
 import typer
 
-import trubrics.cli.project as project
 from trubrics.context import TrubricContext
 from trubrics.validators.run import run_trubric
 
 app = typer.Typer()
-app.add_typer(project.app, name="project")
 
 
 @app.command()
@@ -49,6 +47,14 @@ def run(trubric_init_path: str):
             ending = typer.style("FAILED", fg=typer.colors.WHITE, bg=typer.colors.RED)
         message = typer.style(message_start, bold=True) + completed_dots + ending
         typer.echo(message)
+
+
+@app.command()
+def init():
+    """
+    gcloud init style authorisation to a project created on the trubrics UI.
+    """
+    typer.echo("WIP: CLI like `gcloud init` to connect to a project on trubrics API.")
 
 
 def _import_module(module_path: str):
