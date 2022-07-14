@@ -1,5 +1,5 @@
 {
-    "path": "../../examples/notebooks/bare-bones.ipynb",
+    "path": "../../examples/notebooks/house-prices-demo.ipynb",
     "extra-media": [
         "../../examples/data",
         "../../examples/models"

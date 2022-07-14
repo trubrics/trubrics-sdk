@@ -1,16 +1,17 @@
 # Examples
-## Bare Bones Example
+
+## Classification Example: Titanic
 ```{toctree}
-:caption: 'Example Notebook of basic validation:'
+:caption: 'Example Notebook of regression validation:'
 :maxdepth: 1
 
-../bare
+../classifier
 ```
 
-## Titanic Example
+## Regression Example: House price predictions
 ```{toctree}
-:caption: 'Example Titanic Notebook:'
+:caption: 'Example Notebook of regression validation:'
 :maxdepth: 1
 
-../titanic
+../regressor
 ```
