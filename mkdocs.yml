@@ -1,0 +1,8 @@
+site_name: trubrics-sdk
+theme:
+  name: material
+  logo: assets/logo-white.png
+  palette:
+    scheme: slate
+extra_css:
+  - stylesheets/extra.css

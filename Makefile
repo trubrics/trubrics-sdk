@@ -10,8 +10,8 @@ train-titanic:
 streamlit-demo:
 	@streamlit run examples/streamlit/app-titanic.py
 
-auto-docs:
-	@sphinx-autobuild docs/source docs/build/html
+docs-serve:
+	@mkdocs serve
 
 install:
 	@python -m pip install --upgrade pip
