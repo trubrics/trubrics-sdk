@@ -1,4 +1,5 @@
 ```python
+import streamlit as st
 from trubrics.context import DataContext, ModelContext
 from sklearn.metrics import accuracy_score
 data_context = DataContext(

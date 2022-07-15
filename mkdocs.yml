@@ -22,9 +22,12 @@ markdown_extensions:
   - pymdownx.details
 nav:
   - Getting Started: index.md
-  - Tutorial:
-    - Train our example model: train_titanic.md
-  - Features: features.md
+  - Tutorials:
+    - Titanic Classifier Example: train_titanic.md
+  - Contexts: context.md
+  - Features:
+    - Running Trubrics: run_trubrics.md
+    - Logging Trubrics to the UI: log_trubrics.md
   - Validations:
     - Out of the box: validations.md
     - Build Custom Validations: custom_validations.md
