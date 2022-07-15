@@ -148,7 +148,7 @@ class ValidationContext(BaseModel):
 class TrubricContext(BaseModel):
     """Context for a Trubric, or set of validation points."""
 
-    name: str = "trubric"
+    name: str = "my_trubric"
     model_context_name: str
     model_context_version: float
     data_context_name: str

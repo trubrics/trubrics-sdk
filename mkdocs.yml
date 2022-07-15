@@ -1,8 +1,30 @@
 site_name: trubrics-sdk
+site_description: Combine data science knowledge with business user feedback to validate machine learning
 theme:
   name: material
   logo: assets/logo-white.png
   palette:
     scheme: slate
+  font:
+    text: Montserrat
+  icon:
+    admonition:
+      note: octicons/tag-16
 extra_css:
   - stylesheets/extra.css
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+nav:
+  - Getting Started: index.md
+  - Tutorial:
+    - Train our example model: train_titanic.md
+  - Features: features.md
+  - Validations:
+    - Out of the box: validations.md
+    - Build Custom Validations: custom_validations.md
