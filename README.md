@@ -1,47 +1,41 @@
-# Trubrics SDK
-
-Trubrics is a collaborative ML validation platform that allows data scientists and domain experts to define test cases for models. This python SDK allows ML model tests to be explored, developed and saved to the Trubrics UI. There are two main parts to the package:
-1. validators: Ready-to-go ML tests to implement on your models, with connection to the Trubrics API
-2. components: Plugins to your favourite python web app tool (Streamlit) to collect feedback on your model from domain experts and translate these into tests
-
-## Try it out
-### Install trubrics
+## Install
+```console
+(venv)$ pip install trubrics
 ```
-(venv)$ pip install --upgrade pip
-(venv)$ pip install -r requirements.txt && make local-build
-```
-### Test our example on the titanic dataset...
-1. Run `make train-titanic` to train a model on the titanic dataset.
-2. Then open up `(venv)$ jupyter lab` and run the cells in the titanic-demo.ipynb.
-3. Finally, run `make streamlit-demo` to collect user feedback on your model.
 
-### ... or try with your own model & data
-```
-# Instantiate data and model contexts
+## Create a trubric
+```python
+# instantiate data and model contexts
 from trubrics.context import DataContext, ModelContext
 from sklearn.metrics import accuracy_score
 data_context = DataContext(
     testing_data=test_df,  # pandas dataframe of data to test against a model
-    target_column="Survived"  # name of target column to predict
+    target_column="target_column_name_in_test_df"
 )
 model_context = ModelContext(
     estimator=model,  # model to validate
     evaluation_function=accuracy_score  # evaluation function
 )
 
-# Test your model
+# create a validation point for your model
 from trubrics.validators.base import Validator
 model_validator = Validator(data=data_context, model=model_context)
-model_validator.validate_performance_against_threshold(threshold=0.8)
+validations = [
+    model_validator.validate_performance_against_threshold(threshold=0.8)
+]
+
+# save trubric as .json
+from trubrics.context import TrubricContext
+trubric_context = TrubricContext(
+    name="my_first_trubric",
+    model_context_name=model_context.name,
+    model_context_version=model_context.version,
+    data_context_name=data_context.name,
+    data_context_version=data_context.version,
+    validations=validations,
+)
+trubric_context.save_local(path="/data")
 ```
 
-## Contribute
-### Install dev requirements
-```
-pip install -r requirements-dev.txt
-```
-### Install the pre-commit hook
-```
-pre-commit install
-make lint
-```
+
+--8<-- "docs/snippets/create_trubric.md"
