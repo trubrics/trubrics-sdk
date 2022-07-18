@@ -37,7 +37,23 @@ class ModelContext(BaseModel):
 
 
 class DataContext(BaseModel):
-    """Context for data."""
+    """
+    The DataContext wraps data into a trubrics friendly format.
+
+    Note:
+        The DataContext *must contain* at least testing_data and a target_column.
+        Default values are set for all other attributes.
+
+    Attributes:
+        name: DataContext name. Required for trubrics UI tracking.
+        version: DataContext version. Required for trubrics UI tracking.
+        training_data: Dataframe of the training data, that can be used in some
+                       validations. E.g. data leakage validations between train and test sets.
+        testing_data: Dataframe that all validations are executed against.
+        categorical_columns: List of categorical names of the train & test datasets.
+        business_columns: Mapping between dataset column names and comprehensible column names to be displayed to users.
+        target_column: Name of target column.
+    """
 
     name: str = "my_dataset"
     version: float = 0.1
@@ -54,7 +70,7 @@ class DataContext(BaseModel):
 
     @property
     def features(self) -> List[str]:
-        """Features defined as all testing column names excluding the target feature."""
+        """Features are here defined as all testing column names excluding the target feature."""
         return [col for col in self.testing_data.columns if col != self.target_column]
 
     @property

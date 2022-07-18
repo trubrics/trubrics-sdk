@@ -1,5 +1,7 @@
 site_name: trubrics-sdk
 site_description: Combine data science knowledge with business user feedback to validate machine learning
+plugins:
+  - mkdocstrings
 theme:
   name: material
   logo: assets/logo-white.png
@@ -20,6 +22,11 @@ markdown_extensions:
   - pymdownx.superfences
   - admonition
   - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 nav:
   - Getting Started: index.md
   - Tutorials:
