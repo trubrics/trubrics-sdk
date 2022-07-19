@@ -11,9 +11,25 @@ from trubrics.utils.pandas import schema_is_equal
 
 class ModelContext(BaseModel):
     """
-    Context for models.
+    The ModelContext wraps models into a trubrics friendly format.
 
-    Estimator: defined using scikit-learn: https://scikit-learn.org/stable/developers/develop.html
+    Note:
+        The ModelContext *must contain* at least an estimator and an evaluation attribute.
+        Default values are set for all other attributes.
+        Currently, estimator and evaluation functions are defined with scikit-learn convention:
+
+            * Estimators: https://scikit-learn.org/stable/developers/develop.html
+            * Classification Metrics:
+                https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics
+            * Regression Metrics: https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics
+
+    Attributes:
+        name: ModelContext name. Required for trubrics UI tracking.
+        version: ModelContext version. Required for trubrics UI tracking.
+        estimator: An estimator (or model) that can be a classifier or regressor.
+        evaluation_function: An evaluation function that takes arguments (y_true, y_pred, ...)
+        evaluation_kwargs: Optional[Dict[str, Union[bool, str, int, float, None]]] = None
+
     """
 
     name: str = "my_model"
@@ -29,10 +45,12 @@ class ModelContext(BaseModel):
 
     @property
     def evaluation_function_name(self) -> str:
+        """The scikit-learn name of the evaluation function."""
         return self.evaluation_function.__name__
 
     @property
     def estimator_type(self) -> str:
+        """The scikit-learn type of the estimator."""
         return self.estimator._estimator_type
 
 
@@ -41,7 +59,7 @@ class DataContext(BaseModel):
     The DataContext wraps data into a trubrics friendly format.
 
     Note:
-        The DataContext *must contain* at least testing_data and a target_column.
+        The DataContext *must contain* at least a testing_data and a target_column attribute.
         Default values are set for all other attributes.
 
     Attributes:
@@ -75,7 +93,7 @@ class DataContext(BaseModel):
 
     @property
     def renamed_testing_data(self) -> pd.DataFrame:
-        """Renamed testing data with business columns."""
+        """Renamed testing data with business columns"""
         if self.business_columns is None:
             raise TypeError("Business columns must be set to rename testing features.")
         return self.testing_data.rename(columns=self.business_columns)

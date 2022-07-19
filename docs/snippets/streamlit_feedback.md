@@ -1,17 +1,7 @@
 ```python
 import streamlit as st
-from trubrics.context import DataContext, ModelContext
-from sklearn.metrics import accuracy_score
-data_context = DataContext(
-    testing_data=test_df,  # pandas dataframe of data to test against a model
-    target_column="target_column_name_in_test_df"
-)
-model_context = ModelContext(
-    estimator=model,  # model to validate
-    evaluation_function=accuracy_score  # evaluation function
-)
+from trubrics.feedback_components.streamlit import StreamlitComponent
 
-# create streamlit component
 st_component = StreamlitComponent(model=model_context, data=data_context)
 
 with st.sidebar:

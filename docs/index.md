@@ -19,15 +19,18 @@ For the trubrics website visit [trubrics.com](https://www.trubrics.com/home).
 Build validations by:
 
 1. Initialising `DataContext` and `ModelContext` objects to wrap your data and models into a trubrics friendly format
+--8<-- "docs/snippets/init_datacontext.md"
+--8<-- "docs/snippets/init_modelcontext.md"
 2. Using the `Validator` object to generate out of the box validations
+--8<-- "docs/snippets/create_validations.md"
 3. Saving a .json of all validations locally using a `TrubricsContext` object
-
---8<-- "docs/snippets/create_trubric.md"
+--8<-- "docs/snippets/save_trubric.md"
 
 ## Build a python app to collect model feedback
 Trubrics components can be built with your favourite python web development framework:
 
 1. Initialising `DataContext` and `ModelContext` objects to wrap your data and models into a trubrics friendly format
+--8<-- "docs/snippets/init_datacontext.md"
+--8<-- "docs/snippets/init_modelcontext.md"
 2. Using the `StreamlitComponent` object to generate app components to collect feedback
-
 --8<-- "docs/snippets/streamlit_feedback.md"
