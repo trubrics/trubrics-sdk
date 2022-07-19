@@ -24,13 +24,16 @@ graph LR
 ## The DataContext
 !!!example "DataContext Example"
     --8<-- "docs/snippets/init_datacontext.md"
-
 :::trubrics.context.DataContext
 
 ## The ModelContext
+!!!example "ModelContext Example"
+    --8<-- "docs/snippets/init_modelcontext.md"
 :::trubrics.context.ModelContext
 
 ## The TrubricsContext
+!!!example "TrubricContext Example"
+    --8<-- "docs/snippets/save_trubric.md"
 :::trubrics.context.TrubricContext
 
 ???note "The ValidationContext"

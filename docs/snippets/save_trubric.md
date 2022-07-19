@@ -6,7 +6,7 @@ trubric_context = TrubricContext(
     model_context_version=model_context.version,
     data_context_name=data_context.name,
     data_context_version=data_context.version,
-    validations=validations,
+    validations=validations,  # list of ValidationContexts
 )
 trubric_context.save_local(path="/data")
 ```

@@ -180,7 +180,18 @@ class ValidationContext(BaseModel):
 
 
 class TrubricContext(BaseModel):
-    """Context for a Trubric, or set of validation points."""
+    """
+    Context for a Trubric, or set of validation points.
+
+    Attributes:
+        name: Trubric name.
+        model_context_name: model context name (from ModelContext)
+        model_context_version: model context version (from ModelContext)
+        data_context_name: data context name (from DataContext)
+        data_context_version: data context version (from DataContext)
+        metadata: free textual metadata field
+        validations: list of validations (defined by ValidationContext)
+    """
 
     name: str = "my_trubric"
     model_context_name: str
