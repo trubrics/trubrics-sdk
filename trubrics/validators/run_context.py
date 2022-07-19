@@ -11,7 +11,7 @@ from trubrics.validators.base import Validator
 
 
 class TrubricRun(BaseModel):
-    """hello."""
+    """Context for a trubrics run object."""
 
     data_context: DataContext
     model_context: ModelContext

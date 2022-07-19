@@ -26,6 +26,11 @@ Build validations by:
 3. Saving a .json of all validations locally using a `TrubricsContext` object
 --8<-- "docs/snippets/save_trubric.md"
 
+## Run a trubric from the command line
+To run a trubric in a CI/CD pipeline or in a continuous training pipeline for auto-validation of your model:
+--8<-- "docs/snippets/trubrics_cli.md"
+:::examples.trubrics_config
+
 ## Build a python app to collect model feedback
 Trubrics components can be built with your favourite python web development framework:
 
