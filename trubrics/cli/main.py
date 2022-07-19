@@ -3,9 +3,9 @@ import sys
 
 import typer
 
-from trubrics.cli.run_context import TrubricRun
 from trubrics.context import TrubricContext
 from trubrics.validators.run import run_trubric
+from trubrics.validators.run_context import TrubricRun
 
 app = typer.Typer()
 
