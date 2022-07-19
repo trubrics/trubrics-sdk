@@ -3,6 +3,7 @@ import sys
 
 import typer
 
+from trubrics.cli.run_context import TrubricRun
 from trubrics.context import TrubricContext
 from trubrics.validators.run import run_trubric
 
@@ -23,18 +24,26 @@ def run(trubric_init_path: str):
         - DATA_CONTEXT: your data context object with the data you would like to test
     """
     tc = _import_module(module_path=trubric_init_path)
+    if hasattr(tc, "RUN_CONTEXT"):
+        if isinstance(tc.RUN_CONTEXT, TrubricRun):
+            tc = tc.RUN_CONTEXT
+        else:
+            raise TypeError("'RUN_CONTEXT' attribute must be of type TrubricRun.")
+    else:
+        raise AttributeError("Trubrics config python module must contain an attribute 'RUN_CONTEXT'.")
+
     typer.echo(
         typer.style(
-            f"Running trubric from '{tc.TRUBRIC_PATH}' with model '{tc.MODEL_CONTEXT.name}' and dataset"
-            f" '{tc.DATA_CONTEXT.name}'.",
+            f"Running trubric from '{tc.trubric_path}' with model '{tc.model_context.name}' and dataset"
+            f" '{tc.data_context.name}'.",
             fg=typer.colors.BLUE,
         )
     )
     all_validation_results = run_trubric(
-        data_context=tc.DATA_CONTEXT,
-        model_context=tc.MODEL_CONTEXT,
-        trubric=TrubricContext.parse_file(tc.TRUBRIC_PATH),
-        custom_validator=tc.CUSTOM_VALIDATOR,
+        data_context=tc.data_context,
+        model_context=tc.model_context,
+        trubric=TrubricContext.parse_file(tc.trubric_path),
+        custom_validator=tc.custom_validator,
     )
     for validation_result in all_validation_results:
         validation_type, severity, outcome = validation_result
