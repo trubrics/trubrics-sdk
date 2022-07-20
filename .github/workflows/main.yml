@@ -33,4 +33,4 @@ jobs:
           make test
       - name: Build docs
         run: |
-          make docs
+          mkdocs gh-deploy --force
