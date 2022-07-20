@@ -2,7 +2,7 @@
 
 ![logo-gradient](./docs/assets/logo-gradient.png)
 <center>
-*Combine data science knowledge with business user feedback to validate machine learning.*
+Combine data science knowledge with business user feedback to validate machine learning.
 </center>
 
 ## Install 
