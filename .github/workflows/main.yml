@@ -31,6 +31,9 @@ jobs:
       - name: Test with pytest
         run: |
           make test
+      - name: Overwrite README.md with docs index.md
+        run: |
+          cp docs/index.md README.md
       - name: Build docs
         run: |
           mkdocs gh-deploy --force
