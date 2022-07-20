@@ -2,6 +2,8 @@ site_name: trubrics-sdk
 site_description: Combine data science knowledge with business user feedback to validate machine learning
 plugins:
   - mkdocstrings
+  - search
+  - mkdocs-jupyter
 theme:
   name: material
   logo: assets/logo-white.png
@@ -31,7 +33,8 @@ markdown_extensions:
 nav:
   - Getting Started: index.md
   - Tutorials:
-    - Titanic classifier example: train_titanic.md
+    - Titanic classifier example: classifier_tutorial.md
+    - Titanic classifier notebook: notebooks/titanic-demo.ipynb
   - Contexts: context.md
   - Features:
     - Running Trubrics: run_trubrics.md
