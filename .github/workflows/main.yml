@@ -31,3 +31,6 @@ jobs:
       - name: Test with pytest
         run: |
           make test
+      - name: Build docs
+        run: |
+          make docs

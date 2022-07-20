@@ -1,3 +1,3 @@
 # Logging trubrics to Trubrics Manager
 
-Coming Soon...
+***[Coming soon]***

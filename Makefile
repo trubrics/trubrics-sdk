@@ -13,6 +13,9 @@ streamlit-demo:
 docs-serve:
 	@mkdocs serve
 
+docs:
+	@mkdocs gh-deploy --force
+
 install:
 	@python -m pip install --upgrade pip
 	@pip install -r requirements.txt
