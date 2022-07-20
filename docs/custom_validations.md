@@ -1,3 +1,2 @@
 # Building custom validations
-
---8<-- "docs/snippets/create_trubric.md"
+The Validator object can also be used to build your own custom validations.
