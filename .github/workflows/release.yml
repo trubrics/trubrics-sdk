@@ -4,8 +4,6 @@ on:
   push:
     tags:
     - '*'
-    branches:
-    - release-test
 
 jobs:
   build-and-publish:
@@ -32,7 +30,7 @@ jobs:
         --outdir dist/
         .
     - name: Publish distribution 📦 to PyPI
-      # if: startsWith(github.ref, 'refs/tags')
+      if: startsWith(github.ref, 'refs/tags')
       uses: pypa/gh-action-pypi-publish@master
       with:
         password: ${{ secrets.PYPI_API_TOKEN }}
