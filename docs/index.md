@@ -9,10 +9,13 @@ For the trubrics website visit [trubrics.com](https://www.trubrics.com/home).
 
 -------
 
-???note "Abstract"
-    A lack of communication between data teams and the end business users result in Data Scientists not truly understanding the business problem they are solving and business users not understanding the machine learning model being delivered. Trubrics provides solutions to collect business user feedback for machine learning, combine feedback with data science knowledge into actionable validation points, and build repeatable validation checklists - a trubric.
+Trubrics bridges the gap between data science understanding of business challenges, and business understanding of data science outputs. The trubrics-sdk provides solutions to collect business user feedback for machine learning, combine feedback with data science knowledge into actionable validation points, and build repeatable validation checklists - a trubric.
 
-## Install
+<center>
+![trubrics-explain](./assets/trubrics-explain.png)
+</center>
+
+## Install (Python 3.7+)
 --8<-- "docs/snippets/install.md"
 
 ## Create a trubric
