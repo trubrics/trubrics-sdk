@@ -9,7 +9,7 @@ For the trubrics website visit [trubrics.com](https://www.trubrics.com/home).
 
 -------
 
-Trubrics bridges the gap between data science understanding of business challenges, and business understanding of data science outputs. The trubrics-sdk provides solutions to collect business user feedback for machine learning, combine feedback with data science knowledge into actionable validation points, and build repeatable validation checklists - a trubric.
+Trubrics bridges the gap between data science understanding of business challenges, and business understanding of data science outputs. The trubrics-sdk is a python library to collect business user feedback for machine learning, combine feedback with data science knowledge into actionable validation points, and build repeatable validation checklists - a trubric.
 
 <center>
 ![trubrics-explain](./assets/trubrics-explain.png)
