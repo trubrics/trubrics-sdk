@@ -34,4 +34,3 @@ jobs:
       - name: Build docs
         run: |
           mkdocs gh-deploy --force
-      - name: Build a binary wheel and a source tarball
