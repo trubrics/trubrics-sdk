@@ -1,4 +1,8 @@
 -r requirements.txt
+
+#docs
+-r requirements-docs.txt
+
 setuptools==62.2.0
 pre-commit==2.19.0
 build==0.8.0
@@ -13,16 +17,6 @@ mypy==0.950
 pandas-stubs==1.2.0.58
 types-requests==2.27.25
 
-#docs
-pymdown-extensions==9.5
-mkdocs==1.2.4
-mkdocs-autorefs==0.4.1
-mkdocs-git-revision-date-localized-plugin==1.1.0
-mkdocs-jupyter==0.21.0
-mkdocs-material==8.2.7
-mkdocs-material-extensions==1.0.3
-mkdocstrings==0.19.0
-mkdocstrings-python==0.7.1
 
 #tests
 pytest==7.1.2
