@@ -1,3 +1,12 @@
+"""
+The trubrics file that is run using `trubrics run <trubrics_config_file>.py must contain a variable RUN_CONTEXT.
+The RUN_CONTEXT variable is should be an instance of the TrubricRun dataclass, containing:
+- The DataContext to test
+- The ModelContext to test
+- A path to the trubric of validations
+- A CustomValidator if one has been used, if None the Validator is used
+"""
+
 import joblib
 import pandas as pd
 from sklearn.metrics import accuracy_score
