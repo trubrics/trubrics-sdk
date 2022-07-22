@@ -18,8 +18,8 @@ Trubrics bridges the gap between data science understanding of business challeng
 ## Key Features
 - [Out of the box validations](validations.md) to build around models & datasets (currently supporting tabular data)
 - An object to write [custom validations](custom_validations.md)
-- [A CLI tool](run_trubrics.md) to execute validations against new models in a CI/CD/CT pipeline
-- Python web development components (e.g. with streamlit) to [gather feedback from business users](feedback.md) on models
+- [A CLI tool](run_trubrics.md) to run validations against new models in a CI/CD/CT pipeline
+- Python web development components (e.g. with [Streamlit](https://streamlit.io/)) to [gather feedback from business users](feedback.md) on models
 - A UI to track validation checklists per project - [coming soon](log_trubrics.md)
 
 ## Install (Python 3.7+)
@@ -40,10 +40,20 @@ A trubric is a checklist of validations, and can be built by:
 Run the locally saved trubric .json with:
 --8<-- "docs/snippets/trubrics_cli.md"
 
-:::examples.trubrics_config
+`<trubrics_config_file>.py` is a trubrics config file where you can initialise a `DataContext` and `ModelContext`.
+The file must contain a variable RUN_CONTEXT, an instance of the TrubricRun class. For more information, visit the
+[Running trubrics](run_trubrics.md) page.
 
-## Build a python app to collect model feedback
-Trubrics components can be built with your favourite python web development framework:
+???note "Example of `<trubrics_config_file>.py` from examples/trubrics_config.py"
+    ```py
+    --8<-- "examples/trubrics_config.py"
+    ```
+
+
+## Collect model feedback
+Trubrics feedback components help you build python applications with your favourite library (e.g. [Streamlit](https://streamlit.io/)).
+These are aimed at collecting feedback on your models from business users and translating these into validation points.
+Build a feedback application by:
 
 1. Initialising `DataContext` and `ModelContext` objects to wrap your data and models into a trubrics friendly format
 --8<-- "docs/snippets/init_datacontext.md"

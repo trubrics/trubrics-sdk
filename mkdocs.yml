@@ -39,11 +39,12 @@ nav:
   - Getting Started: index.md
   - Tutorials:
     - Titanic classifier example: classifier_tutorial.md
-    - Titanic classifier notebook: notebooks/titanic-demo.ipynb
+    - Titanic classifier notebook: notebooks/titanic-demo.html
   - Contexts: context.md
   - Features:
+    - Validations:
+      - Out of the box: validations.md
+      - Custom: custom_validations.md
     - Running trubrics: run_trubrics.md
+    - Collecting feedback: feedback.md
     - (WIP) Logging trubrics to the UI: log_trubrics.md
-  - Validations:
-    - Out of the box: validations.md
-    - Custom: custom_validations.md
