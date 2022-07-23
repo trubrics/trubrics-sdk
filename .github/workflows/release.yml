@@ -29,6 +29,12 @@ jobs:
         --wheel
         --outdir dist/
         .
+    - name: Create github release
+      if: startsWith(github.ref, 'refs/tags')
+      uses: softprops/action-gh-release@v1
+      with:
+        body: TODO CHANGELOG.md
+        files: dist/*.whl
     - name: Publish distribution 📦 to PyPI
       if: startsWith(github.ref, 'refs/tags')
       uses: pypa/gh-action-pypi-publish@master
