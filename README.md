@@ -77,7 +77,8 @@ Run the locally saved trubric .json with:
 ```
 
 `<trubrics_config_file>.py` is a trubrics config file where you can initialise a `DataContext` and `ModelContext`.
-The file must contain a variable RUN_CONTEXT, an instance of the TrubricRun class.
+The file must contain a variable RUN_CONTEXT, an instance of the TrubricRun class. See an example of this file in
+[examples/trubrics_config.py](examples/trubrics_config.py).
 
 ## Collect model feedback
 Trubrics feedback components help you build python applications with your favourite library (e.g. [Streamlit](https://streamlit.io/)).
