@@ -15,11 +15,11 @@ Trubrics bridges the gap between data scientists understanding of business chall
 </center>
 
 ## Key Features
-- [Out of the box validations](validations.md) to build around models & datasets (currently supporting tabular data)
-- An object to write [custom validations](custom_validations.md)
-- [A CLI tool](run_trubrics.md) to run validations against new models in a CI/CD/CT pipeline
-- Python web development components (e.g. with [Streamlit](https://streamlit.io/)) to [gather feedback from business users](feedback.md) on models
-- A UI to track validation checklists per project - [coming soon](log_trubrics.md)
+- Out of the box validations to build around models & datasets (currently supporting tabular data)
+- An object to write custom validations
+- A CLI tool to run validations against new models in a CI/CD/CT pipeline
+- Python web development components (e.g. with [Streamlit](https://streamlit.io/)) to gather feedback from business users on models
+- A UI to track validation checklists per project - coming soon
 
 ## Install (Python 3.7+)
 ```console
