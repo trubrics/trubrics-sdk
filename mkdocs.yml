@@ -43,6 +43,7 @@ nav:
   - Contexts: context.md
   - Features:
     - Validations:
+      - The Validator object: validator_object.md
       - Out of the box: validations.md
       - Custom: custom_validations.md
     - Running trubrics: run_trubrics.md
