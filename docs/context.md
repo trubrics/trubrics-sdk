@@ -24,5 +24,7 @@ Contexts in the trubrics library refer to [Pydantic](https://pydantic-docs.helpm
     The ValidationContext is an intermediate context used to define the output of a trubrics validation.
     ValidationContexts are gathered into a list to define a trubric.
 
+    :::trubrics.context.ValidationContext
+
 ## The FeedbackContext
 :::trubrics.context.FeedbackContext

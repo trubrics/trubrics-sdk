@@ -151,7 +151,19 @@ def _validation_context_example():
 
 
 class ValidationContext(BaseModel):
-    """Context for a single validation point of a model."""
+    """
+    The ValidationContext represents a single validation point.
+
+    Note:
+        The ValidationContext is applied to validations with the @validation_output decorator.
+
+    Attributes:
+        validation_type: method name of the validation.
+        validation_kwargs: all args and kwargs that the validation had run with.
+        outcome: pass or fail output of the validation.
+        severity: severity of the validation, can be one of ["error", "warning", "experiment"], is "error" by default
+        result: a dictionary of contextual elements calculated during the validation run
+    """
 
     validation_type: str
     validation_kwargs: Dict[str, Optional[Any]]
