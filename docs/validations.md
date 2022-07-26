@@ -1,4 +1,4 @@
-# Out of the box validations
+# Out-of-the-box validations
 
 ## `_validate_single_edge_case()`
 :::trubrics.validators.base.Validator._validate_single_edge_case
