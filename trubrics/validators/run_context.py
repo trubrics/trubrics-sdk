@@ -6,7 +6,7 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, validator
 
-from trubrics.context import DataContext, ModelContext
+from trubrics.context import DataContext, ModelContext, TrubricContext
 from trubrics.validators.base import Validator
 
 
@@ -15,7 +15,7 @@ class TrubricRun(BaseModel):
 
     data_context: DataContext
     model_context: ModelContext
-    trubric_path: str
+    trubric_context: TrubricContext
     custom_validator: Optional[Any]
 
     @validator("custom_validator")

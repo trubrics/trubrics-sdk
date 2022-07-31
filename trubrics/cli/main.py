@@ -3,7 +3,6 @@ import sys
 
 import typer
 
-from trubrics.context import TrubricContext
 from trubrics.validators.run import run_trubric
 from trubrics.validators.run_context import TrubricRun
 
@@ -12,16 +11,18 @@ app = typer.Typer()
 
 @app.command()
 def run(trubric_init_path: str):
-    """
-    Specify the TRUBRIC_INIT_PATH that points to your initialisation file.
+    """CLI command for running trubrics.
 
-    For example: trubrics run examples/trubrics_config.py
+    Arguments:
+        trubric_init_path: a path towards a .py file that initialises data, model and trubrics contexts.
+                           This file must contain the TrubricRun object that holds all contexts to run a
+                           trubric. The TrubricRun object must be set to a variable `RUN_CONTEXT` to be recognised.
+                           E.g. `py RUN_CONTEXT=TrubricRun(...)`
 
-    This file must contain constant values with:
-
-        - TRUBRIC_PATH: the path towards your .json trubric file that you want to run \n
-        - MODEL_CONTEXT: your model context object with the model you would like to test \n
-        - DATA_CONTEXT: your data context object with the data you would like to test
+    Example:
+        ```console
+        trubrics run examples/trubrics_config.py
+        ```
     """
     tc = _import_module(module_path=trubric_init_path)
     if hasattr(tc, "RUN_CONTEXT"):
@@ -34,7 +35,7 @@ def run(trubric_init_path: str):
 
     typer.echo(
         typer.style(
-            f"Running trubric from '{tc.trubric_path}' with model '{tc.model_context.name}' and dataset"
+            f"Running trubric from file '{trubric_init_path}' with model '{tc.model_context.name}' and dataset"
             f" '{tc.data_context.name}'.",
             fg=typer.colors.BLUE,
         )
@@ -42,7 +43,7 @@ def run(trubric_init_path: str):
     all_validation_results = run_trubric(
         data_context=tc.data_context,
         model_context=tc.model_context,
-        trubric=TrubricContext.parse_file(tc.trubric_path),
+        trubric=tc.trubric_context,
         custom_validator=tc.custom_validator,
     )
     for validation_result in all_validation_results:

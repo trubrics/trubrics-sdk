@@ -21,7 +21,7 @@ The `Validator` object respects the following conventions:
     ```py
     @validation_output
     def validate_something(self, some_arg, some_kwarg):
-        return self._something(some_arg, some_kwarg)
+        return self._validate_something(some_arg, some_kwarg)
     ```
 
 ## The `validation_output` decorator

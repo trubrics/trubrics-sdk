@@ -15,7 +15,7 @@ Contexts in the trubrics library refer to [Pydantic](https://pydantic-docs.helpm
     --8<-- "docs/snippets/init_modelcontext.md"
 :::trubrics.context.ModelContext
 
-## The TrubricsContext
+## The TrubricContext
 !!!example "TrubricContext Example"
     --8<-- "docs/snippets/save_trubric.md"
 :::trubrics.context.TrubricContext
