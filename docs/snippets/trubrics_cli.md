@@ -1,3 +1,3 @@
 ```console
-(venv)$ trubrics run <trubrics_config_file>.py
+(venv)$ trubrics run examples/trubrics_config.py
 ```

@@ -11,12 +11,18 @@ from trubrics.validators.base import Validator
 
 
 class TrubricRun(BaseModel):
-    """Context for a trubrics run object."""
+    """The TrubricRun object to group all necessary contexts in order for a run.
+    Attributes:
+        data_context: a data context to validate a model on
+        model_context: a model context with the model to validate
+        trubric_context: a trubric context listing all validations to execute
+        custom_validator: an optional custom validator
+    """
 
     data_context: DataContext
     model_context: ModelContext
     trubric_context: TrubricContext
-    custom_validator: Optional[Any]
+    custom_validator: Optional[Any] = None
 
     @validator("custom_validator")
     def validate_some_foo(cls, val):

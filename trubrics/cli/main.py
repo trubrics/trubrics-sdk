@@ -11,18 +11,19 @@ app = typer.Typer()
 
 @app.command()
 def run(trubric_init_path: str):
-    """CLI command for running trubrics.
+    """The CLI `trubrics run` command for running trubrics.
 
-    Arguments:
+    Example:
+        ```
+        trubrics run <trubric_init_path>.py
+        ```
+
+    Args:
         trubric_init_path: a path towards a .py file that initialises data, model and trubrics contexts.
                            This file must contain the TrubricRun object that holds all contexts to run a
                            trubric. The TrubricRun object must be set to a variable `RUN_CONTEXT` to be recognised.
-                           E.g. `py RUN_CONTEXT=TrubricRun(...)`
+                           For example `RUN_CONTEXT=TrubricRun(...)`.
 
-    Example:
-        ```console
-        trubrics run examples/trubrics_config.py
-        ```
     """
     tc = _import_module(module_path=trubric_init_path)
     if hasattr(tc, "RUN_CONTEXT"):
