@@ -209,7 +209,7 @@ class Validator:
             strategy: see scikit-learns sklearn.dummy [insert link]
 
         Returns:
-            True for success, false otherwise. With a results dictionary giving the model's
+            True for success, false otherwise. With a results dictionary giving the model's\
             actual performance on the test set and the dummy model's performance.
 
         Example:
