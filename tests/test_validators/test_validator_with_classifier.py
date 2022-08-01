@@ -39,6 +39,14 @@ def test__validate_biased_performance_across_category(validator_classifier):
     assert result == actual
 
 
+def test__validate_performance_against_dummy(validator_classifier):
+    result = validator_classifier._validate_performance_against_dummy()
+    result[1]["dummy_performance"] = round(result[1]["dummy_performance"], 2)
+
+    actual = False, {"dummy_performance": 0.67, "test_performance": 0.5}
+    assert result == actual
+
+
 def test__validate_feature_in_top_n_important_features(validator_classifier, feature_importance):
     result = validator_classifier._validate_feature_in_top_n_important_features(
         feature="Age", feature_importance=feature_importance, top_n_features=2
