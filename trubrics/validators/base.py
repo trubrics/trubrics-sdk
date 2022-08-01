@@ -31,8 +31,12 @@ class Validator:
         self.features = data.features
         self.target = data.target_column
 
+        if data.training_data is not None:
+            self.training_data = data.training_data
+
     @validation_output
     def validate_single_edge_case(self, edge_case_data, desired_output):
+        """For information, refer to the _validate_single_edge_case method."""
         return self._validate_single_edge_case(edge_case_data, desired_output)
 
     def _validate_single_edge_case(
@@ -65,6 +69,7 @@ class Validator:
 
     @validation_output
     def validate_single_edge_case_in_range(self, edge_case_data, lower_output, upper_output):
+        """For information, refer to the _validate_single_edge_case_in_range method."""
         return self._validate_single_edge_case_in_range(edge_case_data, lower_output, upper_output)
 
     def _validate_single_edge_case_in_range(
@@ -107,6 +112,7 @@ class Validator:
 
     @validation_output
     def validate_performance_against_threshold(self, threshold):
+        """For information, refer to the _validate_performance_against_threshold method."""
         return self._validate_performance_against_threshold(threshold)
 
     def _validate_performance_against_threshold(self, threshold: float) -> validation_output_type:
@@ -137,6 +143,7 @@ class Validator:
 
     @validation_output
     def validate_biased_performance_across_category(self, category, threshold):
+        """For information, refer to the _validate_biased_performance_across_category method."""
         return self._validate_biased_performance_across_category(category, threshold)
 
     def _validate_biased_performance_across_category(self, category: str, threshold: float) -> validation_output_type:
@@ -190,7 +197,51 @@ class Validator:
         return max_performance_difference < threshold, {"max_performance_difference": max_performance_difference}
 
     @validation_output
+    def validate_performance_against_dummy(self, strategy="most_frequent"):
+        return self._validate_performance_against_dummy(strategy)
+
+    def _validate_performance_against_dummy(self, strategy: str = "most_frequent") -> validation_output_type:
+        """Performance validation versus a dummy baseline model.
+
+        Trains a DummyClassifier / DummyRegressor from sklearn and compares performance against the model.
+
+        Args:
+            strategy: see scikit-learns sklearn.dummy [insert link]
+
+        Returns:
+            True for success, false otherwise. With a results dictionary giving the model's
+            actual performance on the test set and the dummy model's performance.
+
+        Example:
+            ```py
+            model_validator = Validator(data=data_context, model=model_context)
+            model_validator.model_validator.validate_performance_against_dummy(strategy="stratified")
+            ```
+        """
+        from sklearn.dummy import DummyClassifier
+
+        dummy_clf = DummyClassifier(strategy=strategy)
+        dummy_clf.fit(self.training_data[self.features], self.training_data[self.target])
+        predictions = dummy_clf.predict(self.test_data[self.target])
+        dummy_performance = float(self.trubrics_model_eval_func(self.test_data[self.target], predictions))
+
+        test_performance = float(self.trubrics_model.compute_performance_on_test_set())
+        if self.trubrics_model_eval_func.__name__ == "accuracy_score":
+            return test_performance > dummy_performance, {
+                "dummy_performance": dummy_performance,
+                "test_performance": test_performance,
+            }
+        elif self.trubrics_model_eval_func.__name__ == "mean_squared_error":
+            return test_performance < dummy_performance, {
+                "dummy_performance": dummy_performance,
+                "test_performance": test_performance,
+            }
+        else:
+            raise NotImplementedError("The evaluation type is not recognized.")
+
+    @validation_output
     def validate_feature_in_top_n_important_features(self, feature, feature_importance, top_n_features):
+        """For information, refer to the _validate_feature_in_top_n_important_features method."""
         return self._validate_feature_in_top_n_important_features(feature, feature_importance, top_n_features)
 
     @staticmethod
