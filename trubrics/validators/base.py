@@ -206,7 +206,8 @@ class Validator:
         Trains a DummyClassifier / DummyRegressor from sklearn and compares performance against the model.
 
         Args:
-            strategy: see scikit-learns sklearn.dummy [insert link]
+            strategy: see scikit-learns dummy models -\
+            https://scikit-learn.org/stable/modules/classes.html?highlight=dummy#module-sklearn.dummy
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the model's\
