@@ -9,11 +9,6 @@
 
 Trubrics bridges the gap between data scientists understanding of business challenges, and business users understanding of data science outputs. The trubrics-sdk is a python library to collect business user feedback for machine learning, combine feedback with data science knowledge into actionable validation points, and build repeatable validation checklists - a trubric.
 
-<center>
-
-![trubrics-explain](./docs/assets/trubrics-explain.png)
-</center>
-
 ## Key Features
 - Out of the box validations to build around models & datasets (currently supporting tabular data)
 - An object to write custom validations
@@ -122,3 +117,6 @@ st.markdown(prediction, unsafe_allow_html=True)
 st.title("Send model feedback")
 st_component.feedback(what_if_df=what_if_df, model_prediction=raw_prediction, tracking=True)
 ```
+
+## Watch our "Getting Started" demo
+[![img](docs/assets/trubrics-demo-youtube.png)](https://www.youtube.com/watch?v=I-lUGhHss5g)
