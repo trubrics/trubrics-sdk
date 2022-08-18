@@ -10,7 +10,8 @@ For the trubrics website visit [trubrics.com](https://www.trubrics.com/home).
 -------
 
 Trubrics grows confidence and trust in machine learning by bridging the gap between data scientists and business users. The trubrics-sdk is a python library to validate machine learning with data science and domain expertise. This is achieved by collecting business user feedback, combining feedback with data science knowledge to create actionable validation points, and building repeatable validation checklists - a trubric.
-
+<br>
+<br>
 <center>
 ![trubrics-explain](./assets/trubrics-explain.png)
 </center>
