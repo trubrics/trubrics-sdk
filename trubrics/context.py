@@ -6,7 +6,7 @@ from pydantic import BaseModel, validator
 
 from trubrics.exceptions import PandasSchemaError
 from trubrics.utils.pandas import schema_is_equal
-from trubrics.utils.trubrics_manager_connector import get_gcp_id_token, make_request
+from trubrics.utils.trubrics_manager_connector import make_request
 
 
 class ModelContext(BaseModel):
@@ -140,10 +140,9 @@ class FeedbackContext(BaseModel):
     def save_ui(self):
         url = "https://trubrics-api-efmcopwrwa-ew.a.run.app"
 
-        id_token = get_gcp_id_token(url)
-
-        headers = {"Content-type": "application/json", "Authorization": f"Bearer {id_token}"}
-        make_request(url + "/api/feedback/", headers=headers, data=self.json().encode("utf-8"))
+        make_request(
+            f"{url}/api/feedback", headers={"Content-Type": "application/json"}, data=self.json().encode("utf-8")
+        )
 
 
 def _validation_context_example():
@@ -240,12 +239,14 @@ class TrubricContext(BaseModel):
         with open(Path(path) / f"{self.name}.json", "w") as file:
             file.write(self.json())
 
-    def save_ui(self):
+    def save_ui(self, user_id: str):
         url = "https://trubrics-api-efmcopwrwa-ew.a.run.app"
 
-        if self.metadata is None:
-            raise Exception("Metadata must contain 'user_id' field.")
+        if user_id is None:
+            raise Exception("You must specify a 'user_id' to push to the trubrics manager.")
         else:
             make_request(
-                f"{url}/api/trubrics/", headers={"Content-Type": "application/json"}, data=self.json().encode("utf-8")
+                f"{url}/api/trubrics/{user_id}",
+                headers={"Content-Type": "application/json"},
+                data=self.json().encode("utf-8"),
             )

@@ -1,8 +1,12 @@
 import importlib.util
+import json
+import os
 import sys
 
 import typer
+from rich import print as rprint
 
+from trubrics.utils.trubrics_manager_connector import make_request
 from trubrics.validators.run import run_trubric
 from trubrics.validators.run_context import TrubricRun
 
@@ -63,9 +67,22 @@ def run(trubric_init_path: str):
 @app.command()
 def init():
     """
-    gcloud init style authorisation to a project created on the trubrics UI.
+    Authenticate a User ID with an account created on the trubrics manager UI.
     """
-    typer.echo("WIP: CLI like `gcloud init` to connect to a project on trubrics API.")
+    uid = typer.prompt("Enter the User ID generated in the trubrics manager")
+
+    # url = "https://trubrics-api-efmcopwrwa-ew.a.run.app"
+    url = "http://localhost:8000"
+    res = make_request(f"{url}/api/is_user/{uid}", headers={"Content-Type": "application/json"})
+    res = json.loads(res)
+    if "is_user" in res.keys():
+        message = typer.style(res["msg"], fg=typer.colors.RED, bold=True)
+        typer.echo(message)
+    else:
+        os.environ["TRUBRICS_MANAGER_UID"] = uid
+        message = typer.style("User authenticated with the trubrics manager UI:", fg=typer.colors.GREEN, bold=True)
+        typer.echo(message)
+        rprint(res)
 
 
 def _import_module(module_path: str):
