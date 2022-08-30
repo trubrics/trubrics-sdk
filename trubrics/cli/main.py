@@ -69,10 +69,10 @@ def init():
     """
     Authenticate a User ID with an account created on the trubrics manager UI.
     """
-    uid = typer.prompt("Enter the User ID generated in the trubrics manager")
+    uid = typer.prompt("Enter your User ID (generated in the trubrics manager)")
 
-    # url = "https://trubrics-api-efmcopwrwa-ew.a.run.app"
-    url = "http://localhost:8000"
+    url = "https://trubrics-api-efmcopwrwa-ew.a.run.app"
+
     res = make_request(f"{url}/api/is_user/{uid}", headers={"Content-Type": "application/json"})
     res = json.loads(res)
     if "is_user" in res.keys():
