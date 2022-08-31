@@ -79,12 +79,11 @@ def run(
     )
     validations = []
     for validation_result in all_validation_results:
-        validation_type, severity, validation_context_result = validation_result
-        validations.append(validation_context_result)
+        validations.append(validation_result)
 
-        message_start = f"{validation_type} - {severity.upper()}"
+        message_start = f"{validation_result.validation_type} - {validation_result.severity.upper()}"
         completed_dots = (100 - len(message_start)) * "."
-        if validation_context_result.outcome == "pass":
+        if validation_result.outcome == "pass":
             ending = typer.style("PASSED", fg=typer.colors.GREEN, bold=True)
         else:
             ending = typer.style("FAILED", fg=typer.colors.WHITE, bg=typer.colors.RED)

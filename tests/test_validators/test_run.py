@@ -20,7 +20,9 @@ def test_run_trubric(data_context, classifier_model_context, custom_validator_cl
     )
 
     for actual, result in zip(actuals, all_validation_results):
-        assert result == actual
+        assert result.validation_type == actual[0]
+        assert result.severity == actual[1]
+        assert result.outcome == actual[2]
 
 
 def test_run_trubric_raises(data_context, classifier_model_context):
