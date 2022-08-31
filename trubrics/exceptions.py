@@ -16,3 +16,11 @@ class UnknownEstimatorType(Exception):
 
 class UnknownValidationError(Exception):
     """An exception signalling that validation is not recognised by a given validator."""
+
+
+class MissingConfigPathError(Exception):
+    """..."""
+
+
+class MissingTrubricRunFileError(Exception):
+    """..."""

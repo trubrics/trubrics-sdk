@@ -20,7 +20,7 @@ def run_trubric(
         kwargs = validation.validation_kwargs["kwargs"]
         try:
             result = getattr(model_validator, validation.validation_type)(*args, **kwargs)
-            yield validation.validation_type, validation.severity, result.outcome
+            yield validation.validation_type, validation.severity, result
         except AttributeError:
             raise UnknownValidationError(
                 f"The validation '{validation.validation_type}' does not appear to belong to a validator."

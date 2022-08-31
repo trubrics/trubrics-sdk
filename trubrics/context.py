@@ -233,11 +233,11 @@ class TrubricContext(BaseModel):
             }
         }
 
-    def save_local(self, path: str):
+    def save_local(self, path: str, file_name: str = f"{name}.json"):
         if path is None:
             raise Exception("Specify the local path where you would like to save your Trubric json.")
-        with open(Path(path) / f"{self.name}.json", "w") as file:
-            file.write(self.json())
+        with open(Path(path) / file_name, "w") as file:
+            file.write(self.json(indent=4))
 
     def save_ui(self, user_id: str):
         url = "https://trubrics-api-efmcopwrwa-ew.a.run.app"
