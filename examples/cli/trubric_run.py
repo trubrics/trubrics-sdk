@@ -2,7 +2,7 @@ import joblib
 import pandas as pd
 from sklearn.metrics import accuracy_score
 
-from examples.custom_validator import CustomValidator
+from examples.cli.custom_validator import CustomValidator
 from trubrics.context import DataContext, ModelContext, TrubricContext
 from trubrics.validators.run_context import TrubricRun
 

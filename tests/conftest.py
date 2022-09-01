@@ -4,7 +4,7 @@ import joblib
 import pandas as pd
 import pytest
 
-from examples.custom_validator import CustomValidator
+from examples.cli.custom_validator import CustomValidator
 from trubrics.context import DataContext, ModelContext, TrubricContext
 from trubrics.validators.base import Validator
 
