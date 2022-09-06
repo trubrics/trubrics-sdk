@@ -8,7 +8,7 @@ train-titanic:
 	@python examples/training/titanic.py
 
 streamlit-demo:
-	@streamlit run examples/streamlit/app-titanic.py
+	@PYTHONPATH=. streamlit run examples/streamlit/app-titanic.py
 
 docs-serve:
 	@mkdocs serve
