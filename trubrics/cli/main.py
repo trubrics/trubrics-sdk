@@ -106,15 +106,15 @@ def run(
             new_trubric_context.save_ui(user_id=trubrics_config["user_id"])
             typer.echo(
                 typer.style(
-                    "New trubric context saved to the trubrics UI.",
+                    "New trubric context saved to the trubrics manager.",
                     fg=typer.colors.GREEN,
                 )
             )
         else:
             typer.echo(
                 typer.style(
-                    "ERROR: You must authenticate with the trubrics manager UI by running `trubrics init` to save"
-                    " trubrics runs to the UI.",
+                    "ERROR: You must authenticate with the trubrics manager by running `trubrics init` to remotely save"
+                    " trubrics runs.",
                     fg=typer.colors.RED,
                 )
             )
@@ -130,7 +130,7 @@ def init(
     ),
 ):
     """The CLI `trubrics init` command for initialising trubrics config."""
-    save_ui = typer.confirm("Do you want authenticate with the trubrics UI?")
+    save_ui = typer.confirm("Do you want authenticate with the trubrics manager?")
     if save_ui:
         uid = typer.prompt("Enter your User ID (generated in the trubrics manager)")
         url = "https://trubrics-api-efmcopwrwa-ew.a.run.app"
@@ -143,7 +143,7 @@ def init(
             raise typer.Abort()
         typer.echo(
             typer.style(
-                "Trubrics config set and user authenticated with the trubrics manager UI:",
+                "Trubrics configuration has been set and user is authenticated with the trubrics manager UI:",
                 fg=typer.colors.GREEN,
                 bold=True,
             )
@@ -151,7 +151,7 @@ def init(
     else:
         typer.echo(
             typer.style(
-                "Trubrics config set without trubrics manager UI authentication:", fg=typer.colors.GREEN, bold=True
+                "Trubrics config set without trubrics manager authentication:", fg=typer.colors.GREEN, bold=True
             )
         )
         res = {}
