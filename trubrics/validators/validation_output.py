@@ -1,13 +1,14 @@
 import json
 from typing import Any, Callable, Dict, Tuple, Union
 
+import numpy as np
 from typeguard import check_type
 
 from trubrics.context import ValidationContext
 from trubrics.exceptions import ValidationOutputError
 from trubrics.modellers.classifier import Classifier
 
-validation_output_type = Tuple[bool, Dict[str, Union[str, int, float]]]
+validation_output_type = Tuple[Union[bool, np.bool_], Dict[str, Union[str, int, float, np.generic]]]
 
 
 def validation_output(func: Callable) -> Callable:
@@ -32,26 +33,41 @@ def validation_output(func: Callable) -> Callable:
         else:
             args = ()
 
-        jsonable_args = [arg for arg in args if _is_jsonable(arg, raise_error=True)]
-        jsonable_kwargs = {key: val for key, val in kwargs.items() if _is_jsonable(val, raise_error=True)}
-        _is_jsonable(result, raise_error=True)
+        typed_args = _correct_types_for_json(args)
+        typed_kwargs = _correct_types_for_json(kwargs)
+        typed_result = _correct_types_for_json(result)
+
+        _is_jsonable(typed_args, raise_error=True)
+        _is_jsonable(typed_kwargs, raise_error=True)
+        _is_jsonable(typed_result, raise_error=True)
 
         return ValidationContext(
             validation_type=func.__name__,
-            validation_kwargs={"args": jsonable_args, "kwargs": jsonable_kwargs},
+            validation_kwargs={"args": typed_args, "kwargs": typed_kwargs},
             outcome=outcome,
-            result=result,
+            result=typed_result,  # type: ignore
         )
 
     return inner
 
 
-def _is_jsonable(x: Any, raise_error: bool = False) -> bool:
+def _correct_types_for_json(value: Any):
+    if isinstance(value, dict):
+        return {_correct_types_for_json(key): _correct_types_for_json(val) for key, val in value.items()}
+    elif isinstance(value, list):
+        return [_correct_types_for_json(arg) for arg in value]
+    elif isinstance(value, np.generic):
+        return value.item()
+    else:
+        return value
+
+
+def _is_jsonable(obj: Any, raise_error: bool = False) -> bool:
     try:
-        json.dumps(x)
+        json.dumps(obj)
         return True
     except (OverflowError, TypeError) as e:
-        if isinstance(x, Classifier):
+        if isinstance(obj, Classifier):
             return False
         elif raise_error:
             raise e

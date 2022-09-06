@@ -27,16 +27,15 @@ class ModelContext(BaseModel):
         name: ModelContext name. Required for trubrics UI tracking.
         version: ModelContext version. Required for trubrics UI tracking.
         estimator: An estimator (or model) that can be a classifier or regressor.
-        evaluation_function: An evaluation function that takes arguments (y_true, y_pred, ...)
-        evaluation_kwargs: Optional[Dict[str, Union[bool, str, int, float, None]]] = None
-
+        evaluation_function: An evaluation function that takes arguments (y_true, y_pred, ...).
+        evaluation_kwargs: Any kwargs for the evaluation function.
     """
 
     name: str = "my_model"
     version: float = 0.1
     estimator: Any
     evaluation_function: Any
-    evaluation_kwargs: Optional[Dict[str, Union[bool, str, int, float, None]]] = None
+    evaluation_kwargs: Optional[Dict[str, Union[bool, float, int, str, None]]] = None
 
     class Config:
         allow_mutation = False
@@ -135,11 +134,9 @@ class FeedbackContext(BaseModel):
     """Context for feedback given by a user from a UI component."""
 
     feedback_type: Optional[str]
-    metadata: Dict[str, Union[List[Any], str, int, float, dict]]
+    metadata: Dict[str, Union[List[Any], float, int, str, dict]]
 
-    def save_ui(self):
-        url = "https://trubrics-api-efmcopwrwa-ew.a.run.app"
-
+    def save_ui(self, url: str):
         make_request(
             f"{url}/api/feedback", headers={"Content-Type": "application/json"}, data=self.json().encode("utf-8")
         )
@@ -176,7 +173,7 @@ class ValidationContext(BaseModel):
     validation_kwargs: Dict[str, Optional[Any]]
     outcome: str
     severity: str = "error"
-    result: Optional[Dict[str, Union[str, int, float]]]
+    result: Optional[Dict[str, Optional[Any]]]
 
     class Config:
         extra = "forbid"
@@ -239,8 +236,7 @@ class TrubricContext(BaseModel):
         with open(Path(path) / file_name, "w") as file:
             file.write(self.json(indent=4))
 
-    def save_ui(self, user_id: str):
-        url = "https://trubrics-api-efmcopwrwa-ew.a.run.app"
+    def save_ui(self, url: str, user_id: str):
 
         if user_id is None:
             raise Exception("You must specify a 'user_id' to push to the trubrics manager.")

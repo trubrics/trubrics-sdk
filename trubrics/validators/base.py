@@ -281,7 +281,5 @@ class Validator:
 
     def _predict_from_dict(self, edge_case_data: Dict[str, Union[str, int, float]]) -> Union[int, float]:
         edge_case_data_df = pd.DataFrame.from_records(edge_case_data, index=["0"], columns=self.features)
-        prediction = self.trubrics_model.predict(data=edge_case_data_df)[
-            0
-        ].item()  # .item() converts numpy to python type, in order to be serialised to json
+        prediction = self.trubrics_model.predict(data=edge_case_data_df)[0]
         return prediction
