@@ -2,6 +2,7 @@ import importlib.util
 import json
 import sys
 from pathlib import Path
+from typing import Optional
 
 import typer
 from rich import print as rprint
@@ -122,6 +123,7 @@ def run(
 
 @app.command()
 def init(
+    trubrics_api_url: Optional[str] = None,
     trubric_run_path: str = typer.Option(
         ..., prompt="Enter the path to your trubric run .py file (e.g. examples/cli/trubric_run.py)"
     ),
@@ -130,12 +132,11 @@ def init(
     ),
 ):
     """The CLI `trubrics init` command for initialising trubrics config."""
-    save_ui = typer.confirm("Do you want authenticate with the trubrics manager?")
-    if save_ui:
-        uid = typer.prompt("Enter your User ID (generated in the trubrics manager)")
-        url = "https://trubrics-api-efmcopwrwa-ew.a.run.app"
 
-        res = make_request(f"{url}/api/is_user/{uid}", headers={"Content-Type": "application/json"})
+    if trubrics_api_url:
+        uid = typer.prompt("Enter your User ID (generated in the trubrics manager)")
+
+        res = make_request(f"{trubrics_api_url}/api/is_user/{uid}", headers={"Content-Type": "application/json"})
         res = json.loads(res)
         if "is_user" in res.keys():
             message = typer.style(res["msg"], fg=typer.colors.RED, bold=True)
