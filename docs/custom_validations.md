@@ -5,6 +5,6 @@ The `Validator` object can be used to build your own custom validations. Create 
 `Validator`, feeding in DataContext and ModelContext.
 
 !!!example
-    :::examples.custom_validator
+    :::examples.cli.custom_validator
 
 As seen in the example source code above, the conventions follow those of [the `Validator` object](validator_object.md).
