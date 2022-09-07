@@ -29,6 +29,7 @@ test-coverage:
 
 example-run-trubric:
 	@trubrics run \
+	--no-save-ui \
 	--trubric-config-path "examples/cli" \
 	--trubric-output-file-path "examples/data" \
 	--trubric-output-file-name "my_new_trubric.json"
