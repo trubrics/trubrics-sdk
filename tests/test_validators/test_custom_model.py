@@ -5,11 +5,29 @@ from trubrics.validators.base import Validator
 
 
 class RuleBasedModel:
+    """Example of a custom rule based model.
+
+    This example shows how we can wrap any python code into a model that can be used by the ModelContext.
+    The class must contain:
+        - an attribute named _estimator_type (see attributes bellow).
+        - a predict() method with a pandas dataframe input argument,
+          that returns a pandas series / numpy array of predict values.
+
+    Attributes:
+        _estimator_type: the estimator type can either be 'classifier' or 'regressor'.
+
+    Example:
+        ```py
+        estimator = RuleBasedModel()
+        model_context = ModelContext(estimator=estimator, evaluation_function=accuracy_score)
+        ```
+    """
+
     def __init__(self):
         self._estimator_type = "classifier"
 
     def predict(self, df):
-        """Rule based system to determine class based on single feature."""
+        """Rule based predict classification function to determine a class based on single feature."""
         df["Survived"] = df["Age"].apply(lambda x: 0 if x > 40 else 1)
         return df["Survived"]
 
