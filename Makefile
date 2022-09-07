@@ -27,5 +27,8 @@ test:
 test-coverage:
 	@pytest --cov=trubrics tests
 
-example-trubric:
-	@trubrics run examples/trubrics_config.py
+example-run-trubric:
+	@trubrics run \
+	--trubric-config-path "examples/cli" \
+	--trubric-output-file-path "examples/data" \
+	--trubric-output-file-name "my_new_trubric.json"
