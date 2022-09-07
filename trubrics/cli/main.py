@@ -104,7 +104,7 @@ def run(
     # save new trubric to ui
     if save_ui is True:
         if "user_id" in trubrics_config.keys():
-            new_trubric_context.save_ui(user_id=trubrics_config["user_id"])
+            new_trubric_context.save_ui(url=trubrics_config["api_url"], user_id=trubrics_config["user_id"])
             typer.echo(
                 typer.style(
                     "New trubric context saved to the trubrics manager.",
@@ -149,6 +149,7 @@ def init(
                 bold=True,
             )
         )
+        res["api_url"] = trubrics_api_url
     else:
         typer.echo(
             typer.style(
