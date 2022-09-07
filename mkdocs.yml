@@ -3,7 +3,13 @@ site_description: Combine data science knowledge with business user feedback to 
 repo_url: https://github.com/trubrics/trubrics-sdk.git
 repo_name: trubrics/trubrics-sdk
 plugins:
-  - mkdocstrings
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_root_toc_entry: false
+            members:
+                -
   - search
   - mkdocs-jupyter
   - git-revision-date-localized:
@@ -43,6 +49,7 @@ nav:
     - Titanic classifier notebook: notebooks/titanic-demo.html
   - Contexts: context.md
   - Features:
+    - Models: models.md
     - Validations:
       - The Validator object: validator_object.md
       - Out-of-the-box validations: validations.md

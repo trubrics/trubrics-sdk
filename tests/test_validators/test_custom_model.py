@@ -5,19 +5,21 @@ from trubrics.validators.base import Validator
 
 
 class RuleBasedModel:
-    """Example of a custom rule based model.
+    """
+    This example shows how we can wrap python code into a model that can be used by the ModelContext.
 
-    This example shows how we can wrap any python code into a model that can be used by the ModelContext.
-    The class must contain:
+    Tip: A custom model is built with python class that must contain:
         - an attribute named _estimator_type (see attributes bellow).
         - a predict() method with a pandas dataframe input argument,
-          that returns a pandas series / numpy array of predict values.
+          that returns a pandas series / numpy array of predict values
+          (see source code bellow).
 
     Attributes:
         _estimator_type: the estimator type can either be 'classifier' or 'regressor'.
 
     Example:
         ```py
+        from sklearn.metrics import accuracy_score
         estimator = RuleBasedModel()
         model_context = ModelContext(estimator=estimator, evaluation_function=accuracy_score)
         ```
