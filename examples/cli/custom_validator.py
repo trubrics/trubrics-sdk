@@ -1,6 +1,6 @@
 from trubrics.context import DataContext, ModelContext
-from trubrics.validators.base import Validator
-from trubrics.validators.validation_output import (
+from trubrics.validations.base import Validator
+from trubrics.validations.validation_output import (
     validation_output,
     validation_output_type,
 )

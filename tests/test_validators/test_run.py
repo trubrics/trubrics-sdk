@@ -2,7 +2,7 @@ import pytest
 
 from trubrics.context import TrubricContext
 from trubrics.exceptions import UnknownValidationError
-from trubrics.validators.run import run_trubric
+from trubrics.validations.run import run_trubric
 
 
 def test_run_trubric(data_context, classifier_model_context, custom_validator_classifier, trubric):

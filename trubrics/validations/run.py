@@ -2,7 +2,7 @@ from typing import Optional
 
 from trubrics.context import DataContext, ModelContext, TrubricContext
 from trubrics.exceptions import UnknownValidationError
-from trubrics.validators.base import Validator
+from trubrics.validations.base import Validator
 
 
 def run_trubric(

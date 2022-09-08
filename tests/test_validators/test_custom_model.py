@@ -1,7 +1,7 @@
 from sklearn.metrics import accuracy_score
 
 from trubrics.context import ModelContext
-from trubrics.validators.base import Validator
+from trubrics.validations.base import Validator
 
 
 class RuleBasedModel:

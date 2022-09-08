@@ -7,7 +7,7 @@ from trubrics.context import DataContext, ModelContext
 from trubrics.exceptions import ClassifierNotSupportedError, UnknownEstimatorType
 from trubrics.modellers.classifier import Classifier
 from trubrics.modellers.regressor import Regressor
-from trubrics.validators.validation_output import (
+from trubrics.validations.validation_output import (
     validation_output,
     validation_output_type,
 )

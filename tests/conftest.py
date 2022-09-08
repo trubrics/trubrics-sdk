@@ -6,7 +6,7 @@ import pytest
 
 from examples.cli.custom_validator import CustomValidator
 from trubrics.context import DataContext, ModelContext, TrubricContext
-from trubrics.validators.base import Validator
+from trubrics.validations.base import Validator
 
 
 @pytest.fixture

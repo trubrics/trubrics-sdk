@@ -9,8 +9,8 @@ from rich import print as rprint
 
 from trubrics.exceptions import MissingConfigPathError, MissingTrubricRunFileError
 from trubrics.utils.trubrics_manager_connector import make_request
-from trubrics.validators.run import run_trubric
-from trubrics.validators.run_context import TrubricRun
+from trubrics.validations.run import run_trubric
+from trubrics.validations.run_context import TrubricRun
 
 app = typer.Typer()
 

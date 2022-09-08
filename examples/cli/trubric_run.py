@@ -4,7 +4,7 @@ from sklearn.metrics import accuracy_score
 
 from examples.cli.custom_validator import CustomValidator
 from trubrics.context import DataContext, ModelContext, TrubricContext
-from trubrics.validators.run_context import TrubricRun
+from trubrics.validations.run_context import TrubricRun
 
 testing_data = pd.read_csv("examples/data/preprocessed_test.csv")
 training_data = pd.read_csv("examples/data/preprocessed_train.csv")
