@@ -6,7 +6,7 @@ from typeguard import check_type
 
 from trubrics.context import ValidationContext
 from trubrics.exceptions import ValidationOutputError
-from trubrics.modellers.classifier import Classifier
+from trubrics.models.classifier import Classifier
 
 validation_output_type = Tuple[Union[bool, np.bool_], Dict[str, Union[str, int, float, np.generic]]]
 

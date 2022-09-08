@@ -1,5 +1,5 @@
 from trubrics.context import DataContext, ModelContext
-from trubrics.modellers.base import Modeller
+from trubrics.models.base import Modeller
 
 
 class Regressor(Modeller):
