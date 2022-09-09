@@ -215,44 +215,44 @@ class Validator:
             "test_performance": self.score_test,
         }
 
-    # @validation_output
-    # def validate_feature_in_top_n_important_features(self, feature, feature_importance, top_n_features):
-    #     """For information, refer to the _validate_feature_in_top_n_important_features method."""
-    #     return self._validate_feature_in_top_n_important_features(feature, feature_importance, top_n_features)
+    @validation_output
+    def validate_feature_in_top_n_important_features(self, feature, feature_importance, top_n_features):
+        """For information, refer to the _validate_feature_in_top_n_important_features method."""
+        return self._validate_feature_in_top_n_important_features(feature, feature_importance, top_n_features)
 
-    # @staticmethod
-    # def _validate_feature_in_top_n_important_features(
-    #     feature: str, feature_importance: Dict[str, float], top_n_features: int
-    # ) -> validation_output_type:
-    #     """Feature importance validation for top n features.
+    @staticmethod
+    def _validate_feature_in_top_n_important_features(
+        feature: str, feature_importance: Dict[str, float], top_n_features: int
+    ) -> validation_output_type:
+        """Feature importance validation for top n features.
 
-    #     Verifies that a given feature is in the top n most important features.
+        Verifies that a given feature is in the top n most important features.
 
-    #     Args:
-    #         feature: feature to assess
-    #         feature_importance: dictionary of feature importance values
-    #         top_n_features: the number of important features that the named feature must be in e.g. if
-    #                         top_n_features=2, the feature must be within the top two most important features
+        Args:
+            feature: feature to assess
+            feature_importance: dictionary of feature importance values
+            top_n_features: the number of important features that the named feature must be in e.g. if
+                            top_n_features=2, the feature must be within the top two most important features
 
-    #     Returns:
-    #         True for success, false otherwise. With a results dictionary giving the actual feature importance ranking.
+        Returns:
+            True for success, false otherwise. With a results dictionary giving the actual feature importance ranking.
 
-    #     Example:
-    #         ```py
-    #         model_validator = Validator(data=data_context, model=model_context)
-    #         model_validator.validate_feature_in_top_n_important_features(
-    #             feature="feature_a",
-    #             feature_importance=feature_importance_dict,
-    #             top_n_features=2,
-    #         )
-    #         ```
-    #     """
-    #     count = 0
-    #     for importance in feature_importance.values():
-    #         if importance > feature_importance[feature]:
-    #             count += 1
+        Example:
+            ```py
+            model_validator = Validator(data=data_context, model=model_context)
+            model_validator.validate_feature_in_top_n_important_features(
+                feature="feature_a",
+                feature_importance=feature_importance_dict,
+                top_n_features=2,
+            )
+            ```
+        """
+        count = 0
+        for importance in feature_importance.values():
+            if importance > feature_importance[feature]:
+                count += 1
 
-    #     return count < top_n_features, {"feature_importance_ranking": count}
+        return count < top_n_features, {"feature_importance_ranking": count}
 
     def _predict_from_dict(self, edge_case_data: Dict[str, Union[str, int, float]]) -> Union[int, float]:
         edge_case_data_df = pd.DataFrame.from_records(
