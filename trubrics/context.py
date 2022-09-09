@@ -2,55 +2,17 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
+import sklearn.metrics
 from pydantic import BaseModel, validator
 
-from trubrics.exceptions import PandasSchemaError
+from trubrics.exceptions import (
+    EstimatorTypeError,
+    ModelPredictionError,
+    PandasSchemaError,
+    SklearnMetricTypeError,
+)
 from trubrics.utils.pandas import schema_is_equal
 from trubrics.utils.trubrics_manager_connector import make_request
-
-
-class ModelContext(BaseModel):
-    """
-    The ModelContext wraps models into a trubrics friendly format.
-
-    Note:
-        The ModelContext *must contain* at least an estimator and an evaluation attribute.
-        Default values are set for all other attributes.
-        Currently, estimator and evaluation functions are defined with scikit-learn convention:
-
-            * Estimators: https://scikit-learn.org/stable/developers/develop.html
-            * Classification Metrics:
-                https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics
-            * Regression Metrics: https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics
-
-    Attributes:
-        name: ModelContext name. Required for trubrics UI tracking.
-        version: ModelContext version. Required for trubrics UI tracking.
-        estimator: An estimator (or model) that can be a classifier or regressor.
-        evaluation_function: An evaluation function that takes arguments (y_true, y_pred, ...).
-        evaluation_kwargs: Any kwargs for the evaluation function.
-    """
-
-    name: str = "my_model"
-    version: float = 0.1
-    estimator: Any
-    evaluation_function: Any
-    evaluation_kwargs: Optional[Dict[str, Union[bool, float, int, str, None]]] = None
-
-    class Config:
-        allow_mutation = False
-        arbitrary_types_allowed = True
-        extra = "forbid"
-
-    @property
-    def evaluation_function_name(self) -> str:
-        """The scikit-learn name of the evaluation function."""
-        return self.evaluation_function.__name__
-
-    @property
-    def estimator_type(self) -> str:
-        """The scikit-learn type of the estimator."""
-        return self.estimator._estimator_type
 
 
 class DataContext(BaseModel):
@@ -91,6 +53,26 @@ class DataContext(BaseModel):
         return [col for col in self.testing_data.columns if col != self.target_column]
 
     @property
+    def X_test(self) -> pd.DataFrame:
+        """Feature testing dataframe."""
+        return self.testing_data[self.features]
+
+    @property
+    def y_test(self) -> pd.Series:
+        """Target testing series."""
+        return self.testing_data[self.target_column]
+
+    @property
+    def X_train(self) -> Optional[pd.DataFrame]:
+        """Feature training dataframe."""
+        return self.training_data[self.features] if self.training_data is not None else None
+
+    @property
+    def y_train(self) -> Optional[pd.Series]:
+        """Target training series."""
+        return self.training_data[self.target_column] if self.training_data is not None else None
+
+    @property
     def renamed_testing_data(self) -> pd.DataFrame:
         """Renamed testing data with business columns"""
         if self.business_columns is None:
@@ -128,6 +110,86 @@ class DataContext(BaseModel):
                 "Target column should not feature as a categorical column. Categorical columns only refer to features."
             )
         return v
+
+
+class TrubricsModel(BaseModel):
+    """ """
+
+    scorer: Optional[Any] = None
+    metric: str
+    data: DataContext
+    model: Any
+
+    class Config:
+        allow_mutation = False
+        arbitrary_types_allowed = True
+        extra = "forbid"
+
+    @validator("metric")
+    def is_metric_in_default_scorer(cls, v: str, values: Any) -> str:
+        if values["scorer"] is None:
+            if v in sklearn.metrics.SCORERS:
+                values["scorer"] = sklearn.metrics.SCORERS[v]
+            else:
+                raise SklearnMetricTypeError(
+                    f"The metric '{v}' is not part of scikit-learns scorers. Run `sklearn.metrics.SCORERS` for list"
+                    " default scorers."
+                )
+        return v
+
+    @validator("model")
+    def does_model_predict_train_head(cls, v: Any, values: Any) -> Any:
+        """
+        Validate that model predicts on the first 5 rows of the training data.
+        """
+        if values["data"].X_train is not None:
+            try:
+                v.predict(values["data"].X_train.head())
+            except ValueError as e:
+                print(e)
+                raise ModelPredictionError("The model specified does not predict on the train data.")
+        return v
+
+    @validator("model")
+    def does_model_predict_test_head(cls, v: Any, values: Any) -> Any:
+        """
+        Validate that model predicts on the first 5 rows of the testing data.
+        """
+        try:
+            v.predict(values["data"].X_test.head())
+        except ValueError as e:
+            print(e)
+            raise ModelPredictionError("The model specified does not predict on the test data.")
+        return v
+
+    @property
+    def model_type(self):
+        if self.model._estimator_type in ["regressor", "classifier"]:
+            return self.model._estimator_type
+        else:
+            raise EstimatorTypeError("_estimator_type must be a 'regressor' or a 'classifier'.")
+
+    @property
+    def predictions_train(self):
+        if self.data.X_train is not None:
+            print("Predicting on training set...")
+            return self.model.predict(self.data.X_train)
+        return None
+
+    @property
+    def predictions_test(self):
+        print("Predicting on testing set...")
+        return self.model.predict(self.data.X_test)
+
+    @property
+    def score_train(self):
+        print("Scoring on training set...")
+        return self.scorer(self.model, self.data.X_train, self.data.y_train)  # type: ignore
+
+    @property
+    def score_test(self):
+        print("Scoring on testing set...")
+        return self.scorer(self.model, self.data.X_test, self.data.y_test)  # type: ignore
 
 
 class FeedbackContext(BaseModel):

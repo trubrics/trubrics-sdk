@@ -4,9 +4,8 @@ from typing import Any, Callable, Dict, Tuple, Union
 import numpy as np
 from typeguard import check_type
 
-from trubrics.context import ValidationContext
+from trubrics.context import TrubricsModel, ValidationContext
 from trubrics.exceptions import ValidationOutputError
-from trubrics.models.classifier import Classifier
 
 validation_output_type = Tuple[Union[bool, np.bool_], Dict[str, Union[str, int, float, np.generic]]]
 
@@ -67,7 +66,7 @@ def _is_jsonable(obj: Any, raise_error: bool = False) -> bool:
         json.dumps(obj)
         return True
     except (OverflowError, TypeError) as e:
-        if isinstance(obj, Classifier):
+        if isinstance(obj, TrubricsModel):
             return False
         elif raise_error:
             raise e

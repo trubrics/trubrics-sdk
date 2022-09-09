@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Any, Optional
 
 import pandas as pd
 
-from trubrics.context import DataContext, ModelContext
+from trubrics.context import DataContext
 
 
 class BaseModeller(ABC):
     @abstractmethod
-    def __init__(self, data: DataContext, model: ModelContext):
+    def __init__(self, data: DataContext, model: Any):
         self.data = data
         self.model = model
 
@@ -26,7 +26,7 @@ class BaseModeller(ABC):
 
 
 class Modeller(BaseModeller):
-    def __init__(self, data: DataContext, model: ModelContext):
+    def __init__(self, data: DataContext, model: Any):
         self.data = data
         self.model = model
 
