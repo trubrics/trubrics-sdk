@@ -278,17 +278,17 @@ class TrubricContext(BaseModel):
 
     Attributes:
         name: Trubric name.
-        model_context_name: model context name (from ModelContext)
-        model_context_version: model context version (from ModelContext)
+        model_name: model context name (from ModelContext)
+        model_version: model context version (from ModelContext)
         data_context_name: data context name (from DataContext)
         data_context_version: data context version (from DataContext)
         metadata: free textual metadata field
         validations: list of validations (defined by ValidationContext)
     """
 
-    name: str = "my_trubric"
-    model_context_name: str
-    model_context_version: float
+    trubric_name: str = "my_trubric"
+    model_name: str = "my_model"
+    model_version: float = 0.1
     data_context_name: str
     data_context_version: float
     metadata: Optional[Dict[str, str]] = None
@@ -298,8 +298,8 @@ class TrubricContext(BaseModel):
         schema_extra = {
             "example": {
                 "name": "my_first_trubric",
-                "model_context_name": "my_model",
-                "model_context_version": 0.1,
+                "model_name": "my_model",
+                "model_version": 0.1,
                 "data_context_name": "my_dataset",
                 "data_context_version": 0.1,
                 "metadata": {},
@@ -307,11 +307,14 @@ class TrubricContext(BaseModel):
             }
         }
 
-    def save_local(self, path: str, file_name: str = f"{name}.json"):
+    def save_local(self, path: str, file_name: Optional[str] = None):
         if path is None:
             raise Exception("Specify the local path where you would like to save your Trubric json.")
+        if file_name is None:
+            file_name = f"{self.trubric_name}.json"
         with open(Path(path) / file_name, "w") as file:
             file.write(self.json(indent=4))
+            print(f"Trubric saved to {Path(path) / file_name}.")
 
     def save_ui(self, url: str, user_id: str):
 
