@@ -278,8 +278,8 @@ class TrubricContext(BaseModel):
 
     Attributes:
         name: Trubric name.
-        model_name: model context name (from ModelContext)
-        model_version: model context version (from ModelContext)
+        model_name: model name
+        model_version: model version
         data_context_name: data context name (from DataContext)
         data_context_version: data context version (from DataContext)
         metadata: free textual metadata field
@@ -287,6 +287,7 @@ class TrubricContext(BaseModel):
     """
 
     trubric_name: str = "my_trubric"
+    metric: str
     model_name: str = "my_model"
     model_version: float = 0.1
     data_context_name: str
@@ -326,3 +327,4 @@ class TrubricContext(BaseModel):
                 headers={"Content-Type": "application/json"},
                 data=self.json().encode("utf-8"),
             )
+            print("Trubric saved to the trubrics manager.")

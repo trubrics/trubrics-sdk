@@ -58,7 +58,7 @@ def run(
     tc = _import_module(module_path=trubric_run_path)
     if hasattr(tc, "RUN_CONTEXT"):
         if isinstance(tc.RUN_CONTEXT, TrubricRun):
-            tc = tc.RUN_CONTEXT
+            run_context = tc.RUN_CONTEXT
         else:
             raise TypeError("'RUN_CONTEXT' attribute must be of type TrubricRun.")
     else:
@@ -66,16 +66,16 @@ def run(
 
     typer.echo(
         typer.style(
-            f"Running trubric from file '{trubric_run_path}' with model '{tc.model_context.name}' and dataset"
-            f" '{tc.data_context.name}'.",
+            f"Running trubric from file '{trubric_run_path}' with model '{run_context.trubric_context.model_name}' and"
+            f" dataset '{tc.data_context.name}'.",
             fg=typer.colors.BLUE,
         )
     )
     all_validation_results = run_trubric(
-        data_context=tc.data_context,
-        model_context=tc.model_context,
-        trubric=tc.trubric_context,
-        custom_validator=tc.custom_validator,
+        data_context=run_context.data_context,
+        model=run_context.model,
+        trubric=run_context.trubric_context,
+        custom_validator=run_context.custom_validator,
     )
     validations = []
     for validation_result in all_validation_results:
@@ -94,23 +94,11 @@ def run(
     new_trubric_context = tc.trubric_context
     new_trubric_context.validations = validations
     new_trubric_context.save_local(path=trubric_output_file_path, file_name=trubric_output_file_name)
-    typer.echo(
-        typer.style(
-            f"New trubric context saved locally to: '{Path(trubric_output_file_path) / trubric_output_file_name}'",
-            fg=typer.colors.GREEN,
-        )
-    )
 
     # save new trubric to ui
     if save_ui is True:
         if "user_id" in trubrics_config.keys():
             new_trubric_context.save_ui(url=trubrics_config["api_url"], user_id=trubrics_config["user_id"])
-            typer.echo(
-                typer.style(
-                    "New trubric context saved to the trubrics manager.",
-                    fg=typer.colors.GREEN,
-                )
-            )
         else:
             typer.echo(
                 typer.style(
