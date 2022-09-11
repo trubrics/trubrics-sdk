@@ -1,10 +1,13 @@
 {
-    "name": "my_first_trubric",
-    "model_context_name": "my_first_model",
-    "model_context_version": 0.1,
+    "trubric_name": "my_first_trubric",
+    "metric": "accuracy",
+    "model_name": "my_model",
+    "model_version": 0.1,
     "data_context_name": "my_first_dataset",
     "data_context_version": 0.1,
-    "metadata": null,
+    "metadata": {
+        "tag": "master"
+    },
     "validations": [
         {
             "validation_type": "validate_single_edge_case",

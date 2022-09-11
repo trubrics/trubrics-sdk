@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 
 from trubrics.context import DataContext, TrubricsModel
+from trubrics.exceptions import ClassifierNotSupportedError
 from trubrics.validations.validation_output import (
     validation_output,
     validation_output_type,
@@ -51,48 +52,48 @@ class ModelValidator:
         prediction = self._predict_from_dict(edge_case_data=edge_case_data)
         return prediction == desired_output, {"prediction": prediction}
 
-    # @validation_output
-    # def validate_single_edge_case_in_range(self, edge_case_data, lower_output, upper_output):
-    #     """For information, refer to the _validate_single_edge_case_in_range method."""
-    #     return self._validate_single_edge_case_in_range(edge_case_data, lower_output, upper_output)
+    @validation_output
+    def validate_single_edge_case_in_range(self, edge_case_data, lower_output, upper_output):
+        """For information, refer to the _validate_single_edge_case_in_range method."""
+        return self._validate_single_edge_case_in_range(edge_case_data, lower_output, upper_output)
 
-    # def _validate_single_edge_case_in_range(
-    #     self,
-    #     edge_case_data: Dict[str, Union[str, int, float]],
-    #     lower_output: Union[int, float],
-    #     upper_output: Union[int, float],
-    # ) -> validation_output_type:
-    #     """Single edge case validation in range.
+    def _validate_single_edge_case_in_range(
+        self,
+        edge_case_data: Dict[str, Union[str, int, float]],
+        lower_output: Union[int, float],
+        upper_output: Union[int, float],
+    ) -> validation_output_type:
+        """Single edge case validation in range.
 
-    #     Validate that a combination of features (all features must be defined) input to a model
-    #     result in a range of prediction values. This validation can be used to highlight edge cases
-    #     that a model must respect. It is only possible to use on regression models.
+        Validate that a combination of features (all features must be defined) input to a model
+        result in a range of prediction values. This validation can be used to highlight edge cases
+        that a model must respect. It is only possible to use on regression models.
 
-    #     Args:
-    #         edge_case_data: ensemble of all feature values
-    #         lower_output: minimum prediction value to be expected
-    #         upper_output: maximum prediction value to be expected
+        Args:
+            edge_case_data: ensemble of all feature values
+            lower_output: minimum prediction value to be expected
+            upper_output: maximum prediction value to be expected
 
-    #     Returns:
-    #         True for success, false otherwise. With a results dictionary giving the actual prediction result.
+        Returns:
+            True for success, false otherwise. With a results dictionary giving the actual prediction result.
 
-    #     Example:
-    #         ```py
-    #         model_validator = ModelValidator(data=data_context, model=model_context)
-    #         model_validator.validate_single_edge_case_in_range(
-    #             edge_case_data={'feature_a': 1, 'feature_b': 3},
-    #             lower_output=120,
-    #             upper_output=140,
-    #         )
-    #         ```
-    #     """
-    #     if lower_output >= upper_output:
-    #         raise ValueError("lower_output must be strictly inferior to upper_output.")
-    #     if self.trubrics_model_type == "classifier":
-    #         raise ClassifierNotSupportedError("Model type 'classifier' not supported for a range output.")
-    #     prediction = self._predict_from_dict(edge_case_data=edge_case_data)
+        Example:
+            ```py
+            model_validator = ModelValidator(data=data_context, model=model_context)
+            model_validator.validate_single_edge_case_in_range(
+                edge_case_data={'feature_a': 1, 'feature_b': 3},
+                lower_output=120,
+                upper_output=140,
+            )
+            ```
+        """
+        if lower_output >= upper_output:
+            raise ValueError("lower_output must be strictly inferior to upper_output.")
+        if self.model_type == "classifier":
+            raise ClassifierNotSupportedError("Model type 'classifier' not supported for a range output.")
+        prediction = self._predict_from_dict(edge_case_data=edge_case_data)
 
-    #     return prediction > lower_output and prediction < upper_output, {"prediction": prediction}
+        return prediction > lower_output and prediction < upper_output, {"prediction": prediction}
 
     @validation_output
     def validate_performance_against_threshold(self, threshold):
@@ -116,7 +117,7 @@ class ModelValidator:
             model_validator.validate_performance_against_threshold(threshold=0.8)
             ```
         """
-        return bool(self.score_test < threshold), {"performance": self.score_test}
+        return bool(self.score_test > threshold), {"performance": self.score_test}
 
     @validation_output
     def validate_biased_performance_across_category(self, category, threshold):

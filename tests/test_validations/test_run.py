@@ -1,15 +1,16 @@
 import pytest
 
+from examples.cli.custom_validator import CustomValidator
 from trubrics.context import TrubricContext
 from trubrics.exceptions import UnknownValidationError
 from trubrics.validations.run import run_trubric
 
 
-def test_run_trubric(data_context, classifier_model_context, custom_validator_classifier, trubric):
+def test_run_trubric(data_context, classifier_model, trubric):
     all_validation_results = run_trubric(
         data_context=data_context,
-        model_context=classifier_model_context,
-        custom_validator=custom_validator_classifier,
+        model=classifier_model,
+        custom_validator=CustomValidator,
         trubric=trubric,
     )
 
@@ -25,14 +26,15 @@ def test_run_trubric(data_context, classifier_model_context, custom_validator_cl
         assert result.outcome == actual[2]
 
 
-def test_run_trubric_raises(data_context, classifier_model_context):
+def test_run_trubric_raises(data_context, classifier_model):
     trubric_dict = {
-        "name": "",
-        "model_context_name": "",
-        "model_context_version": 0,
-        "data_context_name": "",
-        "data_context_version": 0,
-        "metadata": None,
+        "trubric_name": "my_first_trubric",
+        "metric": "accuracy",
+        "model_name": "my_model",
+        "model_version": 0.1,
+        "data_context_name": "my_first_dataset",
+        "data_context_version": 0.1,
+        "metadata": {"tag": "master"},
         "validations": [
             {
                 "validation_type": "some_random_validation_name_that_is_not_in_a_validator",
@@ -45,7 +47,7 @@ def test_run_trubric_raises(data_context, classifier_model_context):
     }
     trubric = TrubricContext.parse_obj(trubric_dict)
     all_validation_results = run_trubric(
-        data_context=data_context, model_context=classifier_model_context, custom_validator=None, trubric=trubric
+        data_context=data_context, model=classifier_model, custom_validator=None, trubric=trubric
     )
 
     with pytest.raises(UnknownValidationError):

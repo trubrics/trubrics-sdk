@@ -1,7 +1,4 @@
-from sklearn.metrics import accuracy_score
-
-from trubrics.context import ModelContext
-from trubrics.validations.base import Validator
+from trubrics.validations import ModelValidator
 
 
 class RuleBasedModel:
@@ -34,14 +31,11 @@ class RuleBasedModel:
         return df["Survived"]
 
 
-def custom_model_context():
-    estimator = RuleBasedModel()
-    model_context = ModelContext(estimator=estimator, evaluation_function=accuracy_score)
-    return model_context
+model = RuleBasedModel()
 
 
 def test_performance_validation(data_context):
-    model_validator = Validator(data=data_context, model=custom_model_context())
+    model_validator = ModelValidator(metric="accuracy", data=data_context, model=model)
 
     result = model_validator._validate_performance_against_threshold(threshold=0.7)
     actual = False, {"performance": 1 / 3}
@@ -49,7 +43,7 @@ def test_performance_validation(data_context):
 
 
 def test_biased_performance_validation(data_context):
-    model_validator = Validator(data=data_context, model=custom_model_context())
+    model_validator = ModelValidator(metric="accuracy", data=data_context, model=model)
     result = model_validator._validate_biased_performance_across_category("Sex", 0.5)
     actual = True, {"max_performance_difference": 0.4}
     assert result == actual
