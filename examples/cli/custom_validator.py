@@ -1,12 +1,12 @@
 from trubrics.context import DataContext
-from trubrics.validations.base import Validator
+from trubrics.validations import ModelValidator
 from trubrics.validations.validation_output import (
     validation_output,
     validation_output_type,
 )
 
 
-class CustomValidator(Validator):
+class CustomValidator(ModelValidator):
     def __init__(self, data: DataContext, model, metric: str):
         super().__init__(data, model, metric)
 

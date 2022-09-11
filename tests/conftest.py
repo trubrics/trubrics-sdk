@@ -5,8 +5,8 @@ import pandas as pd
 import pytest
 
 from examples.cli.custom_validator import CustomValidator
-from trubrics.context import DataContext, ModelContext, TrubricContext
-from trubrics.validations.base import Validator
+from trubrics.context import DataContext, TrubricContext
+from trubrics.validations import ModelValidator
 
 
 @pytest.fixture
@@ -34,21 +34,18 @@ def data_context():
 
 
 @pytest.fixture
-def classifier_model_context():
-    from sklearn.metrics import accuracy_score
-
-    model = joblib.load("assets/tests/classifier_test_model.pkl")
-    return ModelContext(estimator=model, evaluation_function=accuracy_score)
+def classifier_model():
+    return joblib.load("assets/tests/classifier_test_model.pkl")
 
 
 @pytest.fixture
-def validator_classifier(data_context, classifier_model_context):
-    return Validator(data=data_context, model=classifier_model_context)
+def validator_classifier(data_context, classifier_model):
+    return ModelValidator(metric="accuracy", data=data_context, model=classifier_model)
 
 
 @pytest.fixture
-def custom_validator_classifier(data_context, classifier_model_context):
-    return CustomValidator(data=data_context, model=classifier_model_context)
+def custom_validator_classifier(data_context, classifier_model):
+    return CustomValidator(metric="accuracy", data=data_context, model=classifier_model)
 
 
 @pytest.fixture

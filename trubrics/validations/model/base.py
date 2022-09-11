@@ -10,7 +10,7 @@ from trubrics.validations.validation_output import (
 )
 
 
-class Validator:
+class ModelValidator:
     def __init__(self, data: DataContext, model: Any, metric: str):
         self.metric = metric
         self.trubrics_model = TrubricsModel(metric=metric, data=data, model=model)
@@ -41,7 +41,7 @@ class Validator:
 
         Example:
             ```py
-            model_validator = Validator(data=data_context, model=model_context)
+            model_validator = ModelValidator(data=data_context, model=model_context)
             model_validator.validate_single_edge_case(
                 edge_case_data={'feature_a': 1, 'feature_b': 3},
                 desired_output=0
@@ -78,7 +78,7 @@ class Validator:
 
     #     Example:
     #         ```py
-    #         model_validator = Validator(data=data_context, model=model_context)
+    #         model_validator = ModelValidator(data=data_context, model=model_context)
     #         model_validator.validate_single_edge_case_in_range(
     #             edge_case_data={'feature_a': 1, 'feature_b': 3},
     #             lower_output=120,
@@ -112,7 +112,7 @@ class Validator:
 
         Example:
             ```py
-            model_validator = Validator(data=data_context, model=model_context)
+            model_validator = ModelValidator(data=data_context, model=model_context)
             model_validator.validate_performance_against_threshold(threshold=0.8)
             ```
         """
@@ -138,7 +138,7 @@ class Validator:
 
         Example:
             ```py
-            model_validator = Validator(data=data_context, model=model_context)
+            model_validator = ModelValidator(data=data_context, model=model_context)
             model_validator.validate_biased_performance_across_category(category="feature_a", threshold=0.05)
             ```
 
@@ -197,7 +197,7 @@ class Validator:
 
         Example:
             ```py
-            model_validator = Validator(data=data_context, model=model_context)
+            model_validator = ModelValidator(data=data_context, model=model_context)
             model_validator.model_validator.validate_performance_against_dummy(strategy="stratified")
             ```
         """
@@ -239,7 +239,7 @@ class Validator:
 
         Example:
             ```py
-            model_validator = Validator(data=data_context, model=model_context)
+            model_validator = ModelValidator(data=data_context, model=model_context)
             model_validator.validate_feature_in_top_n_important_features(
                 feature="feature_a",
                 feature_importance=feature_importance_dict,

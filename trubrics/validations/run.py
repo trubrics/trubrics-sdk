@@ -2,7 +2,7 @@ from typing import Any
 
 from trubrics.context import DataContext, TrubricContext
 from trubrics.exceptions import UnknownValidationError
-from trubrics.validations.base import Validator
+from trubrics.validations import ModelValidator
 
 
 def run_trubric(
@@ -15,7 +15,7 @@ def run_trubric(
     if custom_validator is not None:
         model_validator = custom_validator(metric=metric, data=data_context, model=model)
     else:
-        model_validator = Validator(metric=metric, data=data_context, model=model)
+        model_validator = ModelValidator(metric=metric, data=data_context, model=model)
     for validation in trubric.validations:
         args = validation.validation_kwargs["args"]
         kwargs = validation.validation_kwargs["kwargs"]

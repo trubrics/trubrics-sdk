@@ -7,7 +7,7 @@ from typing import Any, Optional
 from pydantic import BaseModel, validator
 
 from trubrics.context import DataContext, TrubricContext
-from trubrics.validations.base import Validator
+from trubrics.validations import ModelValidator
 
 
 class TrubricRun(BaseModel):
@@ -26,6 +26,6 @@ class TrubricRun(BaseModel):
 
     @validator("custom_validator")
     def validate_some_foo(cls, val):
-        if issubclass(val, Validator):
+        if issubclass(val, ModelValidator):
             return val
-        raise TypeError("Wrong type for 'custom_validator', must be subclass of Validator.")
+        raise TypeError("Wrong type for 'custom_validator', must be subclass of ModelValidator.")
