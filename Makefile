@@ -33,3 +33,8 @@ example-run-trubric:
 	--trubric-config-path "examples/cli" \
 	--trubric-output-file-path "examples/data" \
 	--trubric-output-file-name "my_new_trubric.json"
+
+save-titanic-tutorial-notebook:
+	@jupyter nbconvert \
+	--execute examples/notebooks/titanic-demo.ipynb \
+	--to html --output-dir docs/notebooks/
