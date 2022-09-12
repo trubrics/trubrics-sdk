@@ -3,7 +3,7 @@ from trubrics.validations import ModelValidator
 
 class RuleBasedModel:
     """
-    This example shows how we can wrap python code into a model that can be used by the ModelContext.
+    This example shows how we can wrap python code into a model that can be used by the ModelValidator.
 
     Tip: A custom model is built with python class that must contain:
         - an attribute named _estimator_type (see attributes bellow).
@@ -17,8 +17,10 @@ class RuleBasedModel:
     Example:
         ```py
         from sklearn.metrics import accuracy_score
-        estimator = RuleBasedModel()
-        model_context = ModelContext(estimator=estimator, evaluation_function=accuracy_score)
+        rule_based = RuleBasedModel()
+
+        from trubrics.validation import ModelValidator
+        model_validator = ModelValidator(metric="accuracy", data=data_context, model=rule_based)
         ```
     """
 

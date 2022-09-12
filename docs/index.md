@@ -29,10 +29,9 @@ Trubrics grows confidence and trust in machine learning by bridging the gap betw
 ## Create a trubric
 A trubric is a checklist of validations, and can be built by:
 
-1. Initialising `DataContext` and `ModelContext` objects to wrap data and models into a trubrics friendly format
+1. Initialising a `DataContext` to wrap ML data into a trubrics friendly object
 --8<-- "docs/snippets/init_datacontext.md"
---8<-- "docs/snippets/init_modelcontext.md"
-2. Using the `Validator` object to generate out of the box validations
+1. Using the `ModelValidator` object to generate out of the box validations
 --8<-- "docs/snippets/create_validations.md"
 3. Saving a .json of all validations locally using a `TrubricsContext` object
 --8<-- "docs/snippets/save_trubric.md"
@@ -41,7 +40,7 @@ A trubric is a checklist of validations, and can be built by:
 Run the locally saved trubric .json with:
 --8<-- "docs/snippets/trubrics_cli.md"
 
-`<trubrics_config_file>.py` is a trubrics config file where you can initialise a `DataContext` and `ModelContext`.
+`<trubrics_config_file>.py` is a trubrics config file where you can initialise a `DataContext`.
 The file must contain a variable RUN_CONTEXT, an instance of the TrubricRun class. For more information, visit the
 [Running trubrics](run_trubrics.md) page.
 
@@ -56,8 +55,7 @@ Trubrics feedback components help you build python applications with your favour
 These are aimed at collecting feedback on your models from business users and translating these into validation points.
 Build a feedback application by:
 
-1. Initialising `DataContext` and `ModelContext` objects to wrap your data and models into a trubrics friendly format
+1. Initialising a `DataContext` to wrap your ML data into a trubrics friendly object
 --8<-- "docs/snippets/init_datacontext.md"
---8<-- "docs/snippets/init_modelcontext.md"
 2. Using the `StreamlitComponent` object to generate app components to collect feedback
 --8<-- "docs/snippets/streamlit_feedback.md"

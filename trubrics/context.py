@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 import sklearn.metrics
+from loguru import logger
 from pydantic import BaseModel, validator
 
 from trubrics.exceptions import (
@@ -142,11 +143,10 @@ class TrubricsModel(BaseModel):
         """
         Validate that model predicts on the first 5 rows of the training data.
         """
-        if values["data"].X_train is not None:
+        if values["data"].training_data is not None:
             try:
                 v.predict(values["data"].X_train.head())
-            except ValueError as e:
-                print(e)
+            except ValueError:
                 raise ModelPredictionError("The model specified does not predict on the train data.")
         return v
 
@@ -157,8 +157,7 @@ class TrubricsModel(BaseModel):
         """
         try:
             v.predict(values["data"].X_test.head())
-        except ValueError as e:
-            print(e)
+        except ValueError:
             raise ModelPredictionError("The model specified does not predict on the test data.")
         return v
 
@@ -171,28 +170,31 @@ class TrubricsModel(BaseModel):
 
     @property
     def predictions_train(self):
-        if self.data.X_train is not None:
-            print("Predicting on training set...")
+        if self.data.training_data is not None:
+            logger.debug("Predicting train set.")
             return self.model.predict(self.data.X_train)
         return None
 
     @property
     def predictions_test(self):
-        print("Predicting on testing set...")
+        logger.debug("Predicting test set.")
         return self.model.predict(self.data.X_test)
 
     @property
     def score_train(self):
-        print("Scoring on training set...")
         if self.scorer:
-            return self.scorer(self.model, self.data.X_train, self.data.y_train)
+            if self.data.training_data is not None:
+                logger.debug("Scoring train set.")
+                return self.scorer(self.model, self.data.X_train, self.data.y_train)
+            else:
+                return None
         else:
             raise ValueError("Scorer has not been set.")
 
     @property
     def score_test(self):
-        print("Scoring on testing set...")
         if self.scorer:
+            logger.debug("Scoring test set.")
             return self.scorer(self.model, self.data.X_test, self.data.y_test)
         else:
             raise ValueError("Scorer has not been set.")
@@ -315,7 +317,7 @@ class TrubricContext(BaseModel):
             file_name = f"{self.trubric_name}.json"
         with open(Path(path) / file_name, "w") as file:
             file.write(self.json(indent=4))
-            print(f"Trubric saved to {Path(path) / file_name}.")
+            logger.info(f"Trubric saved to {Path(path) / file_name}.")
 
     def save_ui(self, url: str, user_id: str):
 
@@ -327,4 +329,4 @@ class TrubricContext(BaseModel):
                 headers={"Content-Type": "application/json"},
                 data=self.json().encode("utf-8"),
             )
-            print("Trubric saved to the trubrics manager.")
+            logger.info("Trubric saved to the trubrics manager.")
