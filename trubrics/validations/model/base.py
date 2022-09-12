@@ -153,7 +153,7 @@ class ModelValidator:
             - Show distributions of category variables
             - Performance plots of results
         """
-        test_data = self.trubrics_model.data.X_test
+        test_data = self.trubrics_model.data.testing_data
         cat_values = list(test_data[category].unique())
         if len(cat_values) > 20:
             raise Exception(f"Cardinality of {len(cat_values)} too high for performance test.")
@@ -165,11 +165,8 @@ class ModelValidator:
         result: Dict[str, Union[int, float]] = {}
         for value in cat_values:
             if value not in [np.nan, None]:
-                if isinstance(value, str):
-                    filtered_data = self.trubrics_model.data.testing_data.query(f"`{category}`=='{value}'")
-                else:
-                    filtered_data = test_data.query(f"`{category}`=={value}")
-
+                value = f"'{value}'" if isinstance(value, str) else value
+                filtered_data = test_data.query(f"`{category}`=={value}")
                 result[value] = self.scorer(
                     self.trubrics_model.model,
                     filtered_data.loc[:, self.trubrics_model.data.features],
