@@ -2,12 +2,13 @@ import joblib
 import pandas as pd
 
 from examples.cli.custom_validator import CustomValidator
+from examples.training import titanic_config
 from trubrics.context import DataContext, TrubricContext
 from trubrics.validations.run_context import TrubricRun
 
-testing_data = pd.read_csv("examples/data/preprocessed_test.csv")
-training_data = pd.read_csv("examples/data/preprocessed_train.csv")
-model = joblib.load("examples/models/rf_model.pkl")
+testing_data = pd.read_csv(titanic_config.LOCAL_TEST_FILENAME)
+training_data = pd.read_csv(titanic_config.LOCAL_TRAIN_FILENAME)
+model = joblib.load(titanic_config.LOCAL_MODEL_FILENAME)
 
 data_context = DataContext(testing_data=testing_data, training_data=training_data, target_column="Survived")
 trubric_context = TrubricContext.parse_file("examples/data/my_first_trubric.json")
