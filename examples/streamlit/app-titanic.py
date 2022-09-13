@@ -27,7 +27,7 @@ def init_data():
 
 
 data_context, model = init_data()
-st_component = StreamlitComponent(metric="accuracy", data=data_context, model=model)
+st_component = StreamlitComponent(data=data_context, model=model)
 
 with st.sidebar:
     st.title("Modify features to test the model...")

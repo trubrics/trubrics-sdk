@@ -12,12 +12,9 @@ from trubrics.utils.pandas import schema_is_equal
 
 
 class StreamlitComponent:
-    def __init__(self, data: DataContext, model: Any, metric: str):
-        self.metric = metric
-        self.trubrics_model = TrubricsModel(metric=metric, data=data, model=model)
+    def __init__(self, data: DataContext, model: Any):
+        self.trubrics_model = TrubricsModel(data=data, model=model)
         self.model_type = self.trubrics_model.model_type
-        self.score_test = self.trubrics_model.score_test
-        self.scorer: Any = self.trubrics_model.scorer
 
     def generate_what_if(self, wi_data: Optional[pd.DataFrame] = None) -> pd.DataFrame:
         """
