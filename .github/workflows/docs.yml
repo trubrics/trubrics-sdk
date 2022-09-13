@@ -13,5 +13,6 @@ jobs:
           python-version: 3.9
       - run: python3 -m venv venv && source venv/bin/activate
       - run: make install-dev
+      - run: make train-titanic
       - run: make save-titanic-tutorial-notebook
       - run: mkdocs gh-deploy --force

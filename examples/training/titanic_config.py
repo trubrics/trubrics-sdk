@@ -1,7 +1,7 @@
 TARGET = "Survived"
 CATEGORICAL_COLUMNS = ["Sex", "Embarked", "Title"]
 
-LOCAL_RAW_TRAIN_FILENAME = "examples/data/titianic_datasets/train.csv"
+LOCAL_RAW_TRAIN_FILENAME = "examples/data/titanic_datasets/train.csv"
 
 LOCAL_TRAIN_FILENAME = "examples/data/titanic_datasets/preprocessed_train.csv"
 LOCAL_TEST_FILENAME = "examples/data/titanic_datasets/preprocessed_test.csv"
