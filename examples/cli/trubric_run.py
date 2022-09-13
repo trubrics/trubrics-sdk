@@ -1,6 +1,7 @@
 import joblib
 import pandas as pd
 
+from examples.cli.custom_scorer import custom_scorers
 from examples.cli.custom_validator import CustomValidator
 from examples.training import titanic_config
 from trubrics.context import DataContext, TrubricContext
@@ -14,5 +15,9 @@ data_context = DataContext(testing_data=testing_data, training_data=training_dat
 trubric_context = TrubricContext.parse_file("examples/data/my_first_trubric.json")
 
 RUN_CONTEXT = TrubricRun(
-    data_context=data_context, model=model, trubric_context=trubric_context, custom_validator=CustomValidator
+    data_context=data_context,
+    model=model,
+    trubric_context=trubric_context,
+    custom_validator=CustomValidator,
+    custom_scorers=custom_scorers,
 )

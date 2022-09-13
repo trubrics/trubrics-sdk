@@ -7,11 +7,11 @@ from trubrics.validations.validation_output import (
 
 
 class CustomValidator(ModelValidator):
-    def __init__(self, data: DataContext, model):
-        super().__init__(data, model)
+    def __init__(self, data: DataContext, model, custom_scorers=None):
+        super().__init__(data, model, custom_scorers)
 
     @validation_output
-    def validate_performance_for_different_fares(self, fare_cutoff):
+    def validate_performance_for_different_fares(self, fare_cutoff, severity=None):
         return self._validate_performance_for_different_fares(fare_cutoff)
 
     def _validate_performance_for_different_fares(self, fare_cutoff: int = 50) -> validation_output_type:
@@ -23,7 +23,7 @@ class CustomValidator(ModelValidator):
             This method is separated from validate_performance_for_different_fares
             to apply @validation_output and for unit testing.
 
-            The @validation_output decorator allows you to generate a ValidationContext object,
+            The @validation_output decorator allows you to generate a ValidationContext,
             and must be used to be able to save your validation as part of a Trubric.
             This decorator requires you to return values with the same type as validation_output_type.
         """

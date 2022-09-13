@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, Union
+from typing import Any, Callable, Dict, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -13,9 +13,10 @@ from trubrics.validations.validation_output import (
 
 
 class ModelValidator:
-    def __init__(self, data: DataContext, model: Any):
+    def __init__(self, data: DataContext, model: Any, custom_scorers: Optional[Dict[str, Any]] = None):
         self.tm = TrubricsModel(data=data, model=model)
         self.model_type = self.tm.model_type
+        self.custom_scorers = custom_scorers
 
     @validation_output
     def validate_single_edge_case(self, edge_case_data, desired_output, severity=None):
@@ -265,10 +266,14 @@ class ModelValidator:
         if metric in sklearn.metrics.SCORERS:
             scorer = sklearn.metrics.SCORERS[metric]
         else:
-            raise SklearnMetricTypeError(
-                f"The metric '{metric}' is not part of scikit-learns scorers. Run `sklearn.metrics.SCORERS` for list"
-                " default scorers."
-            )
+            if self.custom_scorers is not None and metric in self.custom_scorers:
+                scorer = self.custom_scorers[metric]
+            else:
+                raise SklearnMetricTypeError(
+                    f"The metric '{metric}' is not part of scikit-learns scorers, nor is it defined as a custom scorer"
+                    " in the custom_scorers attribute. Run `sklearn.metrics.SCORERS` to list default scorers, or input"
+                    " your custom scorer to the ModelValidator."
+                )
         return scorer
 
     def _testing_data_score(self, metric: str) -> float:

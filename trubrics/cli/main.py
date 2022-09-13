@@ -76,6 +76,7 @@ def run(
         model=run_context.model,
         trubric=run_context.trubric_context,
         custom_validator=run_context.custom_validator,
+        custom_scorers=run_context.custom_scorers,
     )
     validations = []
     for validation_result in all_validation_results:
