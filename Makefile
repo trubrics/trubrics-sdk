@@ -35,6 +35,7 @@ example-run-trubric:
 	--trubric-output-file-name "my_new_trubric.json"
 
 save-titanic-tutorial-notebook:
+	@python -m ipykernel install --user --name=trubrics-venv
 	@jupyter nbconvert \
 	--execute examples/notebooks/titanic-demo.ipynb \
 	--to html --output-dir docs/notebooks/
