@@ -2,55 +2,16 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
+from loguru import logger
 from pydantic import BaseModel, validator
 
-from trubrics.exceptions import PandasSchemaError
+from trubrics.exceptions import (
+    EstimatorTypeError,
+    ModelPredictionError,
+    PandasSchemaError,
+)
 from trubrics.utils.pandas import schema_is_equal
 from trubrics.utils.trubrics_manager_connector import make_request
-
-
-class ModelContext(BaseModel):
-    """
-    The ModelContext wraps models into a trubrics friendly format.
-
-    Note:
-        The ModelContext *must contain* at least an estimator and an evaluation attribute.
-        Default values are set for all other attributes.
-        Currently, estimator and evaluation functions are defined with scikit-learn convention:
-
-            * Estimators: https://scikit-learn.org/stable/developers/develop.html
-            * Classification Metrics:
-                https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics
-            * Regression Metrics: https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics
-
-    Attributes:
-        name: ModelContext name. Required for trubrics UI tracking.
-        version: ModelContext version. Required for trubrics UI tracking.
-        estimator: An estimator (or model) that can be a classifier or regressor.
-        evaluation_function: An evaluation function that takes arguments (y_true, y_pred, ...).
-        evaluation_kwargs: Any kwargs for the evaluation function.
-    """
-
-    name: str = "my_model"
-    version: float = 0.1
-    estimator: Any
-    evaluation_function: Any
-    evaluation_kwargs: Optional[Dict[str, Union[bool, float, int, str, None]]] = None
-
-    class Config:
-        allow_mutation = False
-        arbitrary_types_allowed = True
-        extra = "forbid"
-
-    @property
-    def evaluation_function_name(self) -> str:
-        """The scikit-learn name of the evaluation function."""
-        return self.evaluation_function.__name__
-
-    @property
-    def estimator_type(self) -> str:
-        """The scikit-learn type of the estimator."""
-        return self.estimator._estimator_type
 
 
 class DataContext(BaseModel):
@@ -91,6 +52,26 @@ class DataContext(BaseModel):
         return [col for col in self.testing_data.columns if col != self.target_column]
 
     @property
+    def X_test(self) -> pd.DataFrame:
+        """Feature testing dataframe."""
+        return self.testing_data[self.features]
+
+    @property
+    def y_test(self) -> pd.Series:
+        """Target testing series."""
+        return self.testing_data[self.target_column]
+
+    @property
+    def X_train(self) -> Optional[pd.DataFrame]:
+        """Feature training dataframe."""
+        return self.training_data[self.features] if self.training_data is not None else None
+
+    @property
+    def y_train(self) -> Optional[pd.Series]:
+        """Target training series."""
+        return self.training_data[self.target_column] if self.training_data is not None else None
+
+    @property
     def renamed_testing_data(self) -> pd.DataFrame:
         """Renamed testing data with business columns"""
         if self.business_columns is None:
@@ -128,6 +109,69 @@ class DataContext(BaseModel):
                 "Target column should not feature as a categorical column. Categorical columns only refer to features."
             )
         return v
+
+
+class TrubricsModel(BaseModel):
+    """ """
+
+    data: DataContext
+    model: Any
+
+    class Config:
+        allow_mutation = False
+        arbitrary_types_allowed = True
+        extra = "forbid"
+
+    @validator("model")
+    def does_model_predict_train_head(cls, v: Any, values: Any) -> Any:
+        """
+        Validate that model predicts on the first 5 rows of the training data.
+        """
+        if values["data"].training_data is not None:
+            try:
+                v.predict(values["data"].X_train.head())
+            except ValueError:
+                raise ModelPredictionError("The model specified does not predict on the train data.")
+        return v
+
+    @validator("model")
+    def does_model_predict_test_head(cls, v: Any, values: Any) -> Any:
+        """
+        Validate that model predicts on the first 5 rows of the testing data.
+        """
+        try:
+            v.predict(values["data"].X_test.head())
+        except ValueError:
+            raise ModelPredictionError("The model specified does not predict on the test data.")
+        return v
+
+    @property
+    def model_type(self):
+        if self.model._estimator_type in ["regressor", "classifier"]:
+            return self.model._estimator_type
+        else:
+            raise EstimatorTypeError("_estimator_type must be a 'regressor' or a 'classifier'.")
+
+    @property
+    def predictions_train(self):
+        if self.data.training_data is not None:
+            logger.debug("Predicting train set.")
+            return self.model.predict(self.data.X_train)
+        return None
+
+    @property
+    def predictions_test(self):
+        logger.debug("Predicting test set.")
+        return self.model.predict(self.data.X_test)
+
+    @property
+    def testing_data_errors(self):
+        return self._filter_errors(self.data.testing_data)
+
+    def _filter_errors(self, df):
+        predict_col = f"{self.data.target_column}_predictions"
+        assign_kwargs = {predict_col: self.predictions_test}
+        return df.assign(**assign_kwargs).loc[lambda x: x[self.data.target_column] != x[predict_col], :]
 
 
 class FeedbackContext(BaseModel):
@@ -201,17 +245,17 @@ class TrubricContext(BaseModel):
 
     Attributes:
         name: Trubric name.
-        model_context_name: model context name (from ModelContext)
-        model_context_version: model context version (from ModelContext)
+        model_name: model name
+        model_version: model version
         data_context_name: data context name (from DataContext)
         data_context_version: data context version (from DataContext)
         metadata: free textual metadata field
         validations: list of validations (defined by ValidationContext)
     """
 
-    name: str = "my_trubric"
-    model_context_name: str
-    model_context_version: float
+    trubric_name: str = "my_trubric"
+    model_name: str = "my_model"
+    model_version: float = 0.1
     data_context_name: str
     data_context_version: float
     metadata: Optional[Dict[str, str]] = None
@@ -221,8 +265,8 @@ class TrubricContext(BaseModel):
         schema_extra = {
             "example": {
                 "name": "my_first_trubric",
-                "model_context_name": "my_model",
-                "model_context_version": 0.1,
+                "model_name": "my_model",
+                "model_version": 0.1,
                 "data_context_name": "my_dataset",
                 "data_context_version": 0.1,
                 "metadata": {},
@@ -230,11 +274,14 @@ class TrubricContext(BaseModel):
             }
         }
 
-    def save_local(self, path: str, file_name: str = f"{name}.json"):
+    def save_local(self, path: str, file_name: Optional[str] = None):
         if path is None:
             raise Exception("Specify the local path where you would like to save your Trubric json.")
+        if file_name is None:
+            file_name = f"{self.trubric_name}.json"
         with open(Path(path) / file_name, "w") as file:
             file.write(self.json(indent=4))
+            logger.info(f"Trubric saved to {Path(path) / file_name}.")
 
     def save_ui(self, url: str, user_id: str):
 
@@ -246,3 +293,4 @@ class TrubricContext(BaseModel):
                 headers={"Content-Type": "application/json"},
                 data=self.json().encode("utf-8"),
             )
+            logger.info("Trubric saved to the trubrics manager.")

@@ -24,29 +24,25 @@ Trubrics bridges the gap between data scientists understanding of business chall
 ## Create a trubric
 A trubric is a checklist of validations, and can be built by:
 
-1. Initialising `DataContext` and `ModelContext` objects to wrap data and models into a trubrics friendly format
+1. Initialising `DataContext` object to wrap data into a trubrics friendly format
 ```py
-from trubrics.context import DataContext, ModelContext
+from trubrics.context import DataContext
 from sklearn.metrics import accuracy_score
 data_context = DataContext(
     testing_data=test_df,  # pandas dataframe of data to test against a model
     target_column="target_column_name_in_test_df"
 )
 
-model_context = ModelContext(
-    estimator=model,  # model to validate
-    evaluation_function=accuracy_score  # evaluation function
-)
 ```
 
-2. Using the `Validator` object to generate out of the box validations
+2. Using the `ModelValidator` object to generate out of the box validations
 ```py
-from trubrics.validators.base import Validator
-model_validator = Validator(data=data_context, model=model_context)
+from trubrics.validations import ModelValidator
+model_validator = ModelValidator(data=data_context, model=rf_model)  # sklearn model
 validations = [
-    model_validator.validate_performance_against_threshold(threshold=0.8),
+    model_validator.validate_performance_against_threshold(metric="accuracy", threshold=0.8),
     model_validator.validate_biased_performance_across_category(
-        category="feature_a", threshold=0.05
+        metric="recall", category="feature_a", threshold=0.05
     )
 ]
 ```
@@ -71,27 +67,22 @@ Run the locally saved trubric .json with:
 (venv)$ trubrics run <trubrics_config_file>.py
 ```
 
-`<trubrics_config_file>.py` is a trubrics config file where you can initialise a `DataContext` and `ModelContext`.
+`<trubrics_config_file>.py` is a trubrics config file where you can initialise a `DataContext` and `ModelValidator`.
 The file must contain a variable RUN_CONTEXT, an instance of the TrubricRun class. See an example of this file in
-[examples/trubrics_config.py](examples/trubrics_config.py).
+[examples/cli/trubric_run.py](examples/cli/trubric_run.py).
 
 ## Collect model feedback
 Trubrics feedback components help you build python applications with your favourite library (e.g. [Streamlit](https://streamlit.io/)).
 These are aimed at collecting feedback on your models from business users and translating these into validation points.
 Build a feedback application by:
 
-1. As with [Create a Trubric](#create-a-trubric), initialising `DataContext` and `ModelContext` objects to wrap your data and models into a trubrics friendly format
+1. As with [Create a Trubric](#create-a-trubric), initialise a `DataContext` to wrap your ML data into a trubrics friendly object
 ```py
-from trubrics.context import DataContext, ModelContext
+from trubrics.context import DataContext
 from sklearn.metrics import accuracy_score
 data_context = DataContext(
     testing_data=test_df,  # pandas dataframe of data to test against a model
     target_column="target_column_name_in_test_df"
-)
-
-model_context = ModelContext(
-    estimator=model,  # model to validate
-    evaluation_function=accuracy_score  # evaluation function
 )
 ```
 

@@ -1,10 +1,10 @@
 ```py
-from trubrics.validators.base import Validator
-model_validator = Validator(data=data_context, model=model_context)
+from trubrics.validations import ModelValidator
+model_validator = ModelValidator(data=data_context, model=rf_model)
 validations = [
-    model_validator.validate_performance_against_threshold(threshold=0.8),
+    model_validator.validate_performance_against_threshold(metric="accuracy", threshold=0.8),
     model_validator.validate_biased_performance_across_category(
-        category="feature_a", threshold=0.05
+        metric="recall", category="feature_a", threshold=0.05
     )
 ]
 ```

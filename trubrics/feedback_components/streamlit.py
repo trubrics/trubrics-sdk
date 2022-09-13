@@ -1,22 +1,20 @@
-import logging
-from typing import Optional, Tuple, Union
+from typing import Any, Optional, Tuple, Union
 
 import pandas as pd
 import streamlit as st
+from loguru import logger
 from pandas.api.types import is_numeric_dtype
 
-from trubrics.context import FeedbackContext
+from trubrics.context import DataContext, FeedbackContext, TrubricsModel
 from trubrics.exceptions import PandasSchemaError
-from trubrics.modellers.classifier import Classifier
 from trubrics.utils.loader import save_validation_to_json
 from trubrics.utils.pandas import schema_is_equal
 
-logger = logging.getLogger(__name__)
 
-
-class StreamlitComponent(Classifier):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+class StreamlitComponent:
+    def __init__(self, data: DataContext, model: Any):
+        self.trubrics_model = TrubricsModel(data=data, model=model)
+        self.model_type = self.trubrics_model.model_type
 
     def generate_what_if(self, wi_data: Optional[pd.DataFrame] = None) -> pd.DataFrame:
         """
@@ -26,23 +24,24 @@ class StreamlitComponent(Classifier):
         TODO: check if total columns > N, option to select top n features based on dict of feature importance
         """
         if wi_data is None:
-            wi_data = self.data.testing_data.drop(columns=[self.data.target_column])
+            wi_data = self.trubrics_model.data.X_test
         else:
-            if not schema_is_equal(wi_data, self.data.testing_data):
-                raise PandasSchemaError("Schemas of provided data and DataContext testing data are different.")
-            else:
-                wi_data = wi_data.drop(columns=[self.data.target_column])
+            if not schema_is_equal(wi_data, self.trubrics_model.data.testing_data):
+                raise PandasSchemaError("Schemas of provided data and X_test in DataContext are different.")
 
         out_df = pd.DataFrame()
         for col, dtype in wi_data.dtypes.to_dict().items():
             series = wi_data[col]
-            if self.data.business_columns is not None and col in self.data.business_columns.keys():
-                renamed_col = self.data.business_columns[col]
+            if (
+                self.trubrics_model.data.business_columns is not None
+                and col in self.trubrics_model.data.business_columns.keys()
+            ):
+                renamed_col = self.trubrics_model.data.business_columns[col]
             else:
                 renamed_col = col
-            if self.data.categorical_columns is None:
+            if self.trubrics_model.data.categorical_columns is None:
                 raise ValueError("Categorical columns must be specified for the What-If tool.")
-            if col in self.data.categorical_columns:
+            if col in self.trubrics_model.data.categorical_columns:
                 if is_numeric_dtype(dtype.type):
                     out_df[col] = [
                         st.slider(
@@ -123,7 +122,7 @@ class StreamlitComponent(Classifier):
         )
         corrected_prediction = st.selectbox(
             "The model prediction for this edge case should be:",
-            tuple(self.data.testing_data[self.data.target_column].unique()),
+            tuple(self.trubrics_model.data.testing_data[self.trubrics_model.data.target_column].unique()),
         )
         description = "A single edge case."
         return corrected_prediction, description
@@ -134,7 +133,7 @@ class StreamlitComponent(Classifier):
                 "you are signalling that a given feature must be in the top N most important features."
             )
         )
-        features = self.data.features
+        features = self.trubrics_model.data.features
         selected_feature = st.selectbox("Choose model feature:", (features))
         top_n_feature = st.slider(
             "The selected feature should be in the top ... features:", min_value=1, max_value=len(features)

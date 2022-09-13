@@ -1,12 +1,12 @@
-# The `Validator` object
+# The `ModelValidator` object
 
 The trubrics library comes with ready-to-use validations that you can test against your models in a
-couple of lines of code. These validations are held in the `Validator` object, that can be instantiated
-with your DataContext and ModelContext:
+couple of lines of code. These validations are held in the `ModelValidator` object, that can be instantiated
+with your DataContext and a model:
 
 --8<-- "docs/snippets/create_validations.md"
 
-The `Validator` object respects the following conventions:
+The `ModelValidator` object respects the following conventions:
 
 - Contains all code for validations
 - All validation names start with the prefix "validate_"

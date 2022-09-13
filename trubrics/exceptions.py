@@ -10,17 +10,25 @@ class ClassifierNotSupportedError(Exception):
     """An exception signalling that the output from a validation function is invalid."""
 
 
-class UnknownEstimatorType(Exception):
-    """An exception signalling that an estimator type is not recognised."""
-
-
 class UnknownValidationError(Exception):
     """An exception signalling that validation is not recognised by a given validator."""
 
 
 class MissingConfigPathError(Exception):
-    """..."""
+    """An exception signalling that the trubrics config file path does not exist."""
 
 
 class MissingTrubricRunFileError(Exception):
-    """..."""
+    """An exception signalling that a TrubricRun file does not exist."""
+
+
+class EstimatorTypeError(Exception):
+    """An exception signalling that the estimator is not of type 'classifier' or 'regressor'."""
+
+
+class SklearnMetricTypeError(Exception):
+    """An exception signalling that the metric provided does not refer to an sklearn default metric."""
+
+
+class ModelPredictionError(Exception):
+    """An exception signalling that the model can't predict on a given set."""

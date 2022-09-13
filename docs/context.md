@@ -1,19 +1,10 @@
 # Understanding contexts in trubrics
-Contexts in the trubrics library refer to [Pydantic](https://pydantic-docs.helpmanual.io/) data models. The two main contexts that must be initialised before building a validations or a feedback component are the DataContext and the ModelContext.
-
-<center>
-![trubrics-contexts](./assets/trubrics-contexts.png)
-</center>
+Contexts in the trubrics library refer to [Pydantic](https://pydantic-docs.helpmanual.io/) data models. The DataContext must be configured before creating either a `ModelValidator` or a feedback component.
 
 ## The DataContext
 !!!example "DataContext Example"
     --8<-- "docs/snippets/init_datacontext.md"
 :::trubrics.context.DataContext
-
-## The ModelContext
-!!!example "ModelContext Example"
-    --8<-- "docs/snippets/init_modelcontext.md"
-:::trubrics.context.ModelContext
 
 ## The TrubricContext
 !!!example "TrubricContext Example"

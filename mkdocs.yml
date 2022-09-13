@@ -51,7 +51,7 @@ nav:
   - Features:
     - Models: models.md
     - Validations:
-      - The Validator object: validator_object.md
+      - The ModelValidator object: validator_object.md
       - Out-of-the-box validations: validations.md
       - Custom validations: custom_validations.md
     - Running trubrics: run_trubrics.md

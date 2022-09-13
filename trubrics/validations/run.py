@@ -1,20 +1,20 @@
-from typing import Optional
+from typing import Any
 
-from trubrics.context import DataContext, ModelContext, TrubricContext
+from trubrics.context import DataContext, TrubricContext
 from trubrics.exceptions import UnknownValidationError
-from trubrics.validators.base import Validator
+from trubrics.validations import ModelValidator
 
 
 def run_trubric(
     data_context: DataContext,
-    model_context: ModelContext,
+    model: Any,
     trubric: TrubricContext,
-    custom_validator: Optional[Validator] = None,
+    custom_validator=None,
 ):
     if custom_validator is not None:
-        model_validator = custom_validator
+        model_validator = custom_validator(data=data_context, model=model)
     else:
-        model_validator = Validator(data=data_context, model=model_context)
+        model_validator = ModelValidator(data=data_context, model=model)
     for validation in trubric.validations:
         args = validation.validation_kwargs["args"]
         kwargs = validation.validation_kwargs["kwargs"]
