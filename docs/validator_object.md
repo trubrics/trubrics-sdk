@@ -2,7 +2,7 @@
 
 The trubrics library comes with ready-to-use validations that you can test against your models in a
 couple of lines of code. These validations are held in the `ModelValidator` object, that can be instantiated
-with your DataContext, a model and a metric:
+with your DataContext and a model:
 
 --8<-- "docs/snippets/create_validations.md"
 
