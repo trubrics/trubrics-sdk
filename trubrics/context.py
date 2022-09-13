@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
-import sklearn.metrics
 from loguru import logger
 from pydantic import BaseModel, validator
 
@@ -10,7 +9,6 @@ from trubrics.exceptions import (
     EstimatorTypeError,
     ModelPredictionError,
     PandasSchemaError,
-    SklearnMetricTypeError,
 )
 from trubrics.utils.pandas import schema_is_equal
 from trubrics.utils.trubrics_manager_connector import make_request
@@ -116,8 +114,6 @@ class DataContext(BaseModel):
 class TrubricsModel(BaseModel):
     """ """
 
-    scorer: Optional[Any] = None
-    metric: str
     data: DataContext
     model: Any
 
@@ -125,18 +121,6 @@ class TrubricsModel(BaseModel):
         allow_mutation = False
         arbitrary_types_allowed = True
         extra = "forbid"
-
-    @validator("metric")
-    def is_metric_in_default_scorer(cls, v: str, values: Any) -> str:
-        if values["scorer"] is None:
-            if v in sklearn.metrics.SCORERS:
-                values["scorer"] = sklearn.metrics.SCORERS[v]
-            else:
-                raise SklearnMetricTypeError(
-                    f"The metric '{v}' is not part of scikit-learns scorers. Run `sklearn.metrics.SCORERS` for list"
-                    " default scorers."
-                )
-        return v
 
     @validator("model")
     def does_model_predict_train_head(cls, v: Any, values: Any) -> Any:
@@ -179,25 +163,6 @@ class TrubricsModel(BaseModel):
     def predictions_test(self):
         logger.debug("Predicting test set.")
         return self.model.predict(self.data.X_test)
-
-    @property
-    def score_train(self):
-        if self.scorer:
-            if self.data.training_data is not None:
-                logger.debug("Scoring train set.")
-                return self.scorer(self.model, self.data.X_train, self.data.y_train)
-            else:
-                return None
-        else:
-            raise ValueError("Scorer has not been set.")
-
-    @property
-    def score_test(self):
-        if self.scorer:
-            logger.debug("Scoring test set.")
-            return self.scorer(self.model, self.data.X_test, self.data.y_test)
-        else:
-            raise ValueError("Scorer has not been set.")
 
     @property
     def testing_data_errors(self):
@@ -289,7 +254,6 @@ class TrubricContext(BaseModel):
     """
 
     trubric_name: str = "my_trubric"
-    metric: str
     model_name: str = "my_model"
     model_version: float = 0.1
     data_context_name: str

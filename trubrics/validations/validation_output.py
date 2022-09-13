@@ -24,8 +24,13 @@ def validation_output(func: Callable) -> Callable:
             )
 
         outcome, result = output
-
         outcome = _pass_or_fail(outcome)
+
+        if kwargs.get("severity"):
+            severity = kwargs.get("severity")
+            kwargs.pop("severity")
+        else:
+            severity = "error"
 
         if len(args) > 1:
             args = args[1:]  # ignore self arg for class methods
@@ -44,6 +49,7 @@ def validation_output(func: Callable) -> Callable:
             validation_type=func.__name__,
             validation_kwargs={"args": typed_args, "kwargs": typed_kwargs},
             outcome=outcome,
+            severity=severity,
             result=typed_result,  # type: ignore
         )
 

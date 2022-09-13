@@ -11,11 +11,10 @@ def run_trubric(
     trubric: TrubricContext,
     custom_validator=None,
 ):
-    metric = trubric.metric
     if custom_validator is not None:
-        model_validator = custom_validator(metric=metric, data=data_context, model=model)
+        model_validator = custom_validator(data=data_context, model=model)
     else:
-        model_validator = ModelValidator(metric=metric, data=data_context, model=model)
+        model_validator = ModelValidator(data=data_context, model=model)
     for validation in trubric.validations:
         args = validation.validation_kwargs["args"]
         kwargs = validation.validation_kwargs["kwargs"]

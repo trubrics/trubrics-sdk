@@ -39,7 +39,7 @@ def classifier_model():
 
 @pytest.fixture
 def validator_classifier(data_context, classifier_model):
-    return ModelValidator(metric="accuracy", data=data_context, model=classifier_model)
+    return ModelValidator(data=data_context, model=classifier_model)
 
 
 @pytest.fixture

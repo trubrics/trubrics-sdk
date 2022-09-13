@@ -37,15 +37,16 @@ model = RuleBasedModel()
 
 
 def test_performance_validation(data_context):
-    model_validator = ModelValidator(metric="accuracy", data=data_context, model=model)
-
-    result = model_validator._validate_performance_against_threshold(threshold=0.7)
+    model_validator = ModelValidator(data=data_context, model=model)
+    result = model_validator._validate_performance_against_threshold(metric="accuracy", threshold=0.7)
     actual = False, {"performance": 1 / 3}
     assert result == actual
 
 
 def test_biased_performance_validation(data_context):
-    model_validator = ModelValidator(metric="accuracy", data=data_context, model=model)
-    result = model_validator._validate_biased_performance_across_category("Sex", 0.5)
+    model_validator = ModelValidator(data=data_context, model=model)
+    result = model_validator._validate_biased_performance_across_category(
+        metric="accuracy", category="Sex", threshold=0.5
+    )
     actual = True, {"max_performance_difference": 0.4}
     assert result == actual
