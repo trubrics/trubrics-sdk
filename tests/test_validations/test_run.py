@@ -1,5 +1,6 @@
 import pytest
 
+from examples.cli.custom_scorer import custom_scorers
 from examples.cli.custom_validator import CustomValidator
 from trubrics.context import TrubricContext
 from trubrics.exceptions import UnknownValidationError
@@ -12,10 +13,12 @@ def test_run_trubric(data_context, classifier_model, trubric):
         model=classifier_model,
         custom_validator=CustomValidator,
         trubric=trubric,
+        custom_scorers=custom_scorers,
     )
 
     actuals = (
         ("validate_single_edge_case", "warning", "fail"),
+        ("validate_performance_against_threshold", "experiment", "pass"),
         ("validate_feature_in_top_n_important_features", "error", "pass"),
         ("validate_performance_for_different_fares", "warning", "fail"),
     )

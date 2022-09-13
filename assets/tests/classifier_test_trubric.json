@@ -33,6 +33,21 @@
             }
         },
         {
+            "validation_type": "validate_performance_against_threshold",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "my_custom_loss",
+                    "threshold": -0.7
+                }
+            },
+            "outcome": "pass",
+            "severity": "experiment",
+            "result": {
+                "performance": -0.6931471805599453
+            }
+        },
+        {
             "validation_type": "validate_feature_in_top_n_important_features",
             "validation_kwargs": {
                 "args": [],
