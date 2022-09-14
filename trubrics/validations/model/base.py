@@ -75,6 +75,7 @@ class ModelValidator:
             edge_case_data: ensemble of all feature values
             lower_output: minimum prediction value to be expected
             upper_output: maximum prediction value to be expected
+            proba_class: if model is a classifier, specify the class whose probabilities are to be validated
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the actual prediction result.
