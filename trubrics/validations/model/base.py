@@ -19,12 +19,12 @@ class ModelValidator:
         self.custom_scorers = custom_scorers
 
     @validation_output
-    def validate_single_edge_case(self, edge_case_data, desired_output, severity=None):
+    def validate_single_edge_case(self, edge_case_data, expected_output, severity=None):
         """For information, refer to the _validate_single_edge_case method."""
-        return self._validate_single_edge_case(edge_case_data, desired_output)
+        return self._validate_single_edge_case(edge_case_data, expected_output)
 
     def _validate_single_edge_case(
-        self, edge_case_data: Dict[str, Union[str, int, float]], desired_output: Union[int, float]
+        self, edge_case_data: Dict[str, Union[str, int, float]], expected_output: Union[int, float]
     ) -> validation_output_type:
         """Single edge case validation.
 
@@ -33,8 +33,8 @@ class ModelValidator:
         that a model must respect. It is often used to validate classification models.
 
         Args:
-            edge_case_data: ensemble of all feature values
-            desired_output: expected prediction
+            edge_case_data: ensemble of all feature values for a single data point
+            expected_output: expected prediction
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the actual prediction result.
@@ -44,12 +44,12 @@ class ModelValidator:
             model_validator = ModelValidator(data=data_context, model=model_context)
             model_validator.validate_single_edge_case(
                 edge_case_data={'feature_a': 1, 'feature_b': 3},
-                desired_output=0
+                expected_output=0
             )
             ```
         """
         prediction = self._predict_from_dict(data=edge_case_data)
-        return prediction == desired_output, {"prediction": prediction}
+        return prediction == expected_output, {"prediction": prediction}
 
     @validation_output
     def validate_single_edge_case_in_range(
@@ -72,7 +72,7 @@ class ModelValidator:
         that a model must respect. It is only possible to use on regression models.
 
         Args:
-            edge_case_data: ensemble of all feature values
+            edge_case_data: ensemble of all feature values for a single data point
             lower_output: minimum prediction value to be expected
             upper_output: maximum prediction value to be expected
             proba_class: if model is a classifier, specify the class whose probabilities are to be validated

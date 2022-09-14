@@ -3,9 +3,9 @@ import pytest
 
 def test__validate_single_edge_case(data_context, validator_classifier):
     edge_case_data = data_context.testing_data.iloc[0].to_dict()
-    desired_output = 1
+    expected_output = 1
 
-    result = validator_classifier._validate_single_edge_case(edge_case_data, desired_output)
+    result = validator_classifier._validate_single_edge_case(edge_case_data, expected_output)
     actual = True, {"prediction": 1}
 
     assert result == actual
@@ -13,9 +13,9 @@ def test__validate_single_edge_case(data_context, validator_classifier):
 
 # def test__validate_single_edge_case_in_range(data_context, validator_classifier):
 #     edge_case_data = data_context.testing_data.iloc[0].to_dict()
-#     desired_output = 1
+#     expected_output = 1
 
-#     result = validator_classifier._validate_single_edge_case(edge_case_data, desired_output)
+#     result = validator_classifier._validate_single_edge_case(edge_case_data, expected_output)
 #     actual = True, {"prediction": 1}
 
 #     assert result == actual

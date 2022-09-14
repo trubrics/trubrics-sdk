@@ -23,7 +23,7 @@
                         "Parch": 0,
                         "Fare": 37
                     },
-                    "desired_output": 0
+                    "expected_output": 0
                 }
             },
             "outcome": "fail",
