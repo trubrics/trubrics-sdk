@@ -165,6 +165,18 @@ class TrubricsModel(BaseModel):
         return self.model.predict(self.data.X_test)
 
     @property
+    def probabilities_train(self):
+        if self.data.training_data is not None:
+            logger.debug("Predicting probabilities on train set.")
+            return self.model.predict_proba(self.data.X_train)
+        return None
+
+    @property
+    def probabilities_test(self):
+        logger.debug("Predicting probabilities on test set.")
+        return self.model.predict_proba(self.data.X_test)
+
+    @property
     def testing_data_errors(self):
         return self._filter_errors(self.data.testing_data)
 
