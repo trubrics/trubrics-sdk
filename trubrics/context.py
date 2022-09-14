@@ -146,23 +146,41 @@ class TrubricsModel(BaseModel):
         return v
 
     @property
-    def model_type(self):
+    def model_type(self) -> str:
         if self.model._estimator_type in ["regressor", "classifier"]:
             return self.model._estimator_type
         else:
             raise EstimatorTypeError("_estimator_type must be a 'regressor' or a 'classifier'.")
 
     @property
-    def predictions_train(self):
+    def predictions_train(self) -> Optional[pd.Series]:
         if self.data.training_data is not None:
             logger.debug("Predicting train set.")
             return self.model.predict(self.data.X_train)
         return None
 
     @property
-    def predictions_test(self):
+    def predictions_test(self) -> pd.Series:
         logger.debug("Predicting test set.")
         return self.model.predict(self.data.X_test)
+
+    @property
+    def probabilities_train(self) -> Optional[Dict[str, pd.Series]]:
+        if self.data.training_data is not None:
+            logger.debug("Predicting probabilities on train set.")
+            probabilities = {}
+            for _class, _proba in zip(self.model.classes_, self.model.predict_proba(self.data.X_train).T):
+                probabilities[_class] = _proba
+            return probabilities
+        return None
+
+    @property
+    def probabilities_test(self) -> Dict[str, pd.Series]:
+        logger.debug("Predicting probabilities on test set.")
+        probabilities = {}
+        for _class, _proba in zip(self.model.classes_, self.model.predict_proba(self.data.X_test).T):
+            probabilities[_class] = _proba
+        return probabilities
 
     @property
     def testing_data_errors(self):

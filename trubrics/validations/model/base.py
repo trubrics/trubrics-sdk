@@ -5,7 +5,7 @@ import pandas as pd
 import sklearn.metrics
 
 from trubrics.context import DataContext, TrubricsModel
-from trubrics.exceptions import ClassifierNotSupportedError, SklearnMetricTypeError
+from trubrics.exceptions import EstimatorTypeError, SklearnMetricTypeError
 from trubrics.validations.validation_output import (
     validation_output,
     validation_output_type,
@@ -48,19 +48,22 @@ class ModelValidator:
             )
             ```
         """
-        prediction = self._predict_from_dict(edge_case_data=edge_case_data)
+        prediction = self._predict_from_dict(data=edge_case_data)
         return prediction == desired_output, {"prediction": prediction}
 
     @validation_output
-    def validate_single_edge_case_in_range(self, edge_case_data, lower_output, upper_output, severity=None):
+    def validate_single_edge_case_in_range(
+        self, edge_case_data, lower_output, upper_output, proba_class=None, severity=None
+    ):
         """For information, refer to the _validate_single_edge_case_in_range method."""
-        return self._validate_single_edge_case_in_range(edge_case_data, lower_output, upper_output)
+        return self._validate_single_edge_case_in_range(edge_case_data, lower_output, upper_output, proba_class)
 
     def _validate_single_edge_case_in_range(
         self,
         edge_case_data: Dict[str, Union[str, int, float]],
         lower_output: Union[int, float],
         upper_output: Union[int, float],
+        proba_class: Optional[Union[str, int]] = None,
     ) -> validation_output_type:
         """Single edge case validation in range.
 
@@ -72,6 +75,7 @@ class ModelValidator:
             edge_case_data: ensemble of all feature values
             lower_output: minimum prediction value to be expected
             upper_output: maximum prediction value to be expected
+            proba_class: if model is a classifier, specify the class whose probabilities are to be validated
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the actual prediction result.
@@ -89,9 +93,20 @@ class ModelValidator:
         if lower_output >= upper_output:
             raise ValueError("lower_output must be strictly inferior to upper_output.")
         if self.model_type == "classifier":
-            raise ClassifierNotSupportedError("Model type 'classifier' not supported for a range output.")
-        prediction = self._predict_from_dict(edge_case_data=edge_case_data)
+            if proba_class is None:
+                raise TypeError(
+                    "To create output range validation for classifier, please specify a"
+                    " class with the param proba_class=."
+                )
+            if proba_class not in set(self.tm.data.y_test):
+                raise ValueError(
+                    f"The class '{proba_class}' does not figure in the test data classes."
+                    " Make sure class is correct type between int and str."
+                )
+        if self.model_type == "regressor" and proba_class is not None:
+            raise EstimatorTypeError(f"The proba_class parameter is not recognised for model type {self.model_type}")
 
+        prediction = self._predict_from_dict(data=edge_case_data, proba_class=proba_class)
         return prediction > lower_output and prediction < upper_output, {"prediction": prediction}
 
     @validation_output
@@ -257,10 +272,21 @@ class ModelValidator:
 
         return count < top_n_features, {"feature_importance_ranking": count}
 
-    def _predict_from_dict(self, edge_case_data: Dict[str, Union[str, int, float]]) -> Union[int, float]:
-        edge_case_data_df = pd.DataFrame.from_records(edge_case_data, index=["0"], columns=self.tm.data.features)
-        prediction = self.tm.model.predict(edge_case_data_df)[0]
-        return prediction
+    def _predict_from_dict(
+        self,
+        data: Dict[str, Union[str, int, float]],
+        proba_class: Optional[Union[int, str]] = None,
+    ) -> Union[int, float]:
+        data_df = pd.DataFrame.from_records(data, index=["0"], columns=self.tm.data.features)
+        if proba_class is not None:
+            return self._predict_probabilities(data_df)[proba_class][0]
+        return self.tm.model.predict(data_df)[0]
+
+    def _predict_probabilities(self, data: pd.DataFrame) -> Dict[Union[int, str], pd.Series]:
+        probabilities = {}
+        for _class, _proba in zip(self.tm.model.classes_, self.tm.model.predict_proba(data).T):
+            probabilities[_class] = _proba
+        return probabilities
 
     def _scorer(self, metric: str) -> Callable[[Any, pd.DataFrame, pd.Series], float]:
         if metric in sklearn.metrics.SCORERS:
