@@ -27,8 +27,7 @@ def validation_output(func: Callable) -> Callable:
         outcome = _pass_or_fail(outcome)
 
         if kwargs.get("severity"):
-            severity = kwargs.get("severity")
-            kwargs.pop("severity")
+            severity = kwargs.pop("severity")
         else:
             severity = "error"
 
