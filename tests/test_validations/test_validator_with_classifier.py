@@ -1,7 +1,5 @@
 import pytest
 
-from trubrics.exceptions import ClassifierNotSupportedError
-
 
 def test__validate_single_edge_case(data_context, validator_classifier):
     edge_case_data = data_context.testing_data.iloc[0].to_dict()
@@ -13,11 +11,23 @@ def test__validate_single_edge_case(data_context, validator_classifier):
     assert result == actual
 
 
+# def test__validate_single_edge_case_in_range(data_context, validator_classifier):
+#     edge_case_data = data_context.testing_data.iloc[0].to_dict()
+#     desired_output = 1
+
+#     result = validator_classifier._validate_single_edge_case(edge_case_data, desired_output)
+#     actual = True, {"prediction": 1}
+
+#     assert result == actual
+
+
 @pytest.mark.parametrize(
     "kwargs,error_type",
     [
-        ({"lower_output": 1, "upper_output": 1}, ValueError),
-        ({"lower_output": 1, "upper_output": 3}, ClassifierNotSupportedError),
+        ({"lower_output": 0, "upper_output": 1}, TypeError),
+        ({"lower_output": 1, "upper_output": 1, "proba_class": 1}, ValueError),
+        ({"lower_output": 0, "upper_output": 1, "proba_class": "2"}, ValueError),
+        ({"lower_output": 0, "upper_output": 1, "proba_class": 2}, ValueError),
     ],
 )
 def test__validate_single_edge_case_in_range_raises(data_context, validator_classifier, kwargs, error_type):
