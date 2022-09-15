@@ -3,7 +3,6 @@ from typing import Any, Callable, Dict, Optional, Union
 import numpy as np
 import pandas as pd
 import sklearn.metrics
-from loguru import logger
 
 from trubrics.context import DataContext, TrubricsModel
 from trubrics.exceptions import EstimatorTypeError, SklearnMetricTypeError
@@ -237,22 +236,6 @@ class ModelValidator:
 
         return count < top_n_features, {"feature_importance_ranking": count}
 
-    def _predict_from_dict(
-        self,
-        data: Dict[str, Union[str, int, float]],
-        proba_class: Optional[Union[int, str]] = None,
-    ) -> Union[int, float]:
-        data_df = self._single_dict_to_df(data, self.tm.data.features)
-        if proba_class is not None:
-            return self._predict_probabilities(data_df)[proba_class][0]
-        return self.tm.model.predict(data_df)[0]
-
-    def _predict_probabilities(self, data: pd.DataFrame) -> Dict[Union[int, str], pd.Series]:
-        probabilities = {}
-        for _class, _proba in zip(self.tm.model.classes_, self.tm.model.predict_proba(data).T):
-            probabilities[_class] = _proba
-        return probabilities
-
     def _scorer(self, metric: str) -> Callable[[Any, pd.DataFrame, pd.Series], float]:
         if metric in sklearn.metrics.SCORERS:
             scorer = sklearn.metrics.SCORERS[metric]
@@ -270,23 +253,3 @@ class ModelValidator:
     def _testing_data_score(self, metric: str) -> float:
         scorer = self._scorer(metric)
         return scorer(self.tm.model, self.tm.data.X_test, self.tm.data.y_test)
-
-    def _is_sample_in_data_context(self, sample: pd.DataFrame):
-        """
-        Verify if some combination of features is present in either the testing or training data.
-        """
-
-        def is_sample_in_df(sample, df):
-            return len(pd.concat([sample, df]).drop_duplicates()) == len(df)
-
-        if is_sample_in_df(sample, self.tm.data.X_test):
-            logger.warning("Sample data is present in testing data.")
-
-        if self.tm.data.X_train and is_sample_in_df(sample, self.tm.data.X_train):
-            logger.warning("Sample data is present in testing data.")
-
-    @staticmethod
-    def _single_dict_to_df(_dict, columns):
-        if set(_dict) != set(columns):
-            raise Exception("Input data and data context have different schemas.")
-        return pd.DataFrame.from_records(_dict, index=["0"], columns=columns)
