@@ -27,7 +27,26 @@ class ModelValidator:
         range_value: Union[int, float] = 0,
         range_inclusive: bool = True,
     ) -> validation_output_type:
+        """Minimum functionality validation for a range output.
 
+        Validates that a model correctly predicts all points in a given set of data, within a range of values.
+        This dataset must be set in the `minimum_functionality_data` parameter of the DataContext.
+
+        Args:
+            range_value: a value that is added to and subtracted from the target value for a given prediction,
+                         to create a range of possible values that the prediction should fall between.
+            range_inclusive: make range inclusive (x <= prediction <= y) or exclusive (x <= prediction <= y)
+
+        Returns:
+            True for success, false otherwise. With a results dictionary giving all data points where \
+            the model's prediction did not fall between the range given.
+
+        Example:
+            ```py
+            model_validator = ModelValidator(data=data_context, model=model_context)
+            model_validator.validate_minimum_functionality_in_range(range_value=0.4, range_inclusive=False)
+            ```
+        """
         if self.model_type == "classifier":
             raise EstimatorTypeError(
                 "Validation may only be applied to regressor model types."
@@ -61,6 +80,21 @@ class ModelValidator:
         return self._validate_minimum_functionality()
 
     def _validate_minimum_functionality(self) -> validation_output_type:
+        """Minimum functionality validation.
+
+        Validates that a model correctly predicts all points in a given set of data. This dataset must be set
+        in the `minimum_functionality_data` parameter of the DataContext.
+
+        Returns:
+            True for success, false otherwise. With a results dictionary giving all data points that were not \
+            correctly predicted by the model.
+
+        Example:
+            ```py
+            model_validator = ModelValidator(data=data_context, model=model_context)
+            model_validator.validate_minimum_functionality()
+            ```
+        """
         if self.model_type == "regressor":
             raise EstimatorTypeError(
                 "Validation may only be applied to classifier model types."
