@@ -13,7 +13,7 @@ model = joblib.load(titanic_config.LOCAL_MODEL_FILENAME)
 
 data_context = DataContext(
     testing_data=testing_data,
-    minimum_functionality_data=testing_data.head(),  # type: ignore
+    minimum_functionality_data=testing_data.iloc[:5],
     training_data=training_data,
     target="Survived",
 )

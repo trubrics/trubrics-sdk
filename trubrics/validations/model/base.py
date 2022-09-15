@@ -29,9 +29,9 @@ class ModelValidator:
     ) -> validation_output_type:
 
         if self.model_type == "classifier":
-            EstimatorTypeError(
-                "Range parameters may only be applied to regressor model types."
-                "Try 'validate_minimum_functionality' validation for classifier model types."
+            raise EstimatorTypeError(
+                "Validation may only be applied to regressor model types."
+                " Try 'validate_minimum_functionality' validation for classifier model types."
             )
 
         minimum_functionality_df = self.tm.data.minimum_functionality_data
@@ -62,13 +62,13 @@ class ModelValidator:
 
     def _validate_minimum_functionality(self) -> validation_output_type:
         if self.model_type == "regressor":
-            EstimatorTypeError(
+            raise EstimatorTypeError(
                 "Validation may only be applied to classifier model types."
-                "Try 'validate_minimum_functionality_in_range' validation for regressor model types."
+                " Try 'validate_minimum_functionality_in_range' validation for regressor model types."
             )
         minimum_functionality_df = self.tm.data.minimum_functionality_data
         if minimum_functionality_df is None:
-            raise Exception("Specify minimum_functionality_data attribute in DataContext.")
+            raise ValueError("Specify minimum_functionality_data attribute in DataContext.")
         minimum_functionality_df["predictions"] = self.tm.predictions_minimum_functionality
         errors_df = minimum_functionality_df.loc[lambda x: x[self.tm.data.target] != x["predictions"], :]
         return len(errors_df) == 0, {"errors_df": errors_df.to_dict()} if len(errors_df) != 0 else {}

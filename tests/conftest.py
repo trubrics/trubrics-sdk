@@ -9,7 +9,7 @@ from trubrics.validations import ModelValidator
 
 
 @pytest.fixture
-def testing_data():
+def dummy_testing_data():
     return pd.DataFrame(
         {
             "target": [1, 2, 3],
@@ -29,7 +29,12 @@ def feature_importance():
 def data_context():
     testing_data = pd.read_csv("assets/tests/classifier_test_data.csv")
     training_data = pd.read_csv("assets/tests/classifier_train_data.csv")
-    return DataContext(testing_data=testing_data, training_data=training_data, target="Survived")
+    return DataContext(
+        testing_data=testing_data,
+        training_data=training_data,
+        minimum_functionality_data=testing_data.iloc[:1],
+        target="Survived",
+    )
 
 
 @pytest.fixture
