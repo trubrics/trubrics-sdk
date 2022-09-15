@@ -122,7 +122,7 @@ class StreamlitComponent:
         )
         corrected_prediction = st.selectbox(
             "The model prediction for this edge case should be:",
-            tuple(self.trubrics_model.data.testing_data[self.trubrics_model.data.target_column].unique()),
+            tuple(self.trubrics_model.data.testing_data[self.trubrics_model.data.target].unique()),
         )
         description = "A single edge case."
         return corrected_prediction, description

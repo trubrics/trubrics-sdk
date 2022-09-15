@@ -3,6 +3,7 @@ from typing import Any, Callable, Dict, Optional, Union
 import numpy as np
 import pandas as pd
 import sklearn.metrics
+from loguru import logger
 
 from trubrics.context import DataContext, TrubricsModel
 from trubrics.exceptions import EstimatorTypeError, SklearnMetricTypeError
@@ -19,95 +20,59 @@ class ModelValidator:
         self.custom_scorers = custom_scorers
 
     @validation_output
-    def validate_single_edge_case(self, edge_case_data, expected_output, severity=None):
-        """For information, refer to the _validate_single_edge_case method."""
-        return self._validate_single_edge_case(edge_case_data, expected_output)
+    def validate_minimum_functionality_in_range(self, range_value=0, range_inclusive=True, severity=None):
+        return self._validate_minimum_functionality_in_range(range_value, range_inclusive=range_inclusive)
 
-    def _validate_single_edge_case(
-        self, edge_case_data: Dict[str, Union[str, int, float]], expected_output: Union[int, float]
+    def _validate_minimum_functionality_in_range(
+        self,
+        range_value: Union[int, float] = 0,
+        range_inclusive: bool = True,
     ) -> validation_output_type:
-        """Single edge case validation.
 
-        Validate that a combination of features (all features must be defined) input to a model
-        result in an exact prediction value. This validation can be used to highlight edge cases
-        that a model must respect. It is often used to validate classification models.
-
-        Args:
-            edge_case_data: ensemble of all feature values for a single data point
-            expected_output: expected prediction
-
-        Returns:
-            True for success, false otherwise. With a results dictionary giving the actual prediction result.
-
-        Example:
-            ```py
-            model_validator = ModelValidator(data=data_context, model=model_context)
-            model_validator.validate_single_edge_case(
-                edge_case_data={'feature_a': 1, 'feature_b': 3},
-                expected_output=0
+        if self.model_type == "classifier":
+            EstimatorTypeError(
+                "Range parameters may only be applied to regressor model types."
+                "Try 'validate_minimum_functionality' validation for classifier model types."
             )
-            ```
-        """
-        prediction = self._predict_from_dict(data=edge_case_data)
-        return prediction == expected_output, {"prediction": prediction}
+
+        minimum_functionality_df = self.tm.data.minimum_functionality_data
+        if minimum_functionality_df is None:
+            raise ValueError("Specify minimum_functionality_data attribute in DataContext.")
+
+        def filter_predictions_not_in_range(minimum_functionality_df, range_value, range_inclusive):
+            if range_inclusive:
+                return minimum_functionality_df.loc[
+                    lambda x: (x["predictions"] >= x[self.tm.data.target] + range_value)
+                    | (x["predictions"] <= x[self.tm.data.target] - range_value),
+                    :,
+                ]
+            else:
+                return minimum_functionality_df.loc[
+                    lambda x: (x["predictions"] > x[self.tm.data.target] + range_value)
+                    | (x["predictions"] < x[self.tm.data.target] - range_value),
+                    :,
+                ]
+
+        minimum_functionality_df["predictions"] = self.tm.predictions_minimum_functionality
+        errors_df = filter_predictions_not_in_range(minimum_functionality_df, range_value, range_inclusive)
+        return len(errors_df) == 0, {"errors_df": errors_df.to_dict()} if len(errors_df) != 0 else {}
 
     @validation_output
-    def validate_single_edge_case_in_range(
-        self, edge_case_data, lower_output, upper_output, proba_class=None, severity=None
-    ):
-        """For information, refer to the _validate_single_edge_case_in_range method."""
-        return self._validate_single_edge_case_in_range(edge_case_data, lower_output, upper_output, proba_class)
+    def validate_minimum_functionality(self, severity=None):
+        return self._validate_minimum_functionality()
 
-    def _validate_single_edge_case_in_range(
-        self,
-        edge_case_data: Dict[str, Union[str, int, float]],
-        lower_output: Union[int, float],
-        upper_output: Union[int, float],
-        proba_class: Optional[Union[str, int]] = None,
-    ) -> validation_output_type:
-        """Single edge case validation in range.
-
-        Validate that a combination of features (all features must be defined) input to a model
-        result in a range of prediction values. This validation can be used to highlight edge cases
-        that a model must respect. It is only possible to use on regression models.
-
-        Args:
-            edge_case_data: ensemble of all feature values for a single data point
-            lower_output: minimum prediction value to be expected
-            upper_output: maximum prediction value to be expected
-            proba_class: if model is a classifier, specify the class whose probabilities are to be validated
-
-        Returns:
-            True for success, false otherwise. With a results dictionary giving the actual prediction result.
-
-        Example:
-            ```py
-            model_validator = ModelValidator(data=data_context, model=model_context)
-            model_validator.validate_single_edge_case_in_range(
-                edge_case_data={'feature_a': 1, 'feature_b': 3},
-                lower_output=120,
-                upper_output=140,
+    def _validate_minimum_functionality(self) -> validation_output_type:
+        if self.model_type == "regressor":
+            EstimatorTypeError(
+                "Validation may only be applied to classifier model types."
+                "Try 'validate_minimum_functionality_in_range' validation for regressor model types."
             )
-            ```
-        """
-        if lower_output >= upper_output:
-            raise ValueError("lower_output must be strictly inferior to upper_output.")
-        if self.model_type == "classifier":
-            if proba_class is None:
-                raise TypeError(
-                    "To create output range validation for classifier, please specify a"
-                    " class with the param proba_class=."
-                )
-            if proba_class not in set(self.tm.data.y_test):
-                raise ValueError(
-                    f"The class '{proba_class}' does not figure in the test data classes."
-                    " Make sure class is correct type between int and str."
-                )
-        if self.model_type == "regressor" and proba_class is not None:
-            raise EstimatorTypeError(f"The proba_class parameter is not recognised for model type {self.model_type}")
-
-        prediction = self._predict_from_dict(data=edge_case_data, proba_class=proba_class)
-        return prediction > lower_output and prediction < upper_output, {"prediction": prediction}
+        minimum_functionality_df = self.tm.data.minimum_functionality_data
+        if minimum_functionality_df is None:
+            raise Exception("Specify minimum_functionality_data attribute in DataContext.")
+        minimum_functionality_df["predictions"] = self.tm.predictions_minimum_functionality
+        errors_df = minimum_functionality_df.loc[lambda x: x[self.tm.data.target] != x["predictions"], :]
+        return len(errors_df) == 0, {"errors_df": errors_df.to_dict()} if len(errors_df) != 0 else {}
 
     @validation_output
     def validate_performance_against_threshold(self, metric, threshold, severity=None):
@@ -188,7 +153,7 @@ class ModelValidator:
                 result[value] = scorer(
                     self.tm.model,
                     filtered_data.loc[:, self.tm.data.features],
-                    filtered_data[self.tm.data.target_column],
+                    filtered_data[self.tm.data.target],
                 )
         max_performance_difference = max(result.values()) - min(result.values())
 
@@ -277,7 +242,7 @@ class ModelValidator:
         data: Dict[str, Union[str, int, float]],
         proba_class: Optional[Union[int, str]] = None,
     ) -> Union[int, float]:
-        data_df = pd.DataFrame.from_records(data, index=["0"], columns=self.tm.data.features)
+        data_df = self._single_dict_to_df(data, self.tm.data.features)
         if proba_class is not None:
             return self._predict_probabilities(data_df)[proba_class][0]
         return self.tm.model.predict(data_df)[0]
@@ -305,3 +270,23 @@ class ModelValidator:
     def _testing_data_score(self, metric: str) -> float:
         scorer = self._scorer(metric)
         return scorer(self.tm.model, self.tm.data.X_test, self.tm.data.y_test)
+
+    def _is_sample_in_data_context(self, sample: pd.DataFrame):
+        """
+        Verify if some combination of features is present in either the testing or training data.
+        """
+
+        def is_sample_in_df(sample, df):
+            return len(pd.concat([sample, df]).drop_duplicates()) == len(df)
+
+        if is_sample_in_df(sample, self.tm.data.X_test):
+            logger.warning("Sample data is present in testing data.")
+
+        if self.tm.data.X_train and is_sample_in_df(sample, self.tm.data.X_train):
+            logger.warning("Sample data is present in testing data.")
+
+    @staticmethod
+    def _single_dict_to_df(_dict, columns):
+        if set(_dict) != set(columns):
+            raise Exception("Input data and data context have different schemas.")
+        return pd.DataFrame.from_records(_dict, index=["0"], columns=columns)

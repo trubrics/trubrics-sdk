@@ -7,7 +7,7 @@ from typeguard import check_type
 from trubrics.context import TrubricsModel, ValidationContext
 from trubrics.exceptions import ValidationOutputError
 
-validation_output_type = Tuple[Union[bool, np.bool_], Dict[str, Union[str, int, float, np.generic]]]
+validation_output_type = Tuple[Union[bool, np.bool_], Dict[str, Union[dict, str, int, float, np.generic]]]
 
 
 def validation_output(func: Callable) -> Callable:

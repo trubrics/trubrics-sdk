@@ -29,7 +29,7 @@ def feature_importance():
 def data_context():
     testing_data = pd.read_csv("assets/tests/classifier_test_data.csv")
     training_data = pd.read_csv("assets/tests/classifier_train_data.csv")
-    return DataContext(testing_data=testing_data, training_data=training_data, target_column="Survived")
+    return DataContext(testing_data=testing_data, training_data=training_data, target="Survived")
 
 
 @pytest.fixture

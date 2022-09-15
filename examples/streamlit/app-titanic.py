@@ -19,7 +19,7 @@ def init_data():
     data_context = DataContext(
         training_data=TRAINING_DATA,
         testing_data=TESTING_DATA,
-        target_column=titanic_config.TARGET,
+        target=titanic_config.TARGET,
         categorical_columns=titanic_config.CATEGORICAL_COLUMNS,
         business_columns=titanic_config.BUSINESS_COLUMNS,
     )
@@ -56,15 +56,11 @@ elif data_view == "View split by target":
     target_split = st.radio(label="", options=("survived", "died"))
     if target_split == "survived":
         st.dataframe(
-            st_component.trubrics_model.data.testing_data.loc[
-                lambda x: x[st_component.trubrics_model.data.target_column] == 0
-            ]
+            st_component.trubrics_model.data.testing_data.loc[lambda x: x[st_component.trubrics_model.data.target] == 0]
         )
     elif target_split == "died":
         st.dataframe(
-            st_component.trubrics_model.data.testing_data.loc[
-                lambda x: x[st_component.trubrics_model.data.target_column] == 1
-            ]
+            st_component.trubrics_model.data.testing_data.loc[lambda x: x[st_component.trubrics_model.data.target] == 1]
         )
     else:
         raise NotImplementedError()
