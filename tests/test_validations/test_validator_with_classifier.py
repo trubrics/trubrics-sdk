@@ -37,8 +37,8 @@ def test__validate_performance_against_dummy(validator_classifier):
 
 
 def test_validate_performance_between_train_and_test(validator_classifier):
-    result = validator_classifier._validate_performance_between_train_and_test(metric="accuracy", threshold=0.1)
-    actual = True, {"train_score": 1 / 3, "test_score": 0.5}
+    result = validator_classifier._validate_performance_between_train_and_test(metric="accuracy", threshold=1)
+    actual = False, {"train_score": 1 / 3, "test_score": 0.5}
     assert result == actual
 
 
