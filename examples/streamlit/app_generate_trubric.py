@@ -5,6 +5,7 @@ from sklearn.metrics import SCORERS
 
 from trubrics.context import DataContext, TrubricContext
 from trubrics.validations import ModelValidator
+from trubrics.validations.run import run_trubric
 
 
 def get_spaces(number_rows=2):
@@ -89,3 +90,21 @@ if model_ and test_data and train_data:
                 tc.save_local(path)
                 msg = f'<p style="color:Green;">Trubric saved to {path}/my_trubric.json!</p>'
                 st.markdown(msg, unsafe_allow_html=True)
+
+            if st.button("Run saved trubric"):
+                trubric = TrubricContext.parse_file(f"{path}/my_trubric.json")
+
+                all_validation_results = run_trubric(
+                    data_context=data_context,  # type: ignore
+                    model=model,  # type: ignore
+                    trubric=trubric,
+                )
+
+                for validation_result in all_validation_results:
+                    message_start = f"{validation_result.validation_type} - {validation_result.severity.upper()}"
+                    completed_dots = (100 - len(message_start)) * "."
+                    if validation_result.outcome == "pass":
+                        msg = f'<p style="color:Green;">{message_start + completed_dots + "PASSED"}</p>'
+                    else:
+                        msg = f'<p style="color:Red;">{message_start + completed_dots + "FAILED"}</p>'
+                    st.markdown(msg, unsafe_allow_html=True)
