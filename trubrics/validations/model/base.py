@@ -43,7 +43,7 @@ class ModelValidator:
 
         Example:
             ```py
-            model_validator = ModelValidator(data=data_context, model=model_context)
+            model_validator = ModelValidator(data=data_context, model=model)
             model_validator.validate_minimum_functionality_in_range(range_value=0.4, range_inclusive=False)
             ```
         """
@@ -91,7 +91,7 @@ class ModelValidator:
 
         Example:
             ```py
-            model_validator = ModelValidator(data=data_context, model=model_context)
+            model_validator = ModelValidator(data=data_context, model=model)
             model_validator.validate_minimum_functionality()
             ```
         """
@@ -118,6 +118,8 @@ class ModelValidator:
         Compares performance of a model on the testing dataset to a hard coded threshold value.
 
         Args:
+            metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
+                    custom scorer fed in when initialising the ModelValidator object.
             threshold: the performance threshold that the model must attain
 
         Returns:
@@ -125,11 +127,11 @@ class ModelValidator:
 
         Example:
             ```py
-            model_validator = ModelValidator(data=data_context, model=model_context)
-            model_validator.validate_performance_against_threshold(threshold=0.8)
+            model_validator = ModelValidator(data=data_context, model=model)
+            model_validator.validate_performance_against_threshold(metric="recall", threshold=0.8)
             ```
         """
-        performance = self._testing_data_score(metric)
+        performance = self._score_data_context(metric)
         return bool(performance > threshold), {"performance": performance}
 
     @validation_output
@@ -138,7 +140,7 @@ class ModelValidator:
         return self._validate_biased_performance_across_category(metric, category, threshold)
 
     def _validate_biased_performance_across_category(
-        self, metric, category: str, threshold: float
+        self, metric: str, category: str, threshold: float
     ) -> validation_output_type:
         """Biased performance validation on a category.
 
@@ -146,6 +148,8 @@ class ModelValidator:
         the maximum difference in performance inferior to the threshold value.
 
         Args:
+            metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
+                    custom scorer fed in when initialising the ModelValidator object.
             category: categorical feature to split data on
             threshold: maximum difference in performance
 
@@ -154,8 +158,9 @@ class ModelValidator:
 
         Example:
             ```py
-            model_validator = ModelValidator(data=data_context, model=model_context)
-            model_validator.validate_biased_performance_across_category(category="feature_a", threshold=0.05)
+            model_validator = ModelValidator(data=data_context, model=model)
+            model_validator.validate_biased_performance_across_category(metric="precision", category="feature_a", \
+                threshold=0.05)
             ```
 
         TODO:
@@ -196,12 +201,14 @@ class ModelValidator:
     def validate_performance_against_dummy(self, metric, strategy="most_frequent", severity=None):
         return self._validate_performance_against_dummy(metric, strategy)
 
-    def _validate_performance_against_dummy(self, metric, strategy: str) -> validation_output_type:
+    def _validate_performance_against_dummy(self, metric: str, strategy: str) -> validation_output_type:
         """Performance validation versus a dummy baseline model.
 
         Trains a DummyClassifier / DummyRegressor from sklearn and compares performance against the model.
 
         Args:
+            metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
+                    custom scorer fed in when initialising the ModelValidator object.
             strategy: see scikit-learns dummy models -\
             https://scikit-learn.org/stable/modules/classes.html?highlight=dummy#module-sklearn.dummy
 
@@ -211,11 +218,11 @@ class ModelValidator:
 
         Example:
             ```py
-            model_validator = ModelValidator(data=data_context, model=model_context)
-            model_validator.model_validator.validate_performance_against_dummy(strategy="stratified")
+            model_validator = ModelValidator(data=data_context, model=model)
+            model_validator.model_validator.validate_performance_against_dummy(metric="accuracy", strategy="stratified")
             ```
         """
-        test_performance = self._testing_data_score(metric)
+        test_performance = self._score_data_context(metric)
         scorer = self._scorer(metric)
         if self.tm.data.training_data is None:
             raise Exception("In order to train dummy classifier, training_data must be set in the DataContext.")
@@ -230,6 +237,39 @@ class ModelValidator:
             "dummy_performance": dummy_performance,
             "test_performance": test_performance,
         }
+
+    @validation_output
+    def validate_performance_between_train_and_test(self, metric, threshold, severity=None):
+        return self._validate_performance_between_train_and_test(metric, threshold)
+
+    def _validate_performance_between_train_and_test(
+        self,
+        metric: str,
+        threshold: Union[int, float],
+    ) -> validation_output_type:
+        """Performance validation comparing training and test data scores.
+
+        Scores the test set and the train set in the DataContext, and validates whether the test score is \
+        inferior to but also within a certain range of the train score. Can be used to validate for overfitting
+        on the training set.
+
+        Args:
+            - metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
+                      custom scorer fed in when initialising the ModelValidator object.
+            - threshold: a positive value representing the maximum allowable difference between the train and \
+                         test score.
+
+        Example:
+            ```py
+            model_validator = ModelValidator(data=data_context, model=model)
+            model_validator.validate_performance_against_threshold(metric="recall", threshold=0.8)
+            ```
+        """
+        test_score = self._score_data_context(metric, test_data=True)
+        train_score = self._score_data_context(metric, test_data=False)
+
+        outcome = test_score < train_score and test_score >= train_score - threshold
+        return outcome, {"train_score": train_score, "test_score": test_score}
 
     @validation_output
     def validate_feature_in_top_n_important_features(self, feature, feature_importance, top_n_features, severity=None):
@@ -255,7 +295,7 @@ class ModelValidator:
 
         Example:
             ```py
-            model_validator = ModelValidator(data=data_context, model=model_context)
+            model_validator = ModelValidator(data=data_context, model=model)
             model_validator.validate_feature_in_top_n_important_features(
                 feature="feature_a",
                 feature_importance=feature_importance_dict,
@@ -284,6 +324,12 @@ class ModelValidator:
                 )
         return scorer
 
-    def _testing_data_score(self, metric: str) -> float:
+    def _score_data_context(self, metric: str, test_data: bool = True) -> float:
         scorer = self._scorer(metric)
-        return scorer(self.tm.model, self.tm.data.X_test, self.tm.data.y_test)
+        if test_data:
+            return scorer(self.tm.model, self.tm.data.X_test, self.tm.data.y_test)
+        else:
+            if self.tm.data.X_train is None or self.tm.data.y_train is None:
+                raise ValueError("Training data not specified in DataContext.")
+            else:
+                return scorer(self.tm.model, self.tm.data.X_train, self.tm.data.y_train)

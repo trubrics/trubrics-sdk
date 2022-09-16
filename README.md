@@ -52,8 +52,8 @@ validations = [
 from trubrics.context import TrubricContext
 trubric_context = TrubricContext(
     name="my_first_trubric",
-    model_context_name=model_context.name,
-    model_context_version=model_context.version,
+    model_name=model.name,
+    model_version=model.version,
     data_context_name=data_context.name,
     data_context_version=data_context.version,
     validations=validations,  # list of ValidationContexts
@@ -91,7 +91,7 @@ data_context = DataContext(
 import streamlit as st
 from trubrics.feedback_components.streamlit import StreamlitComponent
 
-st_component = StreamlitComponent(model=model_context, data=data_context)
+st_component = StreamlitComponent(model=model, data=data_context)
 
 with st.sidebar:
     st.title("Modify features to test the model...")
