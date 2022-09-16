@@ -1,19 +1,75 @@
 # Out-of-the-box model validations
 
-## `validate_minimum_functionality`
+## Minimum Functionality
+```py
+from trubrics.validations import ModelValidator
+model_validator = ModelValidator(data=data_context, model=model)
+model_validator.validate_minimum_functionality()
+```
 :::trubrics.validations.ModelValidator._validate_minimum_functionality
 ----
-## `validate_minimum_functionality_in_range`
+```py
+from trubrics.validations import ModelValidator
+model_validator = ModelValidator(data=data_context, model=model)
+model_validator.validate_minimum_functionality_in_range(
+    range_value=0,
+    range_inclusive=True
+)
+```
 :::trubrics.validations.ModelValidator._validate_minimum_functionality_in_range
 ----
-## `validate_performance_against_threshold`
+
+## Performance
+```py
+from trubrics.validations import ModelValidator
+model_validator = ModelValidator(data=data_context, model=model)
+model_validator.validate_performance_against_threshold(
+    metric="recall",
+    threshold=0.8
+)
+```
 :::trubrics.validations.ModelValidator._validate_performance_against_threshold
 ----
-## `validate_performance_against_dummy`
+```py
+from trubrics.validations import ModelValidator
+model_validator = ModelValidator(data=data_context, model=model)
+model_validator.model_validator.validate_performance_against_dummy(
+    metric="accuracy",
+    strategy="stratified"
+)
+```
 :::trubrics.validations.ModelValidator._validate_performance_against_dummy
 ----
-## `validate_biased_performance_across_category`
+```py
+from trubrics.validations import ModelValidator
+model_validator = ModelValidator(data=data_context, model=model)
+model_validator.validate_performance_between_train_and_test(
+    metric="recall",
+    threshold=0.3
+)
+```
+:::trubrics.validations.ModelValidator._validate_performance_between_train_and_test
+----
+```py
+from trubrics.validations import ModelValidator
+model_validator = ModelValidator(data=data_context, model=model)
+model_validator.validate_biased_performance_across_category(
+    metric="precision",
+    category="feature_a",
+    threshold=0.05
+)
+```
 :::trubrics.validations.ModelValidator._validate_biased_performance_across_category
 ----
-## `validate_feature_in_top_n_important_features`
+
+## Feature Importance
+```py
+from trubrics.validations import ModelValidator
+model_validator = ModelValidator(data=data_context, model=model)
+model_validator.validate_feature_in_top_n_important_features(
+    feature="feature_a",
+    feature_importance=feature_importance_dict,
+    top_n_features=2,
+)
+```
 :::trubrics.validations.ModelValidator._validate_feature_in_top_n_important_features

@@ -40,12 +40,6 @@ class ModelValidator:
         Returns:
             True for success, false otherwise. With a results dictionary giving all data points where \
             the model's prediction did not fall between the range given.
-
-        Example:
-            ```py
-            model_validator = ModelValidator(data=data_context, model=model)
-            model_validator.validate_minimum_functionality_in_range(range_value=0.4, range_inclusive=False)
-            ```
         """
         if self.model_type == "classifier":
             raise EstimatorTypeError(
@@ -88,12 +82,6 @@ class ModelValidator:
         Returns:
             True for success, false otherwise. With a results dictionary giving all data points that were not \
             correctly predicted by the model.
-
-        Example:
-            ```py
-            model_validator = ModelValidator(data=data_context, model=model)
-            model_validator.validate_minimum_functionality()
-            ```
         """
         if self.model_type == "regressor":
             raise EstimatorTypeError(
@@ -124,12 +112,6 @@ class ModelValidator:
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the actual model performance calculated.
-
-        Example:
-            ```py
-            model_validator = ModelValidator(data=data_context, model=model)
-            model_validator.validate_performance_against_threshold(metric="recall", threshold=0.8)
-            ```
         """
         performance = self._score_data_context(metric)
         return bool(performance > threshold), {"performance": performance}
@@ -155,12 +137,6 @@ class ModelValidator:
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the maximum performance difference.
-
-        Example:
-            ```py
-            model_validator = ModelValidator(data=data_context, model=model)
-            model_validator.validate_biased_performance_across_category(metric="precision", category="feature_a", \
-                threshold=0.05)
             ```
 
         TODO:
@@ -213,14 +189,8 @@ class ModelValidator:
             https://scikit-learn.org/stable/modules/classes.html?highlight=dummy#module-sklearn.dummy
 
         Returns:
-            True for success, false otherwise. With a results dictionary giving the model's\
+            True for success, false otherwise. With a results dictionary giving the model's \
             actual performance on the test set and the dummy model's performance.
-
-        Example:
-            ```py
-            model_validator = ModelValidator(data=data_context, model=model)
-            model_validator.model_validator.validate_performance_against_dummy(metric="accuracy", strategy="stratified")
-            ```
         """
         test_performance = self._score_data_context(metric)
         scorer = self._scorer(metric)
@@ -254,16 +224,14 @@ class ModelValidator:
         on the training set.
 
         Args:
-            - metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
+            metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
                       custom scorer fed in when initialising the ModelValidator object.
-            - threshold: a positive value representing the maximum allowable difference between the train and \
+            threshold: a positive value representing the maximum allowable difference between the train and \
                          test score.
 
-        Example:
-            ```py
-            model_validator = ModelValidator(data=data_context, model=model)
-            model_validator.validate_performance_against_threshold(metric="recall", threshold=0.8)
-            ```
+        Returns:
+            True for success, false otherwise. With a results dictionary giving the model's \
+            performance on test and train sets.
         """
         test_score = self._score_data_context(metric, test_data=True)
         train_score = self._score_data_context(metric, test_data=False)
@@ -292,16 +260,6 @@ class ModelValidator:
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the actual feature importance ranking.
-
-        Example:
-            ```py
-            model_validator = ModelValidator(data=data_context, model=model)
-            model_validator.validate_feature_in_top_n_important_features(
-                feature="feature_a",
-                feature_importance=feature_importance_dict,
-                top_n_features=2,
-            )
-            ```
         """
         count = 0
         for importance in feature_importance.values():
