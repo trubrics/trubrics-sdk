@@ -62,6 +62,8 @@ def _correct_types_for_json(value: Any):
         return [_correct_types_for_json(arg) for arg in value]
     elif isinstance(value, np.generic):
         return value.item()
+    elif value != value:
+        return None  # replace NaN with None for json serialisation
     else:
         return value
 
