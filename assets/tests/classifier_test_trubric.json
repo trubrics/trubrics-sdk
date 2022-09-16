@@ -9,27 +9,56 @@
     },
     "validations": [
         {
-            "validation_type": "validate_single_edge_case",
+            "validation_type": "validate_minimum_functionality",
             "validation_kwargs": {
                 "args": [],
-                "kwargs": {
-                    "edge_case_data": {
-                        "Sex": "male",
-                        "Embarked": "S",
-                        "Title": "Master",
-                        "Pclass": 2,
-                        "Age": 28,
-                        "SibSp": 0,
-                        "Parch": 0,
-                        "Fare": 37
-                    },
-                    "desired_output": 0
-                }
+                "kwargs": {}
             },
             "outcome": "fail",
-            "severity": "warning",
+            "severity": "error",
             "result": {
-                "prediction": "1"
+                "errors_df": {
+                    "Sex": {
+                        "2": "female",
+                        "4": "male"
+                    },
+                    "Embarked": {
+                        "2": "C",
+                        "4": "C"
+                    },
+                    "Title": {
+                        "2": "Miss",
+                        "4": "Mr"
+                    },
+                    "Pclass": {
+                        "2": 3,
+                        "4": 3
+                    },
+                    "Age": {
+                        "2": 9.0,
+                        "4": null
+                    },
+                    "SibSp": {
+                        "2": 1,
+                        "4": 0
+                    },
+                    "Parch": {
+                        "2": 1,
+                        "4": 0
+                    },
+                    "Fare": {
+                        "2": 15.25,
+                        "4": 7.23
+                    },
+                    "Survived": {
+                        "2": 0,
+                        "4": 1
+                    },
+                    "predictions": {
+                        "2": 1,
+                        "4": 0
+                    }
+                }
             }
         },
         {

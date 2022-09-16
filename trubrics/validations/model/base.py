@@ -19,95 +19,81 @@ class ModelValidator:
         self.custom_scorers = custom_scorers
 
     @validation_output
-    def validate_single_edge_case(self, edge_case_data, desired_output, severity=None):
-        """For information, refer to the _validate_single_edge_case method."""
-        return self._validate_single_edge_case(edge_case_data, desired_output)
+    def validate_minimum_functionality_in_range(self, range_value=0, range_inclusive=True, severity=None):
+        return self._validate_minimum_functionality_in_range(range_value, range_inclusive=range_inclusive)
 
-    def _validate_single_edge_case(
-        self, edge_case_data: Dict[str, Union[str, int, float]], desired_output: Union[int, float]
+    def _validate_minimum_functionality_in_range(
+        self,
+        range_value: Union[int, float] = 0,
+        range_inclusive: bool = True,
     ) -> validation_output_type:
-        """Single edge case validation.
+        """Minimum functionality validation for a range output.
 
-        Validate that a combination of features (all features must be defined) input to a model
-        result in an exact prediction value. This validation can be used to highlight edge cases
-        that a model must respect. It is often used to validate classification models.
+        Validates that a model correctly predicts all points in a given set of data, within a range of values.
+        This dataset must be set in the `minimum_functionality_data` parameter of the DataContext.
 
         Args:
-            edge_case_data: ensemble of all feature values
-            desired_output: expected prediction
+            range_value: a value that is added to and subtracted from the target value for a given prediction,
+                         to create a range of possible values that the prediction should fall between.
+            range_inclusive: make range inclusive (x <= prediction <= y) or exclusive (x <= prediction <= y)
 
         Returns:
-            True for success, false otherwise. With a results dictionary giving the actual prediction result.
-
-        Example:
-            ```py
-            model_validator = ModelValidator(data=data_context, model=model_context)
-            model_validator.validate_single_edge_case(
-                edge_case_data={'feature_a': 1, 'feature_b': 3},
-                desired_output=0
-            )
-            ```
+            True for success, false otherwise. With a results dictionary giving all data points where \
+            the model's prediction did not fall between the range given.
         """
-        prediction = self._predict_from_dict(data=edge_case_data)
-        return prediction == desired_output, {"prediction": prediction}
+        if self.model_type == "classifier":
+            raise EstimatorTypeError(
+                "Validation may only be applied to regressor model types."
+                " Try 'validate_minimum_functionality' validation for classifier model types."
+            )
+
+        minimum_functionality_df = self.tm.data.minimum_functionality_data
+        if minimum_functionality_df is None:
+            raise ValueError("Specify minimum_functionality_data attribute in DataContext.")
+
+        def filter_predictions_not_in_range(minimum_functionality_df, range_value, range_inclusive):
+            if range_inclusive:
+                return minimum_functionality_df.loc[
+                    lambda x: (x["predictions"] >= x[self.tm.data.target] + range_value)
+                    | (x["predictions"] <= x[self.tm.data.target] - range_value),
+                    :,
+                ]
+            else:
+                return minimum_functionality_df.loc[
+                    lambda x: (x["predictions"] > x[self.tm.data.target] + range_value)
+                    | (x["predictions"] < x[self.tm.data.target] - range_value),
+                    :,
+                ]
+
+        minimum_functionality_df["predictions"] = self.tm.predictions_minimum_functionality
+        errors_df = filter_predictions_not_in_range(minimum_functionality_df, range_value, range_inclusive)
+        return len(errors_df) == 0, {"errors_df": errors_df.to_dict()} if len(errors_df) != 0 else {}
 
     @validation_output
-    def validate_single_edge_case_in_range(
-        self, edge_case_data, lower_output, upper_output, proba_class=None, severity=None
-    ):
-        """For information, refer to the _validate_single_edge_case_in_range method."""
-        return self._validate_single_edge_case_in_range(edge_case_data, lower_output, upper_output, proba_class)
+    def validate_minimum_functionality(self, severity=None):
+        return self._validate_minimum_functionality()
 
-    def _validate_single_edge_case_in_range(
-        self,
-        edge_case_data: Dict[str, Union[str, int, float]],
-        lower_output: Union[int, float],
-        upper_output: Union[int, float],
-        proba_class: Optional[Union[str, int]] = None,
-    ) -> validation_output_type:
-        """Single edge case validation in range.
+    def _validate_minimum_functionality(self) -> validation_output_type:
+        """Minimum functionality validation.
 
-        Validate that a combination of features (all features must be defined) input to a model
-        result in a range of prediction values. This validation can be used to highlight edge cases
-        that a model must respect. It is only possible to use on regression models.
-
-        Args:
-            edge_case_data: ensemble of all feature values
-            lower_output: minimum prediction value to be expected
-            upper_output: maximum prediction value to be expected
-            proba_class: if model is a classifier, specify the class whose probabilities are to be validated
+        Validates that a model correctly predicts all points in a given set of data. This dataset must be set
+        in the `minimum_functionality_data` parameter of the DataContext.
 
         Returns:
-            True for success, false otherwise. With a results dictionary giving the actual prediction result.
-
-        Example:
-            ```py
-            model_validator = ModelValidator(data=data_context, model=model_context)
-            model_validator.validate_single_edge_case_in_range(
-                edge_case_data={'feature_a': 1, 'feature_b': 3},
-                lower_output=120,
-                upper_output=140,
-            )
-            ```
+            True for success, false otherwise. With a results dictionary giving all data points that were not \
+            correctly predicted by the model.
         """
-        if lower_output >= upper_output:
-            raise ValueError("lower_output must be strictly inferior to upper_output.")
-        if self.model_type == "classifier":
-            if proba_class is None:
-                raise TypeError(
-                    "To create output range validation for classifier, please specify a"
-                    " class with the param proba_class=."
-                )
-            if proba_class not in set(self.tm.data.y_test):
-                raise ValueError(
-                    f"The class '{proba_class}' does not figure in the test data classes."
-                    " Make sure class is correct type between int and str."
-                )
-        if self.model_type == "regressor" and proba_class is not None:
-            raise EstimatorTypeError(f"The proba_class parameter is not recognised for model type {self.model_type}")
-
-        prediction = self._predict_from_dict(data=edge_case_data, proba_class=proba_class)
-        return prediction > lower_output and prediction < upper_output, {"prediction": prediction}
+        if self.model_type == "regressor":
+            raise EstimatorTypeError(
+                "Validation may only be applied to classifier model types."
+                " Try 'validate_minimum_functionality_in_range' validation for regressor model types."
+            )
+        minimum_functionality_df = self.tm.data.minimum_functionality_data
+        if minimum_functionality_df is None:
+            raise ValueError("Specify minimum_functionality_data attribute in DataContext.")
+        minimum_functionality_df["predictions"] = self.tm.predictions_minimum_functionality
+        errors_df = minimum_functionality_df.loc[lambda x: x[self.tm.data.target] != x["predictions"], :]
+        return len(errors_df) == 0, {"errors_df": errors_df.to_dict()} if len(errors_df) != 0 else {}
 
     @validation_output
     def validate_performance_against_threshold(self, metric, threshold, severity=None):
@@ -120,18 +106,14 @@ class ModelValidator:
         Compares performance of a model on the testing dataset to a hard coded threshold value.
 
         Args:
+            metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
+                    custom scorer fed in when initialising the ModelValidator object.
             threshold: the performance threshold that the model must attain
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the actual model performance calculated.
-
-        Example:
-            ```py
-            model_validator = ModelValidator(data=data_context, model=model_context)
-            model_validator.validate_performance_against_threshold(threshold=0.8)
-            ```
         """
-        performance = self._testing_data_score(metric)
+        performance = self._score_data_context(metric)
         return bool(performance > threshold), {"performance": performance}
 
     @validation_output
@@ -140,7 +122,7 @@ class ModelValidator:
         return self._validate_biased_performance_across_category(metric, category, threshold)
 
     def _validate_biased_performance_across_category(
-        self, metric, category: str, threshold: float
+        self, metric: str, category: str, threshold: float
     ) -> validation_output_type:
         """Biased performance validation on a category.
 
@@ -148,16 +130,13 @@ class ModelValidator:
         the maximum difference in performance inferior to the threshold value.
 
         Args:
+            metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
+                    custom scorer fed in when initialising the ModelValidator object.
             category: categorical feature to split data on
             threshold: maximum difference in performance
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the maximum performance difference.
-
-        Example:
-            ```py
-            model_validator = ModelValidator(data=data_context, model=model_context)
-            model_validator.validate_biased_performance_across_category(category="feature_a", threshold=0.05)
             ```
 
         TODO:
@@ -188,7 +167,7 @@ class ModelValidator:
                 result[value] = scorer(
                     self.tm.model,
                     filtered_data.loc[:, self.tm.data.features],
-                    filtered_data[self.tm.data.target_column],
+                    filtered_data[self.tm.data.target],
                 )
         max_performance_difference = max(result.values()) - min(result.values())
 
@@ -198,26 +177,22 @@ class ModelValidator:
     def validate_performance_against_dummy(self, metric, strategy="most_frequent", severity=None):
         return self._validate_performance_against_dummy(metric, strategy)
 
-    def _validate_performance_against_dummy(self, metric, strategy: str) -> validation_output_type:
+    def _validate_performance_against_dummy(self, metric: str, strategy: str) -> validation_output_type:
         """Performance validation versus a dummy baseline model.
 
         Trains a DummyClassifier / DummyRegressor from sklearn and compares performance against the model.
 
         Args:
+            metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
+                    custom scorer fed in when initialising the ModelValidator object.
             strategy: see scikit-learns dummy models -\
             https://scikit-learn.org/stable/modules/classes.html?highlight=dummy#module-sklearn.dummy
 
         Returns:
-            True for success, false otherwise. With a results dictionary giving the model's\
+            True for success, false otherwise. With a results dictionary giving the model's \
             actual performance on the test set and the dummy model's performance.
-
-        Example:
-            ```py
-            model_validator = ModelValidator(data=data_context, model=model_context)
-            model_validator.model_validator.validate_performance_against_dummy(strategy="stratified")
-            ```
         """
-        test_performance = self._testing_data_score(metric)
+        test_performance = self._score_data_context(metric)
         scorer = self._scorer(metric)
         if self.tm.data.training_data is None:
             raise Exception("In order to train dummy classifier, training_data must be set in the DataContext.")
@@ -232,6 +207,37 @@ class ModelValidator:
             "dummy_performance": dummy_performance,
             "test_performance": test_performance,
         }
+
+    @validation_output
+    def validate_performance_between_train_and_test(self, metric, threshold, severity=None):
+        return self._validate_performance_between_train_and_test(metric, threshold)
+
+    def _validate_performance_between_train_and_test(
+        self,
+        metric: str,
+        threshold: Union[int, float],
+    ) -> validation_output_type:
+        """Performance validation comparing training and test data scores.
+
+        Scores the test set and the train set in the DataContext, and validates whether the test score is \
+        inferior to but also within a certain range of the train score. Can be used to validate for overfitting
+        on the training set.
+
+        Args:
+            metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
+                      custom scorer fed in when initialising the ModelValidator object.
+            threshold: a positive value representing the maximum allowable difference between the train and \
+                         test score.
+
+        Returns:
+            True for success, false otherwise. With a results dictionary giving the model's \
+            performance on test and train sets.
+        """
+        test_score = self._score_data_context(metric, test_data=True)
+        train_score = self._score_data_context(metric, test_data=False)
+
+        outcome = test_score < train_score and test_score >= train_score - threshold
+        return outcome, {"train_score": train_score, "test_score": test_score}
 
     @validation_output
     def validate_feature_in_top_n_important_features(self, feature, feature_importance, top_n_features, severity=None):
@@ -254,16 +260,6 @@ class ModelValidator:
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the actual feature importance ranking.
-
-        Example:
-            ```py
-            model_validator = ModelValidator(data=data_context, model=model_context)
-            model_validator.validate_feature_in_top_n_important_features(
-                feature="feature_a",
-                feature_importance=feature_importance_dict,
-                top_n_features=2,
-            )
-            ```
         """
         count = 0
         for importance in feature_importance.values():
@@ -271,22 +267,6 @@ class ModelValidator:
                 count += 1
 
         return count < top_n_features, {"feature_importance_ranking": count}
-
-    def _predict_from_dict(
-        self,
-        data: Dict[str, Union[str, int, float]],
-        proba_class: Optional[Union[int, str]] = None,
-    ) -> Union[int, float]:
-        data_df = pd.DataFrame.from_records(data, index=["0"], columns=self.tm.data.features)
-        if proba_class is not None:
-            return self._predict_probabilities(data_df)[proba_class][0]
-        return self.tm.model.predict(data_df)[0]
-
-    def _predict_probabilities(self, data: pd.DataFrame) -> Dict[Union[int, str], pd.Series]:
-        probabilities = {}
-        for _class, _proba in zip(self.tm.model.classes_, self.tm.model.predict_proba(data).T):
-            probabilities[_class] = _proba
-        return probabilities
 
     def _scorer(self, metric: str) -> Callable[[Any, pd.DataFrame, pd.Series], float]:
         if metric in sklearn.metrics.SCORERS:
@@ -302,6 +282,12 @@ class ModelValidator:
                 )
         return scorer
 
-    def _testing_data_score(self, metric: str) -> float:
+    def _score_data_context(self, metric: str, test_data: bool = True) -> float:
         scorer = self._scorer(metric)
-        return scorer(self.tm.model, self.tm.data.X_test, self.tm.data.y_test)
+        if test_data:
+            return scorer(self.tm.model, self.tm.data.X_test, self.tm.data.y_test)
+        else:
+            if self.tm.data.X_train is None or self.tm.data.y_train is None:
+                raise ValueError("Training data not specified in DataContext.")
+            else:
+                return scorer(self.tm.model, self.tm.data.X_train, self.tm.data.y_train)

@@ -11,7 +11,12 @@ testing_data = pd.read_csv(titanic_config.LOCAL_TEST_FILENAME)
 training_data = pd.read_csv(titanic_config.LOCAL_TRAIN_FILENAME)
 model = joblib.load(titanic_config.LOCAL_MODEL_FILENAME)
 
-data_context = DataContext(testing_data=testing_data, training_data=training_data, target_column="Survived")
+data_context = DataContext(
+    testing_data=testing_data,
+    minimum_functionality_data=testing_data.iloc[:5],
+    training_data=training_data,
+    target="Survived",
+)
 trubric_context = TrubricContext.parse_file("examples/data/my_first_trubric.json")
 
 RUN_CONTEXT = TrubricRun(

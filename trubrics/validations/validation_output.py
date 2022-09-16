@@ -7,7 +7,7 @@ from typeguard import check_type
 from trubrics.context import TrubricsModel, ValidationContext
 from trubrics.exceptions import ValidationOutputError
 
-validation_output_type = Tuple[Union[bool, np.bool_], Dict[str, Union[str, int, float, np.generic]]]
+validation_output_type = Tuple[Union[bool, np.bool_], Dict[str, Union[dict, str, int, float, np.generic]]]
 
 
 def validation_output(func: Callable) -> Callable:
@@ -27,8 +27,7 @@ def validation_output(func: Callable) -> Callable:
         outcome = _pass_or_fail(outcome)
 
         if kwargs.get("severity"):
-            severity = kwargs.get("severity")
-            kwargs.pop("severity")
+            severity = kwargs.pop("severity")
         else:
             severity = "error"
 
@@ -63,6 +62,8 @@ def _correct_types_for_json(value: Any):
         return [_correct_types_for_json(arg) for arg in value]
     elif isinstance(value, np.generic):
         return value.item()
+    elif value != value:
+        return None  # replace NaN with None for json serialisation
     else:
         return value
 

@@ -15,7 +15,7 @@ class TrubricRun(BaseModel):
     """The TrubricRun object to group all necessary contexts in order for a run.
     Attributes:
         data_context: a data context to validate a model on
-        model_context: a model context with the model to validate
+        model: a model to validate
         trubric_context: a trubric context listing all validations to execute
         custom_validator: an optional custom validator
     """
