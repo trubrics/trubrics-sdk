@@ -33,7 +33,7 @@ model_validator.validate_performance_against_threshold(
 ```py
 from trubrics.validations import ModelValidator
 model_validator = ModelValidator(data=data_context, model=model)
-model_validator.model_validator.validate_performance_against_dummy(
+model_validator.validate_performance_against_dummy(
     metric="accuracy",
     strategy="stratified"
 )
