@@ -1,3 +1,4 @@
+import timeit
 from typing import Any, Callable, Dict, Optional, Union
 
 import numpy as np
@@ -243,6 +244,27 @@ class ModelValidator:
 
         outcome = test_score < train_score and test_score >= train_score - threshold
         return outcome, {"train_score": train_score, "test_score": test_score}
+
+    @validation_output
+    def validate_inference_time(self, threshold, n_executions=100):
+        return self._validate_inference_time(threshold, n_executions)
+
+    def _validate_inference_time(self, threshold: float, n_executions: int = 100) -> validation_output_type:
+        """Validate the model's inference time on a single data point from the test set.
+
+        Args:
+            threshold: number of seconds that the model inference time should be inferior to
+            n_executions: number of executions of the `.predict()` method for a single data point
+
+        Returns:
+            True for success, false otherwise. With a results dictionary giving the model's \
+            average inference time (in seconds).
+        """
+        single_data_point = self.tm.data.X_test.iloc[[0]]
+        inference_time = (
+            timeit.timeit(lambda: self.tm.model.predict(single_data_point), number=n_executions) / n_executions
+        )
+        return inference_time < threshold, {"inference_time": inference_time}
 
     @validation_output
     def validate_feature_in_top_n_important_features(self, feature, feature_importance, top_n_features, severity=None):
