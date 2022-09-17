@@ -174,10 +174,12 @@ class ModelValidator:
         return max_performance_difference < threshold, {"max_performance_difference": max_performance_difference}
 
     @validation_output
-    def validate_performance_against_dummy(self, metric, strategy="most_frequent", severity=None):
-        return self._validate_performance_against_dummy(metric, strategy)
+    def validate_performance_against_dummy(self, metric, strategy="most_frequent", dummy_kwargs=None, severity=None):
+        return self._validate_performance_against_dummy(metric, strategy, dummy_kwargs)
 
-    def _validate_performance_against_dummy(self, metric: str, strategy: str) -> validation_output_type:
+    def _validate_performance_against_dummy(
+        self, metric: str, strategy: str, dummy_kwargs: Optional[dict] = None
+    ) -> validation_output_type:
         """Performance validation versus a dummy baseline model.
 
         Trains a DummyClassifier / DummyRegressor from sklearn and compares performance against the model.
@@ -199,7 +201,10 @@ class ModelValidator:
 
         from sklearn.dummy import DummyClassifier
 
-        dummy_clf = DummyClassifier(strategy=strategy)
+        if dummy_kwargs:
+            dummy_clf = DummyClassifier(strategy=strategy, **dummy_kwargs)
+        else:
+            dummy_clf = DummyClassifier(strategy=strategy)
         dummy_clf.fit(self.tm.data.X_train, self.tm.data.y_train)
         dummy_performance = scorer(dummy_clf, self.tm.data.X_test, self.tm.data.y_test)
 

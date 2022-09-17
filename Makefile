@@ -8,6 +8,9 @@ train-titanic:
 	@python examples/training/titanic.py
 
 streamlit-demo:
+	@streamlit run examples/streamlit/app_generate_trubric.py
+
+streamlit-titanic:
 	@streamlit run examples/streamlit/app-titanic.py
 
 docs-serve:
