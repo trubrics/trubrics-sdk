@@ -64,8 +64,15 @@ if model_ and test_data and train_data:
             metric = st.selectbox("2. Metric", SCORERS)
         with col3:
             strategy = st.selectbox("2. Strategy", ["most_frequent", "prior", "stratified", "uniform", "constant"])
+            if strategy == "constant":
+                cst_value = st.text_input("Enter constant value")
+                if cst_value.isnumeric():
+                    cst_value = int(cst_value)
+                dummy_kwarg = {"metric": metric, "strategy": strategy, "dummy_kwargs": {"constant": cst_value}}
+            else:
+                dummy_kwarg = {"metric": metric, "strategy": strategy}
         if perf_dum:
-            perf_vs_dummy = model_validator.validate_performance_against_dummy(metric="accuracy", strategy="stratified")
+            perf_vs_dummy = model_validator.validate_performance_against_dummy(**dummy_kwarg)
             validations.append(perf_vs_dummy)
             st.write(perf_vs_dummy.dict())
 
@@ -76,9 +83,11 @@ if model_ and test_data and train_data:
         with col2:
             metric = st.selectbox("3. Metric", SCORERS)
         with col3:
-            strategy = st.number_input("3. Threshold", min_value=-1.0, max_value=1.0, value=0.2, step=0.1)
+            threshold = st.number_input("3. Threshold", min_value=-1.0, max_value=1.0, value=0.2, step=0.1)
         if perf_train:
-            perf_vs_train = model_validator.validate_performance_between_train_and_test(metric="recall", threshold=0.3)
+            perf_vs_train = model_validator.validate_performance_between_train_and_test(
+                metric=metric, threshold=threshold
+            )
             validations.append(perf_vs_train)
             st.write(perf_vs_train.dict())
 
