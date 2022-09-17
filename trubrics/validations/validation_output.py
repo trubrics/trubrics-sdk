@@ -47,7 +47,7 @@ def validation_output(func: Callable) -> Callable:
         _is_jsonable(typed_result, raise_error=True)
 
         if func.__doc__ is None:
-            raise Exception(
+            raise TypeError(
                 "Validations require a docstring to explain the validation's purpose and required parameters."
             )
         stripped_docstring = "\n".join(" ".join(line.split()) for line in func.__doc__.split("\n"))

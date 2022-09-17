@@ -27,7 +27,7 @@ def get_business_feedback_data(
     tracking: bool = False,
 ) -> FeedbackContext:
     if tracking:
-        raise Exception("to be replaced with read from test tracking API")
+        raise ValueError("to be replaced with read from test tracking API")
     else:
         with open(
             "../data/feedback_demo.json",

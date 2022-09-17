@@ -166,9 +166,9 @@ class ModelValidator:
         test_data = self.tm.data.testing_data
         cat_values = list(test_data[category].unique())
         if len(cat_values) > 20:
-            raise Exception(f"Cardinality of {len(cat_values)} too high for performance test.")
+            raise ValueError(f"Cardinality of {len(cat_values)} too high for performance test.")
         if len(cat_values) < 1:
-            raise Exception(f"Category '{category}' has a single value.")
+            raise ValueError(f"Category '{category}' has a single value.")
         if category not in test_data.columns:
             # TODO: check when categorical columns are specified
             raise KeyError(f"Column '{category}' not found in dataset.")
@@ -219,7 +219,7 @@ class ModelValidator:
         test_performance = self._score_data_context(metric)
         scorer = self._scorer(metric)
         if self.tm.data.training_data is None:
-            raise Exception("In order to train dummy classifier, training_data must be set in the DataContext.")
+            raise TypeError("In order to train dummy classifier, training_data must be set in the DataContext.")
 
         from sklearn.dummy import DummyClassifier
 

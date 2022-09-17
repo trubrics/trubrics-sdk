@@ -108,7 +108,7 @@ class DataContext(BaseModel):
     @validator("categorical_columns")
     def target_column_must_not_be_in_categoricals(cls, v, values):
         if v is not None and values["target"] in v:
-            raise Exception(
+            raise ValueError(
                 "Target column should not feature as a categorical column. Categorical columns only refer to features."
             )
         return v
@@ -315,7 +315,7 @@ class TrubricContext(BaseModel):
 
     def save_local(self, path: str, file_name: Optional[str] = None):
         if path is None:
-            raise Exception("Specify the local path where you would like to save your Trubric json.")
+            raise TypeError("Specify the local path where you would like to save your Trubric json.")
         if file_name is None:
             file_name = f"{self.trubric_name}.json"
         with open(Path(path) / file_name, "w") as file:
@@ -325,7 +325,7 @@ class TrubricContext(BaseModel):
     def save_ui(self, url: str, user_id: str):
 
         if user_id is None:
-            raise Exception("You must specify a 'user_id' to push to the trubrics manager.")
+            raise TypeError("You must specify a 'user_id' to push to the trubrics manager.")
         else:
             make_request(
                 f"{url}/api/trubrics/{user_id}",

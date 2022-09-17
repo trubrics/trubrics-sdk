@@ -42,6 +42,7 @@ def test_run_trubric_raises(data_context, classifier_model):
             {
                 "validation_type": "some_random_validation_name_that_is_not_in_a_validator",
                 "validation_kwargs": {"args": [], "kwargs": {}},
+                "explanation": "some docstring",
                 "outcome": "fail",
                 "severity": "warning",
                 "result": {},
