@@ -62,6 +62,15 @@ model_validator.validate_biased_performance_across_category(
 :::trubrics.validations.ModelValidator._validate_biased_performance_across_category
 ----
 
+## Inference time
+```py
+from trubrics.validations import ModelValidator
+model_validator = ModelValidator(data=data_context, model=model)
+model_validator.validate_inference_time(threshold=0.04, n_executions=100)
+```
+:::trubrics.validations.ModelValidator._validate_inference_time
+----
+
 ## Feature Importance
 ```py
 from trubrics.validations import ModelValidator
