@@ -11,7 +11,15 @@ class CustomValidator(ModelValidator):
         super().__init__(data, model, custom_scorers)
 
     @validation_output
-    def validate_performance_for_different_fares(self, fare_cutoff, severity=None):
+    def validate_performance_for_different_fares(self, fare_cutoff: int, severity=None):
+        """Validate the models performance for expensive vs cheap tickets.
+
+        Args:
+            fare_cutoff: value to split the fare column on
+
+        Returns:
+            True for success, false otherwise. With a results dictionary giving all the number of errors by fare split.
+        """
         return self._validate_performance_for_different_fares(fare_cutoff)
 
     def _validate_performance_for_different_fares(self, fare_cutoff: int = 50) -> validation_output_type:

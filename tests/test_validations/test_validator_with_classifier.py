@@ -36,9 +36,17 @@ def test__validate_performance_against_dummy(validator_classifier):
     assert result == actual
 
 
-def test_validate_performance_between_train_and_test(validator_classifier):
+def test__validate_performance_between_train_and_test(validator_classifier):
     result = validator_classifier._validate_performance_between_train_and_test(metric="accuracy", threshold=1)
     actual = False, {"train_score": 1 / 3, "test_score": 0.5}
+    assert result == actual
+
+
+def test__validate_inference_time(validator_classifier):
+    result = validator_classifier._validate_inference_time(threshold=0.1, n_executions=10)
+    result[1]["inference_time"] = round(result[1]["inference_time"], 1)
+
+    actual = True, {"inference_time": 0.0}
     assert result == actual
 
 

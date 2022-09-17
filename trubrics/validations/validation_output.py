@@ -1,4 +1,5 @@
 import json
+from functools import wraps
 from typing import Any, Callable, Dict, Tuple, Union
 
 import numpy as np
@@ -13,6 +14,7 @@ validation_output_type = Tuple[Union[bool, np.bool_], Dict[str, Union[dict, str,
 def validation_output(func: Callable) -> Callable:
     """Decorative function for validation point outputs."""
 
+    @wraps(func)
     def inner(*args, **kwargs) -> ValidationContext:
         output = func(*args, **kwargs)
 
@@ -44,9 +46,16 @@ def validation_output(func: Callable) -> Callable:
         _is_jsonable(typed_kwargs, raise_error=True)
         _is_jsonable(typed_result, raise_error=True)
 
+        if func.__doc__ is None:
+            raise TypeError(
+                "Validations require a docstring to explain the validation's purpose and required parameters."
+            )
+        stripped_docstring = "\n".join(" ".join(line.split()) for line in func.__doc__.split("\n"))
+
         return ValidationContext(
             validation_type=func.__name__,
             validation_kwargs={"args": typed_args, "kwargs": typed_kwargs},
+            explanation=stripped_docstring,
             outcome=outcome,
             severity=severity,
             result=typed_result,  # type: ignore

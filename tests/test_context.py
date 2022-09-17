@@ -27,7 +27,7 @@ def test_data_context_attributes(dummy_testing_data):
         ({"feature_1": "feature_one"}, {"target": "target"}, PandasSchemaError),
         ({}, {"target": "wrong_target"}, KeyError),
         ({}, {"categorical_columns": ["feature"]}, KeyError),
-        ({}, {"categorical_columns": ["target"]}, Exception),
+        ({}, {"categorical_columns": ["target"]}, KeyError),
         ({}, {"business_columns": {"feature 1": "feature"}}, KeyError),
     ],
 )

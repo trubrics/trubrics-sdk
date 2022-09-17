@@ -1,3 +1,4 @@
+import timeit
 from typing import Any, Callable, Dict, Optional, Union
 
 import numpy as np
@@ -19,14 +20,9 @@ class ModelValidator:
         self.custom_scorers = custom_scorers
 
     @validation_output
-    def validate_minimum_functionality_in_range(self, range_value=0, range_inclusive=True, severity=None):
-        return self._validate_minimum_functionality_in_range(range_value, range_inclusive=range_inclusive)
-
-    def _validate_minimum_functionality_in_range(
-        self,
-        range_value: Union[int, float] = 0,
-        range_inclusive: bool = True,
-    ) -> validation_output_type:
+    def validate_minimum_functionality_in_range(
+        self, range_value: Union[int, float] = 0, range_inclusive: bool = True, severity: Optional[str] = None
+    ):
         """Minimum functionality validation for a range output.
 
         Validates that a model correctly predicts all points in a given set of data, within a range of values.
@@ -36,11 +32,20 @@ class ModelValidator:
             range_value: a value that is added to and subtracted from the target value for a given prediction,
                          to create a range of possible values that the prediction should fall between.
             range_inclusive: make range inclusive (x <= prediction <= y) or exclusive (x <= prediction <= y)
+            severity: severity of the validation. Can be either ['error', 'warning', 'experiment']. \
+                      If None, defaults to 'error'.
 
         Returns:
             True for success, false otherwise. With a results dictionary giving all data points where \
             the model's prediction did not fall between the range given.
         """
+        return self._validate_minimum_functionality_in_range(range_value, range_inclusive=range_inclusive)
+
+    def _validate_minimum_functionality_in_range(
+        self,
+        range_value: Union[int, float] = 0,
+        range_inclusive: bool = True,
+    ) -> validation_output_type:
         if self.model_type == "classifier":
             raise EstimatorTypeError(
                 "Validation may only be applied to regressor model types."
@@ -70,19 +75,23 @@ class ModelValidator:
         return len(errors_df) == 0, {"errors_df": errors_df.to_dict()} if len(errors_df) != 0 else {}
 
     @validation_output
-    def validate_minimum_functionality(self, severity=None):
-        return self._validate_minimum_functionality()
-
-    def _validate_minimum_functionality(self) -> validation_output_type:
+    def validate_minimum_functionality(self, severity: Optional[str] = None):
         """Minimum functionality validation.
 
         Validates that a model correctly predicts all points in a given set of data. This dataset must be set
         in the `minimum_functionality_data` parameter of the DataContext.
 
+        Args:
+            severity: severity of the validation. Can be either ['error', 'warning', 'experiment']. \
+                      If None, defaults to 'error'.
+
         Returns:
             True for success, false otherwise. With a results dictionary giving all data points that were not \
             correctly predicted by the model.
         """
+        return self._validate_minimum_functionality()
+
+    def _validate_minimum_functionality(self) -> validation_output_type:
         if self.model_type == "regressor":
             raise EstimatorTypeError(
                 "Validation may only be applied to classifier model types."
@@ -96,11 +105,7 @@ class ModelValidator:
         return len(errors_df) == 0, {"errors_df": errors_df.to_dict()} if len(errors_df) != 0 else {}
 
     @validation_output
-    def validate_performance_against_threshold(self, metric, threshold, severity=None):
-        """For information, refer to the _validate_performance_against_threshold method."""
-        return self._validate_performance_against_threshold(metric, threshold)
-
-    def _validate_performance_against_threshold(self, metric: str, threshold: float) -> validation_output_type:
+    def validate_performance_against_threshold(self, metric: str, threshold: float, severity: Optional[str] = None):
         """Performance validation versus a fixed threshold value.
 
         Compares performance of a model on the testing dataset to a hard coded threshold value.
@@ -109,21 +114,22 @@ class ModelValidator:
             metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
                     custom scorer fed in when initialising the ModelValidator object.
             threshold: the performance threshold that the model must attain
+            severity: severity of the validation. Can be either ['error', 'warning', 'experiment']. \
+                      If None, defaults to 'error'.
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the actual model performance calculated.
         """
+        return self._validate_performance_against_threshold(metric, threshold)
+
+    def _validate_performance_against_threshold(self, metric: str, threshold: float) -> validation_output_type:
         performance = self._score_data_context(metric)
         return bool(performance > threshold), {"performance": performance}
 
     @validation_output
-    def validate_biased_performance_across_category(self, metric, category, threshold, severity=None):
-        """For information, refer to the _validate_biased_performance_across_category method."""
-        return self._validate_biased_performance_across_category(metric, category, threshold)
-
-    def _validate_biased_performance_across_category(
-        self, metric: str, category: str, threshold: float
-    ) -> validation_output_type:
+    def validate_biased_performance_across_category(
+        self, metric: str, category: str, threshold: float, severity: Optional[str] = None
+    ):
         """Biased performance validation on a category.
 
         Calculates various performance for all values in a category and validates for
@@ -134,11 +140,18 @@ class ModelValidator:
                     custom scorer fed in when initialising the ModelValidator object.
             category: categorical feature to split data on
             threshold: maximum difference in performance
+            severity: severity of the validation. Can be either ['error', 'warning', 'experiment']. \
+                      If None, defaults to 'error'.
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the maximum performance difference.
-            ```
+        """
+        return self._validate_biased_performance_across_category(metric, category, threshold)
 
+    def _validate_biased_performance_across_category(
+        self, metric: str, category: str, threshold: float
+    ) -> validation_output_type:
+        """
         TODO:
             - More complex threshold function
             - Modify cardinality
@@ -153,9 +166,9 @@ class ModelValidator:
         test_data = self.tm.data.testing_data
         cat_values = list(test_data[category].unique())
         if len(cat_values) > 20:
-            raise Exception(f"Cardinality of {len(cat_values)} too high for performance test.")
+            raise ValueError(f"Cardinality of {len(cat_values)} too high for performance test.")
         if len(cat_values) < 1:
-            raise Exception(f"Category '{category}' has a single value.")
+            raise ValueError(f"Category '{category}' has a single value.")
         if category not in test_data.columns:
             # TODO: check when categorical columns are specified
             raise KeyError(f"Column '{category}' not found in dataset.")
@@ -174,12 +187,13 @@ class ModelValidator:
         return max_performance_difference < threshold, {"max_performance_difference": max_performance_difference}
 
     @validation_output
-    def validate_performance_against_dummy(self, metric, strategy="most_frequent", dummy_kwargs=None, severity=None):
-        return self._validate_performance_against_dummy(metric, strategy, dummy_kwargs)
-
-    def _validate_performance_against_dummy(
-        self, metric: str, strategy: str, dummy_kwargs: Optional[dict] = None
-    ) -> validation_output_type:
+    def validate_performance_against_dummy(
+        self,
+        metric: str,
+        strategy: str = "most_frequent",
+        dummy_kwargs: Optional[dict] = None,
+        severity: Optional[str] = None,
+    ):
         """Performance validation versus a dummy baseline model.
 
         Trains a DummyClassifier / DummyRegressor from sklearn and compares performance against the model.
@@ -189,15 +203,23 @@ class ModelValidator:
                     custom scorer fed in when initialising the ModelValidator object.
             strategy: see scikit-learns dummy models -\
             https://scikit-learn.org/stable/modules/classes.html?highlight=dummy#module-sklearn.dummy
+            dummy_kwargs: kwargs to be passed to dummy model
+            severity: severity of the validation. Can be either ['error', 'warning', 'experiment']. \
+                      If None, defaults to 'error'.
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the model's \
             actual performance on the test set and the dummy model's performance.
         """
+        return self._validate_performance_against_dummy(metric, strategy, dummy_kwargs)
+
+    def _validate_performance_against_dummy(
+        self, metric: str, strategy: str, dummy_kwargs: Optional[dict] = None
+    ) -> validation_output_type:
         test_performance = self._score_data_context(metric)
         scorer = self._scorer(metric)
         if self.tm.data.training_data is None:
-            raise Exception("In order to train dummy classifier, training_data must be set in the DataContext.")
+            raise TypeError("In order to train dummy classifier, training_data must be set in the DataContext.")
 
         from sklearn.dummy import DummyClassifier
 
@@ -214,14 +236,9 @@ class ModelValidator:
         }
 
     @validation_output
-    def validate_performance_between_train_and_test(self, metric, threshold, severity=None):
-        return self._validate_performance_between_train_and_test(metric, threshold)
-
-    def _validate_performance_between_train_and_test(
-        self,
-        metric: str,
-        threshold: Union[int, float],
-    ) -> validation_output_type:
+    def validate_performance_between_train_and_test(
+        self, metric: str, threshold: Union[int, float], severity: Optional[str] = None
+    ):
         """Performance validation comparing training and test data scores.
 
         Scores the test set and the train set in the DataContext, and validates whether the test score is \
@@ -233,11 +250,20 @@ class ModelValidator:
                       custom scorer fed in when initialising the ModelValidator object.
             threshold: a positive value representing the maximum allowable difference between the train and \
                          test score.
+            severity: severity of the validation. Can be either ['error', 'warning', 'experiment']. \
+                      If None, defaults to 'error'.
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the model's \
             performance on test and train sets.
         """
+        return self._validate_performance_between_train_and_test(metric, threshold)
+
+    def _validate_performance_between_train_and_test(
+        self,
+        metric: str,
+        threshold: Union[int, float],
+    ) -> validation_output_type:
         test_score = self._score_data_context(metric, test_data=True)
         train_score = self._score_data_context(metric, test_data=False)
 
@@ -245,14 +271,30 @@ class ModelValidator:
         return outcome, {"train_score": train_score, "test_score": test_score}
 
     @validation_output
-    def validate_feature_in_top_n_important_features(self, feature, feature_importance, top_n_features, severity=None):
-        """For information, refer to the _validate_feature_in_top_n_important_features method."""
-        return self._validate_feature_in_top_n_important_features(feature, feature_importance, top_n_features)
+    def validate_inference_time(self, threshold: float, n_executions: int = 100, severity: Optional[str] = None):
+        """Validate the model's inference time on a single data point from the test set.
 
-    @staticmethod
-    def _validate_feature_in_top_n_important_features(
-        feature: str, feature_importance: Dict[str, float], top_n_features: int
-    ) -> validation_output_type:
+        Args:
+            threshold: number of seconds that the model inference time should be inferior to
+            n_executions: number of executions of the `.predict()` method for a single data point
+
+        Returns:
+            True for success, false otherwise. With a results dictionary giving the model's \
+            average inference time (in seconds).
+        """
+        return self._validate_inference_time(threshold, n_executions)
+
+    def _validate_inference_time(self, threshold: float, n_executions: int = 100) -> validation_output_type:
+        single_data_point = self.tm.data.X_test.iloc[[0]]
+        inference_time = (
+            timeit.timeit(lambda: self.tm.model.predict(single_data_point), number=n_executions) / n_executions
+        )
+        return inference_time < threshold, {"inference_time": inference_time}
+
+    @validation_output
+    def validate_feature_in_top_n_important_features(
+        self, feature: str, feature_importance: Dict[str, float], top_n_features: int, severity: Optional[str] = None
+    ):
         """Feature importance validation for top n features.
 
         Verifies that a given feature is in the top n most important features.
@@ -266,6 +308,12 @@ class ModelValidator:
         Returns:
             True for success, false otherwise. With a results dictionary giving the actual feature importance ranking.
         """
+        return self._validate_feature_in_top_n_important_features(feature, feature_importance, top_n_features)
+
+    @staticmethod
+    def _validate_feature_in_top_n_important_features(
+        feature: str, feature_importance: Dict[str, float], top_n_features: int
+    ) -> validation_output_type:
         count = 0
         for importance in feature_importance.values():
             if importance > feature_importance[feature]:

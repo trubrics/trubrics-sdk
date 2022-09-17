@@ -6,7 +6,7 @@ from trubrics.validations import ModelValidator
 model_validator = ModelValidator(data=data_context, model=model)
 model_validator.validate_minimum_functionality()
 ```
-:::trubrics.validations.ModelValidator._validate_minimum_functionality
+:::trubrics.validations.ModelValidator.validate_minimum_functionality
 ----
 ```py
 from trubrics.validations import ModelValidator
@@ -16,7 +16,7 @@ model_validator.validate_minimum_functionality_in_range(
     range_inclusive=True
 )
 ```
-:::trubrics.validations.ModelValidator._validate_minimum_functionality_in_range
+:::trubrics.validations.ModelValidator.validate_minimum_functionality_in_range
 ----
 
 ## Performance
@@ -28,7 +28,7 @@ model_validator.validate_performance_against_threshold(
     threshold=0.8
 )
 ```
-:::trubrics.validations.ModelValidator._validate_performance_against_threshold
+:::trubrics.validations.ModelValidator.validate_performance_against_threshold
 ----
 ```py
 from trubrics.validations import ModelValidator
@@ -38,7 +38,7 @@ model_validator.validate_performance_against_dummy(
     strategy="stratified"
 )
 ```
-:::trubrics.validations.ModelValidator._validate_performance_against_dummy
+:::trubrics.validations.ModelValidator.validate_performance_against_dummy
 ----
 ```py
 from trubrics.validations import ModelValidator
@@ -48,7 +48,7 @@ model_validator.validate_performance_between_train_and_test(
     threshold=0.3
 )
 ```
-:::trubrics.validations.ModelValidator._validate_performance_between_train_and_test
+:::trubrics.validations.ModelValidator.validate_performance_between_train_and_test
 ----
 ```py
 from trubrics.validations import ModelValidator
@@ -59,7 +59,16 @@ model_validator.validate_biased_performance_across_category(
     threshold=0.05
 )
 ```
-:::trubrics.validations.ModelValidator._validate_biased_performance_across_category
+:::trubrics.validations.ModelValidator.validate_biased_performance_across_category
+----
+
+## Inference time
+```py
+from trubrics.validations import ModelValidator
+model_validator = ModelValidator(data=data_context, model=model)
+model_validator.validate_inference_time(threshold=0.04, n_executions=100)
+```
+:::trubrics.validations.ModelValidator.validate_inference_time
 ----
 
 ## Feature Importance
@@ -72,4 +81,4 @@ model_validator.validate_feature_in_top_n_important_features(
     top_n_features=2,
 )
 ```
-:::trubrics.validations.ModelValidator._validate_feature_in_top_n_important_features
+:::trubrics.validations.ModelValidator.validate_feature_in_top_n_important_features

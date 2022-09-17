@@ -14,6 +14,7 @@
                 "args": [],
                 "kwargs": {}
             },
+            "explanation": "some docstring",
             "outcome": "fail",
             "severity": "error",
             "result": {
@@ -70,6 +71,7 @@
                     "threshold": -0.7
                 }
             },
+            "explanation": "some docstring",
             "outcome": "pass",
             "severity": "experiment",
             "result": {
@@ -110,6 +112,7 @@
                     "top_n_features": 2
                 }
             },
+            "explanation": "some docstring",
             "outcome": "pass",
             "severity": "error",
             "result": {
@@ -124,6 +127,7 @@
                     "fare_cutoff": 25
                 }
             },
+            "explanation": "some docstring",
             "outcome": "pass",
             "severity": "warning",
             "result": {
