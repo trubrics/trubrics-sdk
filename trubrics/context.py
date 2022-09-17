@@ -245,6 +245,7 @@ class ValidationContext(BaseModel):
     Attributes:
         validation_type: method name of the validation.
         validation_kwargs: all args and kwargs that the validation had run with.
+        explanation: docstring explanation of the validation.
         outcome: pass or fail output of the validation.
         severity: severity of the validation, can be one of ["error", "warning", "experiment"], is "error" by default
         result: a dictionary of contextual elements calculated during the validation run
@@ -252,6 +253,7 @@ class ValidationContext(BaseModel):
 
     validation_type: str
     validation_kwargs: Dict[str, Optional[Any]]
+    explanation: str
     outcome: str
     severity: str = "error"
     result: Optional[Dict[str, Optional[Any]]]

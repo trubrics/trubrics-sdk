@@ -8,8 +8,10 @@ from trubrics.validations import ModelValidator
 from trubrics.validations.run import run_trubric
 
 
-def get_spaces(number_rows=2):
-    _ = [st.write("") for x in range(number_rows)]
+def expand_docstring(func):
+    expander = st.expander("See docstring")
+    stripped_docstring = "\n".join(" ".join(line.split()) for line in func.__doc__.split("\n"))
+    expander.text(stripped_docstring)
 
 
 st.set_page_config(layout="wide")
@@ -36,18 +38,17 @@ if model_ and test_data and train_data:
     model_validator = ModelValidator(data=data_context, model=model)  # type: ignore
 
     tab1, tab2 = st.tabs(["Select Model Validations", "Save Trubric"])
-
     with tab1:
         validations = []
 
         col1, col2, col3 = st.columns([2, 1.4, 1])
         with col1:
-            get_spaces(number_rows=3)
             perf_thresh = st.checkbox("validate_performance_against_threshold")
         with col2:
             metric = st.selectbox("1. Metric", SCORERS)
         with col3:
             threshold = st.number_input("1. Threshold", min_value=-1.0, max_value=1.0, value=0.2, step=0.1)
+        expand_docstring(model_validator.validate_performance_against_threshold)
         if perf_thresh:
             perf_vs_thresh = model_validator.validate_performance_against_threshold(
                 metric=metric,
@@ -58,7 +59,6 @@ if model_ and test_data and train_data:
 
         col1, col2, col3 = st.columns([2, 1.4, 1])
         with col1:
-            get_spaces(number_rows=3)
             perf_dum = st.checkbox("validate_performance_against_dummy")
         with col2:
             metric = st.selectbox("2. Metric", SCORERS)
@@ -71,6 +71,7 @@ if model_ and test_data and train_data:
                 dummy_kwarg = {"metric": metric, "strategy": strategy, "dummy_kwargs": {"constant": cst_value}}
             else:
                 dummy_kwarg = {"metric": metric, "strategy": strategy}
+        expand_docstring(model_validator.validate_performance_against_dummy)
         if perf_dum:
             perf_vs_dummy = model_validator.validate_performance_against_dummy(**dummy_kwarg)
             validations.append(perf_vs_dummy)
@@ -78,12 +79,12 @@ if model_ and test_data and train_data:
 
         col1, col2, col3 = st.columns([2, 1.4, 1])
         with col1:
-            get_spaces(number_rows=3)
             perf_train = st.checkbox("validate_performance_between_train_and_test")
         with col2:
             metric = st.selectbox("3. Metric", SCORERS)
         with col3:
             threshold = st.number_input("3. Threshold", min_value=-1.0, max_value=1.0, value=0.2, step=0.1)
+        expand_docstring(model_validator.validate_performance_between_train_and_test)
         if perf_train:
             perf_vs_train = model_validator.validate_performance_between_train_and_test(
                 metric=metric, threshold=threshold
@@ -93,12 +94,12 @@ if model_ and test_data and train_data:
 
         col1, col2, col3 = st.columns([2, 1.4, 1])
         with col1:
-            get_spaces(number_rows=3)
             inf_time = st.checkbox("validate_inference_time")
         with col2:
             threshold = st.number_input("4. Threshold (s)", min_value=0.0, max_value=100.0, value=0.1, step=0.1)
         with col3:
             n_executions = st.number_input("4. n_executions", min_value=1, max_value=1000, value=100, step=50)
+        expand_docstring(model_validator.validate_inference_time)
         if inf_time:
             inference_time = model_validator.validate_inference_time(threshold=threshold, n_executions=n_executions)
             validations.append(inference_time)
