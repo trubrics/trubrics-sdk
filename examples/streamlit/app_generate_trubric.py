@@ -91,6 +91,19 @@ if model_ and test_data and train_data:
             validations.append(perf_vs_train)
             st.write(perf_vs_train.dict())
 
+        col1, col2, col3 = st.columns([2, 1.4, 1])
+        with col1:
+            get_spaces(number_rows=3)
+            inf_time = st.checkbox("validate_inference_time")
+        with col2:
+            threshold = st.number_input("4. Threshold (s)", min_value=0.0, max_value=100.0, value=0.1, step=0.1)
+        with col3:
+            n_executions = st.number_input("4. n_executions", min_value=1, max_value=1000, value=100, step=50)
+        if inf_time:
+            inference_time = model_validator.validate_inference_time(threshold=threshold, n_executions=n_executions)
+            validations.append(inference_time)
+            st.write(inference_time.dict())
+
         with tab2:
             tc = TrubricContext(data_context_name="data", data_context_version=0.1, validations=validations)
 
