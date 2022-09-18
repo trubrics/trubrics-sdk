@@ -4,6 +4,7 @@ from typing import Any, Callable, Dict, Optional, Union
 import numpy as np
 import pandas as pd
 import sklearn.metrics
+from sklearn.dummy import DummyClassifier, DummyRegressor
 
 from trubrics.context import DataContext, TrubricsModel
 from trubrics.exceptions import EstimatorTypeError, SklearnMetricTypeError
@@ -221,14 +222,18 @@ class ModelValidator:
         if self.tm.data.training_data is None:
             raise TypeError("In order to train dummy classifier, training_data must be set in the DataContext.")
 
-        from sklearn.dummy import DummyClassifier
-
-        if dummy_kwargs:
-            dummy_clf = DummyClassifier(strategy=strategy, **dummy_kwargs)
+        if self.model_type == "classifier":
+            Dummy = DummyClassifier
+        elif self.model_type == "regressor":
+            Dummy = DummyRegressor
         else:
-            dummy_clf = DummyClassifier(strategy=strategy)
-        dummy_clf.fit(self.tm.data.X_train, self.tm.data.y_train)
-        dummy_performance = scorer(dummy_clf, self.tm.data.X_test, self.tm.data.y_test)
+            raise NotImplementedError()
+        if dummy_kwargs:
+            dummy_model = Dummy(strategy=strategy, **dummy_kwargs)
+        else:
+            dummy_model = Dummy(strategy=strategy)
+        dummy_model.fit(self.tm.data.X_train, self.tm.data.y_train)
+        dummy_performance = scorer(dummy_model, self.tm.data.X_test, self.tm.data.y_test)
 
         return test_performance > dummy_performance, {
             "dummy_performance": dummy_performance,
