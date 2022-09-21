@@ -320,14 +320,15 @@ class ModelValidator:
     ):
         """Feature importance validation for top n features.
 
-        Verifies that a given feature is in the top n most important features. For calculation of feature \
-        importance we are using sklearn's [permutation_importance](https://scikit-learn.org/stable/modules/generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance). # noqa
+        Validates that a given feature is in the top n most important features. For calculation of feature \
+        importance we are using sklearn's [permutation_importance](https://scikit-learn.org/stable/\
+        modules/generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance).
 
         Args:
             dataset: the name of a dataset from the DataContext to calculate feature importance on \
                 {'testing_data', 'training_data'}.
             feature: feature to assess.
-            top_n_features: the number of important features that the named feature must be in e.g. if
+            top_n_features: the number of most important features that the named feature must be ranked in. E.g. if
                             top_n_features=2, the feature must be within the top two most important features.
             permutation_kwargs: kwargs to pass into the sklearn.inspection.permutation_importance function.
 
@@ -361,7 +362,21 @@ class ModelValidator:
     def validate_feature_importance_between_train_and_test(
         self, top_n_features: Optional[int] = None, permutation_kwargs: Optional[Dict[str, Any]] = None
     ):
-        """Validate that the permutation feature importance ranking is the same between train and test sets."""
+        """Permutation feature importance comparison between train and test sets.
+
+        Validates that the ranking of top n features is the same for both test and train sets. For calculation of \
+        feature importance we are using sklearn's [permutation_importance](https://scikit-learn.org/stable/modules\
+        /generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance).
+
+        Args:
+            top_n_features: the number of most important features to consider for comparison between train and test \
+                            sets. E.g. if top_n_features=2, the train and test sets must have the same 2 most \
+                            important features, in the same order.
+            permutation_kwargs: kwargs to pass into the sklearn.inspection.permutation_importance function.
+
+        Returns:
+            True for success, false otherwise. With a results dictionary giving the actual feature importance ranking.
+        """
         return self._validate_feature_importance_between_train_and_test(top_n_features, permutation_kwargs)
 
     def _validate_feature_importance_between_train_and_test(
