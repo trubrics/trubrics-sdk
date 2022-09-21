@@ -349,12 +349,44 @@ class ModelValidator:
             if importance > importances_mean[feature_index]:
                 count += 1
 
-        feature_importances_recap = {
+        feature_importances_dict = {
             key: value for key, value in zip(self.tm.data.features, feature_importance["importances_mean"])
         }
         return count < top_n_features, {
             "feature_importance_ranking": count,
-            "permutation_importance": feature_importances_recap,
+            "feature_importance": feature_importances_dict,
+        }
+
+    @validation_output
+    def validate_feature_importance_between_train_and_test(
+        self, top_n_features: Optional[int] = None, permutation_kwargs: Optional[Dict[str, Any]] = None
+    ):
+        """Validate that the permutation feature importance ranking is the same between train and test sets."""
+        return self._validate_feature_importance_between_train_and_test(top_n_features, permutation_kwargs)
+
+    def _validate_feature_importance_between_train_and_test(
+        self, top_n_features: Optional[int] = None, permutation_kwargs: Optional[Dict[str, Any]] = None
+    ) -> validation_output_type:
+        train_fi = self._compute_permutation_feature_importance(
+            dataset="testing_data", permutation_kwargs=permutation_kwargs
+        )
+        test_fi = self._compute_permutation_feature_importance(
+            dataset="training_data", permutation_kwargs=permutation_kwargs
+        )
+        ordered_train_fi = {
+            value: key for key, value in sorted(zip(train_fi["importances_mean"], self.tm.data.features))
+        }
+        ordered_test_fi = {value: key for key, value in sorted(zip(test_fi["importances_mean"], self.tm.data.features))}
+
+        if top_n_features:
+            top_n_features = -top_n_features
+
+        is_same_order = [feature for feature in ordered_train_fi][top_n_features:] == [
+            feature for feature in ordered_test_fi
+        ][top_n_features:]
+        return is_same_order, {
+            "training_feature_importance": ordered_train_fi,
+            "testing_feature_importance": ordered_test_fi,
         }
 
     def _scorer(self, metric: str) -> Callable[[Any, pd.DataFrame, pd.Series], float]:
