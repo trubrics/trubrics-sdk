@@ -76,9 +76,18 @@ model_validator.validate_inference_time(threshold=0.04, n_executions=100)
 from trubrics.validations import ModelValidator
 model_validator = ModelValidator(data=data_context, model=model)
 model_validator.validate_feature_in_top_n_important_features(
+    dataset="testing_data",
     feature="feature_a",
-    feature_importance=feature_importance_dict,
     top_n_features=2,
 )
 ```
 :::trubrics.validations.ModelValidator.validate_feature_in_top_n_important_features
+
+```py
+from trubrics.validations import ModelValidator
+model_validator = ModelValidator(data=data_context, model=model)
+model_validator.validate_feature_importance_between_train_and_test(
+    top_n_features=1
+)
+```
+:::trubrics.validations.ModelValidator.validate_feature_importance_between_train_and_test

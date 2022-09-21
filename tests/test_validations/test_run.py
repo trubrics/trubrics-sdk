@@ -19,7 +19,6 @@ def test_run_trubric(data_context, classifier_model, trubric):
     actuals = (
         ("validate_minimum_functionality", "error", "pass"),
         ("validate_performance_against_threshold", "experiment", "pass"),
-        ("validate_feature_in_top_n_important_features", "error", "pass"),
         ("validate_performance_for_different_fares", "warning", "fail"),
     )
 

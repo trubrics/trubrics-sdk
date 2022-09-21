@@ -46,13 +46,23 @@ def test__validate_inference_time(validator_classifier):
     result = validator_classifier._validate_inference_time(threshold=0.1, n_executions=10)
     result[1]["inference_time"] = round(result[1]["inference_time"], 1)
 
-    actual = True, {"inference_time": 0.0}
+    actual = True, {"inference_time": 0}
     assert result == actual
 
 
-def test__validate_feature_in_top_n_important_features(validator_classifier, feature_importance):
+def test__validate_feature_in_top_n_important_features(validator_classifier):
     result = validator_classifier._validate_feature_in_top_n_important_features(
-        feature="Age", feature_importance=feature_importance, top_n_features=2
+        dataset="testing_data",
+        feature="Age",
+        top_n_features=2,
+        permutation_kwargs={"n_repeats": 1, "random_state": 88, "n_jobs": -1},
     )
-    actual = True, {"feature_importance_ranking": 1}
-    assert result == actual
+    result[1].pop("feature_importance")
+    assert result == (True, {"feature_importance_ranking": 1})
+
+
+def test__validate_feature_importance_between_train_and_test(validator_classifier):
+    result = validator_classifier._validate_feature_importance_between_train_and_test(
+        top_n_features=2, permutation_kwargs={"n_repeats": 1, "random_state": 88, "n_jobs": -1}
+    )
+    assert result[0] is False

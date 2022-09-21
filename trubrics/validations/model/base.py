@@ -1,10 +1,12 @@
 import timeit
+from collections import defaultdict
 from typing import Any, Callable, Dict, Optional, Union
 
 import numpy as np
 import pandas as pd
 import sklearn.metrics
 from sklearn.dummy import DummyClassifier, DummyRegressor
+from sklearn.inspection import permutation_importance
 
 from trubrics.context import DataContext, TrubricsModel
 from trubrics.exceptions import EstimatorTypeError, SklearnMetricTypeError
@@ -19,6 +21,11 @@ class ModelValidator:
         self.tm = TrubricsModel(data=data, model=model)
         self.model_type = self.tm.model_type
         self.custom_scorers = custom_scorers
+
+        # dict of computed performances {"dataset_name": {"metric_name": value}}
+        self.performances: Dict[str, Dict[str, float]] = defaultdict(dict)
+        # dict of feature importances {"dataset_name": {"feature_name": mean_value}}
+        self.feature_importances: Dict[str, dict] = defaultdict(dict)
 
     @validation_output
     def validate_minimum_functionality_in_range(
@@ -106,25 +113,30 @@ class ModelValidator:
         return len(errors_df) == 0, {"errors_df": errors_df.to_dict()} if len(errors_df) != 0 else {}
 
     @validation_output
-    def validate_performance_against_threshold(self, metric: str, threshold: float, severity: Optional[str] = None):
+    def validate_performance_against_threshold(
+        self, metric: str, threshold: float, dataset: str = "testing_data", severity: Optional[str] = None
+    ):
         """Performance validation versus a fixed threshold value.
 
-        Compares performance of a model on the testing dataset to a hard coded threshold value.
+        Compares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.
 
         Args:
             metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
                     custom scorer fed in when initialising the ModelValidator object.
-            threshold: the performance threshold that the model must attain
-            severity: severity of the validation. Can be either ['error', 'warning', 'experiment']. \
+            threshold: the performance threshold that the model must attain.
+            dataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.
+            severity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. \
                       If None, defaults to 'error'.
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the actual model performance calculated.
         """
-        return self._validate_performance_against_threshold(metric, threshold)
+        return self._validate_performance_against_threshold(metric, threshold, dataset)
 
-    def _validate_performance_against_threshold(self, metric: str, threshold: float) -> validation_output_type:
-        performance = self._score_data_context(metric)
+    def _validate_performance_against_threshold(
+        self, metric: str, threshold: float, dataset: str = "testing_data"
+    ) -> validation_output_type:
+        performance = self._score_data_context(metric, dataset)
         return bool(performance > threshold), {"performance": performance}
 
     @validation_output
@@ -197,14 +209,15 @@ class ModelValidator:
     ):
         """Performance validation versus a dummy baseline model.
 
-        Trains a DummyClassifier / DummyRegressor from sklearn and compares performance against the model.
+        Trains a DummyClassifier / DummyRegressor from \
+        [sklearn](https://scikit-learn.org/stable/modules/classes.html?highlight=dummy#module-sklearn.dummy)\
+        and compares performance against the model.
 
         Args:
             metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
                     custom scorer fed in when initialising the ModelValidator object.
-            strategy: see scikit-learns dummy models -\
-            https://scikit-learn.org/stable/modules/classes.html?highlight=dummy#module-sklearn.dummy
-            dummy_kwargs: kwargs to be passed to dummy model
+            strategy: strategy of scikit-learns dummy model.
+            dummy_kwargs: kwargs to be passed to dummy model.
             severity: severity of the validation. Can be either ['error', 'warning', 'experiment']. \
                       If None, defaults to 'error'.
 
@@ -217,7 +230,7 @@ class ModelValidator:
     def _validate_performance_against_dummy(
         self, metric: str, strategy: str, dummy_kwargs: Optional[dict] = None
     ) -> validation_output_type:
-        test_performance = self._score_data_context(metric)
+        test_performance = self._score_data_context(metric, dataset="testing_data")
         scorer = self._scorer(metric)
         if self.tm.data.training_data is None:
             raise TypeError("In order to train dummy classifier, training_data must be set in the DataContext.")
@@ -269,8 +282,8 @@ class ModelValidator:
         metric: str,
         threshold: Union[int, float],
     ) -> validation_output_type:
-        test_score = self._score_data_context(metric, test_data=True)
-        train_score = self._score_data_context(metric, test_data=False)
+        test_score = self._score_data_context(metric, dataset="testing_data")
+        train_score = self._score_data_context(metric, dataset="training_data")
 
         outcome = test_score < train_score and test_score >= train_score - threshold
         return outcome, {"train_score": train_score, "test_score": test_score}
@@ -298,33 +311,98 @@ class ModelValidator:
 
     @validation_output
     def validate_feature_in_top_n_important_features(
-        self, feature: str, feature_importance: Dict[str, float], top_n_features: int, severity: Optional[str] = None
+        self,
+        dataset: str,
+        feature: str,
+        top_n_features: int,
+        permutation_kwargs: Optional[Dict[str, Any]] = None,
+        severity: Optional[str] = None,
     ):
         """Feature importance validation for top n features.
 
-        Verifies that a given feature is in the top n most important features.
+        Validates that a given feature is in the top n most important features. For calculation of feature \
+        importance we are using sklearn's [permutation_importance](https://scikit-learn.org/stable/\
+        modules/generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance).
 
         Args:
-            feature: feature to assess
-            feature_importance: dictionary of feature importance values
-            top_n_features: the number of important features that the named feature must be in e.g. if
-                            top_n_features=2, the feature must be within the top two most important features
+            dataset: the name of a dataset from the DataContext to calculate feature importance on \
+                {'testing_data', 'training_data'}.
+            feature: feature to assess.
+            top_n_features: the number of most important features that the named feature must be ranked in. E.g. if
+                            top_n_features=2, the feature must be within the top two most important features.
+            permutation_kwargs: kwargs to pass into the sklearn.inspection.permutation_importance function.
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the actual feature importance ranking.
         """
-        return self._validate_feature_in_top_n_important_features(feature, feature_importance, top_n_features)
+        return self._validate_feature_in_top_n_important_features(dataset, feature, top_n_features, permutation_kwargs)
 
-    @staticmethod
     def _validate_feature_in_top_n_important_features(
-        feature: str, feature_importance: Dict[str, float], top_n_features: int
+        self, dataset: str, feature: str, top_n_features: int, permutation_kwargs: Optional[Dict[str, Any]] = None
     ) -> validation_output_type:
         count = 0
-        for importance in feature_importance.values():
-            if importance > feature_importance[feature]:
+        feature_importance = self._compute_permutation_feature_importance(
+            dataset=dataset, permutation_kwargs=permutation_kwargs
+        )
+        importances_mean = feature_importance["importances_mean"]
+        feature_index = self.tm.data.features.index(feature)
+        for importance in importances_mean:
+            if importance > importances_mean[feature_index]:
                 count += 1
 
-        return count < top_n_features, {"feature_importance_ranking": count}
+        feature_importances_dict = {
+            key: value for key, value in zip(self.tm.data.features, feature_importance["importances_mean"])
+        }
+        return count < top_n_features, {
+            "feature_importance_ranking": count,
+            "feature_importance": feature_importances_dict,
+        }
+
+    @validation_output
+    def validate_feature_importance_between_train_and_test(
+        self, top_n_features: Optional[int] = None, permutation_kwargs: Optional[Dict[str, Any]] = None
+    ):
+        """Permutation feature importance comparison between train and test sets.
+
+        Validates that the ranking of top n features is the same for both test and train sets. For calculation of \
+        feature importance we are using sklearn's [permutation_importance](https://scikit-learn.org/stable/modules\
+        /generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance).
+
+        Args:
+            top_n_features: the number of most important features to consider for comparison between train and test \
+                            sets. E.g. if top_n_features=2, the train and test sets must have the same 2 most \
+                            important features, in the same order.
+            permutation_kwargs: kwargs to pass into the sklearn.inspection.permutation_importance function.
+
+        Returns:
+            True for success, false otherwise. With a results dictionary giving the actual feature importance ranking.
+        """
+        return self._validate_feature_importance_between_train_and_test(top_n_features, permutation_kwargs)
+
+    def _validate_feature_importance_between_train_and_test(
+        self, top_n_features: Optional[int] = None, permutation_kwargs: Optional[Dict[str, Any]] = None
+    ) -> validation_output_type:
+        train_fi = self._compute_permutation_feature_importance(
+            dataset="testing_data", permutation_kwargs=permutation_kwargs
+        )
+        test_fi = self._compute_permutation_feature_importance(
+            dataset="training_data", permutation_kwargs=permutation_kwargs
+        )
+        ordered_train_fi = {
+            value: key for key, value in sorted(zip(train_fi["importances_mean"], self.tm.data.features))
+        }
+        ordered_test_fi = {value: key for key, value in sorted(zip(test_fi["importances_mean"], self.tm.data.features))}
+
+        if top_n_features:
+            top_n_features = -top_n_features
+
+        is_same_order = [feature for feature in ordered_train_fi][top_n_features:] == [
+            feature for feature in ordered_test_fi
+        ][top_n_features:]
+        return is_same_order, {
+            "training_feature_importance": ordered_train_fi,
+            "testing_feature_importance": ordered_test_fi,
+        }
 
     def _scorer(self, metric: str) -> Callable[[Any, pd.DataFrame, pd.Series], float]:
         if metric in sklearn.metrics.SCORERS:
@@ -340,12 +418,51 @@ class ModelValidator:
                 )
         return scorer
 
-    def _score_data_context(self, metric: str, test_data: bool = True) -> float:
+    def _score_data_context(self, metric: str, dataset: str) -> float:
+        previously_computed_performance = self.performances.get(dataset, {}).get(metric)
+        if previously_computed_performance:
+            return previously_computed_performance
+
         scorer = self._scorer(metric)
-        if test_data:
-            return scorer(self.tm.model, self.tm.data.X_test, self.tm.data.y_test)
-        else:
+        if dataset == "testing_data":
+            self.performances[dataset][metric] = scorer(self.tm.model, self.tm.data.X_test, self.tm.data.y_test)
+            return self.performances[dataset][metric]
+        elif dataset == "training_data":
             if self.tm.data.X_train is None or self.tm.data.y_train is None:
                 raise ValueError("Training data not specified in DataContext.")
             else:
-                return scorer(self.tm.model, self.tm.data.X_train, self.tm.data.y_train)
+                self.performances[dataset][metric] = scorer(self.tm.model, self.tm.data.X_train, self.tm.data.y_train)
+                return self.performances[dataset][metric]
+        else:
+            raise ValueError(
+                "Method reserved for testing on datasets within the DataContext: {'testing_data', 'training_data'}."
+            )
+
+    def _compute_permutation_feature_importance(
+        self, dataset: str, permutation_kwargs: Optional[Dict[str, Any]]
+    ) -> dict:
+        previously_computed_importance = self.feature_importances.get(dataset)
+        if previously_computed_importance:
+            return previously_computed_importance
+
+        if permutation_kwargs is None:
+            permutation_kwargs = {"random_state": 88, "n_jobs": -1}
+
+        if dataset == "testing_data":
+            self.feature_importances[dataset] = dict(
+                permutation_importance(self.tm.model, self.tm.data.X_test, self.tm.data.y_test, **permutation_kwargs)
+            )
+        elif dataset == "training_data":
+            if self.tm.data.X_train is None or self.tm.data.y_train is None:
+                raise ValueError("Training data not specified in DataContext.")
+            else:
+                self.feature_importances[dataset] = dict(
+                    permutation_importance(
+                        self.tm.model, self.tm.data.X_train, self.tm.data.y_train, **permutation_kwargs
+                    )
+                )
+        else:
+            raise ValueError(
+                "Method reserved for testing on datasets within the DataContext: {'testing_data', 'training_data'}."
+            )
+        return self.feature_importances[dataset]
