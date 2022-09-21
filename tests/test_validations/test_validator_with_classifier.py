@@ -50,9 +50,24 @@ def test__validate_inference_time(validator_classifier):
     assert result == actual
 
 
-def test__validate_feature_in_top_n_important_features(validator_classifier, feature_importance):
+def test__validate_feature_in_top_n_important_features(validator_classifier):
     result = validator_classifier._validate_feature_in_top_n_important_features(
-        feature="Age", feature_importance=feature_importance, top_n_features=2
+        dataset="testing_data", feature="Age", top_n_features=2
     )
-    actual = True, {"feature_importance_ranking": 1}
-    assert result == actual
+    result[1]["permutation_importance"] = {
+        key: round(value, 1) for key, value in result[1]["permutation_importance"].items()
+    }
+    actual = {
+        "feature_importance_ranking": 1,
+        "permutation_importance": {
+            "Sex": 0.0,
+            "Embarked": 0.0,
+            "Title": 0.1,
+            "Pclass": -0.1,
+            "Age": 0.0,
+            "SibSp": -0.1,
+            "Parch": 0.0,
+            "Fare": -0.1,
+        },
+    }
+    assert result == (True, actual)
