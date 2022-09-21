@@ -46,28 +46,23 @@ def test__validate_inference_time(validator_classifier):
     result = validator_classifier._validate_inference_time(threshold=0.1, n_executions=10)
     result[1]["inference_time"] = round(result[1]["inference_time"], 1)
 
-    actual = True, {"inference_time": 0.0}
+    actual = True, {"inference_time": 0}
     assert result == actual
 
 
 def test__validate_feature_in_top_n_important_features(validator_classifier):
     result = validator_classifier._validate_feature_in_top_n_important_features(
-        dataset="testing_data", feature="Age", top_n_features=2
+        dataset="testing_data",
+        feature="Age",
+        top_n_features=2,
+        permutation_kwargs={"n_repeats": 1, "random_state": 88, "n_jobs": -1},
     )
-    result[1]["permutation_importance"] = {
-        key: round(value, 1) for key, value in result[1]["permutation_importance"].items()
-    }
-    actual = {
-        "feature_importance_ranking": 1,
-        "permutation_importance": {
-            "Sex": 0.0,
-            "Embarked": 0.0,
-            "Title": 0.1,
-            "Pclass": -0.1,
-            "Age": 0.0,
-            "SibSp": -0.1,
-            "Parch": 0.0,
-            "Fare": -0.1,
-        },
-    }
-    assert result == (True, actual)
+    result[1].pop("feature_importance")
+    assert result == (True, {"feature_importance_ranking": 1})
+
+
+def test__validate_feature_importance_between_train_and_test(validator_classifier):
+    result = validator_classifier._validate_feature_importance_between_train_and_test(
+        top_n_features=2, permutation_kwargs={"n_repeats": 1, "random_state": 88, "n_jobs": -1}
+    )
+    assert result[0] is False

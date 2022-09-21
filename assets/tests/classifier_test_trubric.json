@@ -79,33 +79,6 @@
             }
         },
         {
-            "validation_type": "validate_feature_in_top_n_important_features",
-            "validation_kwargs": {
-                "args": [],
-                "kwargs": {
-                    "dataset": "training_data",
-                    "feature": "Age",
-                    "top_n_features": 2
-                }
-            },
-            "explanation": "Feature importance validation for top n features.\n\nVerifies that a given feature is in the top n most important features. For calculation of feature importance we are using\nsklearn's [permutation_importance](https://scikit-learn.org/stable/modules/generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance).\n\nArgs:\ndataset: the name of a dataset from the DataContext to calculate feature importance on {'testing_data', 'training_data'}.\nfeature: feature to assess.\ntop_n_features: the number of important features that the named feature must be in e.g. if\ntop_n_features=2, the feature must be within the top two most important features.\npermutation_kwargs: kwargs to pass into the sklearn.inspection.permutation_importance function.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual feature importance ranking.\n",
-            "outcome": "fail",
-            "severity": "error",
-            "result": {
-                "feature_importance_ranking": 2,
-                "permutation_importance": {
-                    "Sex": 0.15771812080536907,
-                    "Embarked": 0.06543624161073822,
-                    "Title": 0.0942953020134228,
-                    "Pclass": 0.10536912751677847,
-                    "Age": 0.11744966442953017,
-                    "SibSp": 0.058053691275167754,
-                    "Parch": 0.02617449664429523,
-                    "Fare": 0.14127516778523488
-                }
-            }
-        },
-        {
             "validation_type": "validate_performance_for_different_fares",
             "validation_kwargs": {
                 "args": [],
