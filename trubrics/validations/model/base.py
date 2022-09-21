@@ -1,4 +1,5 @@
 import timeit
+from collections import defaultdict
 from typing import Any, Callable, Dict, Optional, Union
 
 import numpy as np
@@ -19,6 +20,9 @@ class ModelValidator:
         self.tm = TrubricsModel(data=data, model=model)
         self.model_type = self.tm.model_type
         self.custom_scorers = custom_scorers
+
+        # dict of computed performances {"dataset_name": {"metric_name": value}}
+        self.performances: Dict[str, Dict[str, float]] = defaultdict(dict)
 
     @validation_output
     def validate_minimum_functionality_in_range(
@@ -106,25 +110,30 @@ class ModelValidator:
         return len(errors_df) == 0, {"errors_df": errors_df.to_dict()} if len(errors_df) != 0 else {}
 
     @validation_output
-    def validate_performance_against_threshold(self, metric: str, threshold: float, severity: Optional[str] = None):
+    def validate_performance_against_threshold(
+        self, metric: str, threshold: float, dataset: str = "testing_data", severity: Optional[str] = None
+    ):
         """Performance validation versus a fixed threshold value.
 
-        Compares performance of a model on the testing dataset to a hard coded threshold value.
+        Compares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.
 
         Args:
             metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
                     custom scorer fed in when initialising the ModelValidator object.
-            threshold: the performance threshold that the model must attain
-            severity: severity of the validation. Can be either ['error', 'warning', 'experiment']. \
+            threshold: the performance threshold that the model must attain.
+            dataset: the name of a dataset from the DataContext {"testing_data", "training_data"}.
+            severity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. \
                       If None, defaults to 'error'.
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the actual model performance calculated.
         """
-        return self._validate_performance_against_threshold(metric, threshold)
+        return self._validate_performance_against_threshold(metric, threshold, dataset)
 
-    def _validate_performance_against_threshold(self, metric: str, threshold: float) -> validation_output_type:
-        performance = self._score_data_context(metric)
+    def _validate_performance_against_threshold(
+        self, metric: str, threshold: float, dataset: str = "testing_data"
+    ) -> validation_output_type:
+        performance = self._score_data_context(metric, dataset)
         return bool(performance > threshold), {"performance": performance}
 
     @validation_output
@@ -269,8 +278,8 @@ class ModelValidator:
         metric: str,
         threshold: Union[int, float],
     ) -> validation_output_type:
-        test_score = self._score_data_context(metric, test_data=True)
-        train_score = self._score_data_context(metric, test_data=False)
+        test_score = self._score_data_context(metric, dataset="testing_data")
+        train_score = self._score_data_context(metric, dataset="training_data")
 
         outcome = test_score < train_score and test_score >= train_score - threshold
         return outcome, {"train_score": train_score, "test_score": test_score}
@@ -340,12 +349,22 @@ class ModelValidator:
                 )
         return scorer
 
-    def _score_data_context(self, metric: str, test_data: bool = True) -> float:
+    def _score_data_context(self, metric: str, dataset: str = "testing_data") -> float:
+        previously_computed_performance = self.performances.get(dataset, {}).get(metric)
+        if previously_computed_performance:
+            return previously_computed_performance
+
         scorer = self._scorer(metric)
-        if test_data:
-            return scorer(self.tm.model, self.tm.data.X_test, self.tm.data.y_test)
-        else:
+        if dataset == "testing_data":
+            self.performances[dataset][metric] = scorer(self.tm.model, self.tm.data.X_test, self.tm.data.y_test)
+            return self.performances[dataset][metric]
+        elif dataset == "training_data":
             if self.tm.data.X_train is None or self.tm.data.y_train is None:
                 raise ValueError("Training data not specified in DataContext.")
             else:
-                return scorer(self.tm.model, self.tm.data.X_train, self.tm.data.y_train)
+                self.performances[dataset][metric] = scorer(self.tm.model, self.tm.data.X_train, self.tm.data.y_train)
+                return self.performances[dataset][metric]
+        elif dataset == "minimum_functionality_data":
+            raise NotImplementedError()
+        else:
+            raise ValueError("Method reserved for testing on datasets within the DataContext.")
