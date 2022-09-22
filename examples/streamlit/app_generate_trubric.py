@@ -5,7 +5,7 @@ from sklearn.metrics import SCORERS
 
 from trubrics.context import DataContext, TrubricContext
 from trubrics.validations import ModelValidator
-from trubrics.validations.run import run_trubric
+from trubrics.validations.run import TrubricRun, run_trubric
 
 
 def expand_docstring(func):
@@ -59,7 +59,7 @@ if model_ and test_data and train_data:
 
         col1, col2, col3 = st.columns([2, 1.4, 1])
         with col1:
-            perf_dum = st.checkbox("validate_performance_against_dummy")
+            perf_dum = st.checkbox("validate_test_performance_against_dummy")
         with col2:
             metric = st.selectbox("2. Metric", SCORERS)
         with col3:
@@ -71,9 +71,9 @@ if model_ and test_data and train_data:
                 dummy_kwarg = {"metric": metric, "strategy": strategy, "dummy_kwargs": {"constant": cst_value}}
             else:
                 dummy_kwarg = {"metric": metric, "strategy": strategy}
-        expand_docstring(model_validator.validate_performance_against_dummy)
+        expand_docstring(model_validator.validate_test_performance_against_dummy)
         if perf_dum:
-            perf_vs_dummy = model_validator.validate_performance_against_dummy(**dummy_kwarg)
+            perf_vs_dummy = model_validator.validate_test_performance_against_dummy(**dummy_kwarg)
             validations.append(perf_vs_dummy)
             st.write(perf_vs_dummy.dict())
 
@@ -117,11 +117,13 @@ if model_ and test_data and train_data:
             if st.button("Run saved trubric"):
                 trubric = TrubricContext.parse_file(f"{path}/my_trubric.json")
 
-                all_validation_results = run_trubric(
+                run_context = TrubricRun(
                     data_context=data_context,  # type: ignore
                     model=model,  # type: ignore
-                    trubric=trubric,
+                    trubric_context=trubric,
                 )
+
+                all_validation_results = run_trubric(run_context)
 
                 for validation_result in all_validation_results:
                     message_start = f"{validation_result.validation_type} - {validation_result.severity.upper()}"

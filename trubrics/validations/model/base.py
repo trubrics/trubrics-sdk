@@ -213,7 +213,7 @@ class ModelValidator:
         return max_performance_difference < threshold, {"max_performance_difference": max_performance_difference}
 
     @validation_output
-    def validate_performance_against_dummy(
+    def validate_test_performance_against_dummy(
         self,
         metric: str,
         strategy: str = "most_frequent",
@@ -221,11 +221,11 @@ class ModelValidator:
         data_slice: Optional[str] = None,
         severity: Optional[str] = None,
     ):
-        """Performance validation versus a dummy baseline model.
+        """Performance validation of testing data versus a dummy baseline model.
 
         Trains a DummyClassifier / DummyRegressor from \
         [sklearn](https://scikit-learn.org/stable/modules/classes.html?highlight=dummy#module-sklearn.dummy)\
-        and compares performance against the model.
+        and compares performance against the model on the test set.
 
         Args:
             metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
@@ -240,9 +240,9 @@ class ModelValidator:
             True for success, false otherwise. With a results dictionary giving the model's \
             actual performance on the test set and the dummy model's performance.
         """
-        return self._validate_performance_against_dummy(metric, strategy, dummy_kwargs, data_slice)
+        return self._validate_test_performance_against_dummy(metric, strategy, dummy_kwargs, data_slice)
 
-    def _validate_performance_against_dummy(
+    def _validate_test_performance_against_dummy(
         self, metric: str, strategy: str, dummy_kwargs: Optional[dict] = None, data_slice: Optional[str] = None
     ) -> validation_output_type:
         test_performance = self._score_data_context(metric, dataset="testing_data", data_slice=data_slice)

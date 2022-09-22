@@ -28,8 +28,8 @@ def test__validate_biased_performance_across_category(validator_classifier):
     assert result == actual
 
 
-def test__validate_performance_against_dummy(validator_classifier):
-    result = validator_classifier._validate_performance_against_dummy(metric="accuracy", strategy="most_frequent")
+def test__validate_test_performance_against_dummy(validator_classifier):
+    result = validator_classifier._validate_test_performance_against_dummy(metric="accuracy", strategy="most_frequent")
     result[1]["dummy_performance"] = round(result[1]["dummy_performance"], 2)
 
     actual = False, {"dummy_performance": 0.67, "test_performance": 0.5}
