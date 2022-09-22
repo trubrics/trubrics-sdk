@@ -27,23 +27,19 @@ A trubric is a checklist of validations, and can be built by:
 1. Initialising `DataContext` object to wrap data into a trubrics friendly format
 ```py
 from trubrics.context import DataContext
-from sklearn.metrics import accuracy_score
 data_context = DataContext(
     testing_data=test_df,  # pandas dataframe of data to test against a model
     target="target_column_name_in_test_df"
 )
-
 ```
 
 2. Using the `ModelValidator` object to generate out of the box validations
 ```py
 from trubrics.validations import ModelValidator
-model_validator = ModelValidator(data=data_context, model=rf_model)  # sklearn model
+model_validator = ModelValidator(data=data_context, model=rf_model)
 validations = [
-    model_validator.validate_performance_against_threshold(metric="accuracy", threshold=0.8),
-    model_validator.validate_biased_performance_across_category(
-        metric="recall", category="feature_a", threshold=0.05
-    )
+    model_validator.validate_performance_against_threshold(metric="precision", threshold=0.8),
+    model_validator.validate_performance_against_threshold(metric="recall", threshold=0.7)
 ]
 ```
 
@@ -52,24 +48,14 @@ validations = [
 from trubrics.context import TrubricContext
 trubric_context = TrubricContext(
     name="my_first_trubric",
-    model_name=model.name,
-    model_version=model.version,
     data_context_name=data_context.name,
     data_context_version=data_context.version,
-    validations=validations,  # list of ValidationContexts
+    validations=validations,
 )
 trubric_context.save_local(path="/data")
 ```
 
-## Run a trubric
-Run the locally saved trubric .json with:
-```console
-(venv)$ trubrics run <trubrics_config_file>.py
-```
-
-`<trubrics_config_file>.py` is a trubrics config file where you can initialise a `DataContext` and `ModelValidator`.
-The file must contain a variable RUN_CONTEXT, an instance of the TrubricRun class. See an example of this file in
-[examples/cli/trubric_run.py](examples/cli/trubric_run.py).
+*See a full tutorial on the titanic dataset in our docs [here](https://trubrics.github.io/trubrics-sdk/notebooks/titanic-demo.html)*.
 
 ## Collect model feedback
 Trubrics feedback components help you build python applications with your favourite library (e.g. [Streamlit](https://streamlit.io/)).
