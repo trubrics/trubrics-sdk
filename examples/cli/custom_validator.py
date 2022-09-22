@@ -7,8 +7,8 @@ from trubrics.validations.validation_output import (
 
 
 class CustomValidator(ModelValidator):
-    def __init__(self, data: DataContext, model, custom_scorers=None):
-        super().__init__(data, model, custom_scorers)
+    def __init__(self, data: DataContext, model, custom_scorers=None, slicing_functions=None):
+        super().__init__(data, model, custom_scorers, slicing_functions)
 
     @validation_output
     def validate_performance_for_different_fares(self, fare_cutoff: int, severity=None):

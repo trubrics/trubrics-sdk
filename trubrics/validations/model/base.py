@@ -258,8 +258,16 @@ class ModelValidator:
             dummy_model = Dummy(strategy=strategy, **dummy_kwargs)
         else:
             dummy_model = Dummy(strategy=strategy)
-        dummy_model.fit(self.tm.data.X_train, self.tm.data.y_train)
-        dummy_performance = scorer(dummy_model, self.tm.data.X_test, self.tm.data.y_test)
+
+        if data_slice:
+            X_train, y_train = self._slice_data_with_slicing_function(self.tm.data.training_data, data_slice)
+            X_test, y_test = self._slice_data_with_slicing_function(self.tm.data.testing_data, data_slice)
+        else:
+            X_train, y_train = self.tm.data.X_train, self.tm.data.y_train
+            X_test, y_test = self.tm.data.X_test, self.tm.data.y_test
+
+        dummy_model.fit(X_train, y_train)
+        dummy_performance = scorer(dummy_model, X_test, y_test)
 
         return test_performance > dummy_performance, {
             "dummy_performance": dummy_performance,

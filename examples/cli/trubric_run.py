@@ -3,9 +3,10 @@ import pandas as pd
 
 from examples.cli.custom_scorer import custom_scorers
 from examples.cli.custom_validator import CustomValidator
+from examples.cli.slicing_functions import slicing_functions
 from examples.training import titanic_config
 from trubrics.context import DataContext, TrubricContext
-from trubrics.validations.run_context import TrubricRun
+from trubrics.validations.run import TrubricRun
 
 testing_data = pd.read_csv(titanic_config.LOCAL_TEST_FILENAME)
 training_data = pd.read_csv(titanic_config.LOCAL_TRAIN_FILENAME)
@@ -25,4 +26,5 @@ RUN_CONTEXT = TrubricRun(
     trubric_context=trubric_context,
     custom_validator=CustomValidator,
     custom_scorers=custom_scorers,
+    slicing_functions=slicing_functions,
 )

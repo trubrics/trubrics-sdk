@@ -9,8 +9,7 @@ from rich import print as rprint
 
 from trubrics.exceptions import MissingConfigPathError, MissingTrubricRunFileError
 from trubrics.utils.trubrics_manager_connector import make_request
-from trubrics.validations.run import run_trubric
-from trubrics.validations.run_context import TrubricRun
+from trubrics.validations.run import TrubricRun, run_trubric
 
 app = typer.Typer()
 
@@ -71,13 +70,7 @@ def run(
             fg=typer.colors.BLUE,
         )
     )
-    all_validation_results = run_trubric(
-        data_context=run_context.data_context,
-        model=run_context.model,
-        trubric=run_context.trubric_context,
-        custom_validator=run_context.custom_validator,
-        custom_scorers=run_context.custom_scorers,
-    )
+    all_validation_results = run_trubric(tr=run_context)
     validations = []
     for validation_result in all_validation_results:
         validations.append(validation_result)
