@@ -137,6 +137,7 @@ class ModelValidator:
                     custom scorer fed in when initialising the ModelValidator object.
             threshold: the performance threshold that the model must attain.
             dataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.
+            data_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.
             severity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. \
                       If None, defaults to 'error'.
 
@@ -231,6 +232,7 @@ class ModelValidator:
                     custom scorer fed in when initialising the ModelValidator object.
             strategy: strategy of scikit-learns dummy model.
             dummy_kwargs: kwargs to be passed to dummy model.
+            data_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.
             severity: severity of the validation. Can be either ['error', 'warning', 'experiment']. \
                       If None, defaults to 'error'.
 
@@ -293,6 +295,7 @@ class ModelValidator:
                       custom scorer fed in when initialising the ModelValidator object.
             threshold: a positive value representing the maximum allowable difference between the train and \
                          test score.
+            data_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.
             severity: severity of the validation. Can be either ['error', 'warning', 'experiment']. \
                       If None, defaults to 'error'.
 
