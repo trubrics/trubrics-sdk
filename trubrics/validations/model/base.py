@@ -17,10 +17,17 @@ from trubrics.validations.validation_output import (
 
 
 class ModelValidator:
-    def __init__(self, data: DataContext, model: Any, custom_scorers: Optional[Dict[str, Any]] = None):
+    def __init__(
+        self,
+        data: DataContext,
+        model: Any,
+        custom_scorers: Optional[Dict[str, Any]] = None,
+        slicing_functions: Optional[Dict[str, Any]] = None,
+    ):
         self.tm = TrubricsModel(data=data, model=model)
         self.model_type = self.tm.model_type
         self.custom_scorers = custom_scorers
+        self.slicing_functions = slicing_functions
 
         # dict of computed performances {"dataset_name": {"metric_name": value}}
         self.performances: Dict[str, Dict[str, float]] = defaultdict(dict)
@@ -114,7 +121,12 @@ class ModelValidator:
 
     @validation_output
     def validate_performance_against_threshold(
-        self, metric: str, threshold: float, dataset: str = "testing_data", severity: Optional[str] = None
+        self,
+        metric: str,
+        threshold: float,
+        dataset: str = "testing_data",
+        data_slice: Optional[str] = None,
+        severity: Optional[str] = None,
     ):
         """Performance validation versus a fixed threshold value.
 
@@ -131,12 +143,12 @@ class ModelValidator:
         Returns:
             True for success, false otherwise. With a results dictionary giving the actual model performance calculated.
         """
-        return self._validate_performance_against_threshold(metric, threshold, dataset)
+        return self._validate_performance_against_threshold(metric, threshold, dataset, data_slice)
 
     def _validate_performance_against_threshold(
-        self, metric: str, threshold: float, dataset: str = "testing_data"
+        self, metric: str, threshold: float, dataset: str = "testing_data", data_slice: Optional[str] = None
     ) -> validation_output_type:
-        performance = self._score_data_context(metric, dataset)
+        performance = self._score_data_context(metric, dataset, data_slice)
         return bool(performance > threshold), {"performance": performance}
 
     @validation_output
@@ -205,6 +217,7 @@ class ModelValidator:
         metric: str,
         strategy: str = "most_frequent",
         dummy_kwargs: Optional[dict] = None,
+        data_slice: Optional[str] = None,
         severity: Optional[str] = None,
     ):
         """Performance validation versus a dummy baseline model.
@@ -225,12 +238,12 @@ class ModelValidator:
             True for success, false otherwise. With a results dictionary giving the model's \
             actual performance on the test set and the dummy model's performance.
         """
-        return self._validate_performance_against_dummy(metric, strategy, dummy_kwargs)
+        return self._validate_performance_against_dummy(metric, strategy, dummy_kwargs, data_slice)
 
     def _validate_performance_against_dummy(
-        self, metric: str, strategy: str, dummy_kwargs: Optional[dict] = None
+        self, metric: str, strategy: str, dummy_kwargs: Optional[dict] = None, data_slice: Optional[str] = None
     ) -> validation_output_type:
-        test_performance = self._score_data_context(metric, dataset="testing_data")
+        test_performance = self._score_data_context(metric, dataset="testing_data", data_slice=data_slice)
         scorer = self._scorer(metric)
         if self.tm.data.training_data is None:
             raise TypeError("In order to train dummy classifier, training_data must be set in the DataContext.")
@@ -255,7 +268,11 @@ class ModelValidator:
 
     @validation_output
     def validate_performance_between_train_and_test(
-        self, metric: str, threshold: Union[int, float], severity: Optional[str] = None
+        self,
+        metric: str,
+        threshold: Union[int, float],
+        data_slice: Optional[str] = None,
+        severity: Optional[str] = None,
     ):
         """Performance validation comparing training and test data scores.
 
@@ -275,15 +292,16 @@ class ModelValidator:
             True for success, false otherwise. With a results dictionary giving the model's \
             performance on test and train sets.
         """
-        return self._validate_performance_between_train_and_test(metric, threshold)
+        return self._validate_performance_between_train_and_test(metric, threshold, data_slice)
 
     def _validate_performance_between_train_and_test(
         self,
         metric: str,
         threshold: Union[int, float],
+        data_slice: Optional[str] = None,
     ) -> validation_output_type:
-        test_score = self._score_data_context(metric, dataset="testing_data")
-        train_score = self._score_data_context(metric, dataset="training_data")
+        test_score = self._score_data_context(metric, dataset="testing_data", data_slice=data_slice)
+        train_score = self._score_data_context(metric, dataset="training_data", data_slice=data_slice)
 
         outcome = test_score < train_score and test_score >= train_score - threshold
         return outcome, {"train_score": train_score, "test_score": test_score}
@@ -418,25 +436,44 @@ class ModelValidator:
                 )
         return scorer
 
-    def _score_data_context(self, metric: str, dataset: str) -> float:
+    def _slice_data_with_slicing_function(self, df: pd.DataFrame, data_slice: str):
+        if self.slicing_functions:
+            if data_slice in self.slicing_functions:
+                sliced_data = self.slicing_functions[data_slice](df)
+            else:
+                raise ValueError(
+                    f"Slice '{data_slice}' does not exist in the slicing_functions parameter of the ModelValidator."
+                )
+        else:
+            raise TypeError(
+                "In order to use data slices, add all slicing functions to the slicing_functions parameter of the"
+                " ModelValidator."
+            )
+        return sliced_data.loc[:, self.tm.data.features], sliced_data.loc[:, self.tm.data.target]
+
+    def _score_data_context(self, metric: str, dataset: str, data_slice: Optional[str]) -> float:
         previously_computed_performance = self.performances.get(dataset, {}).get(metric)
         if previously_computed_performance:
             return previously_computed_performance
 
         scorer = self._scorer(metric)
-        if dataset == "testing_data":
-            self.performances[dataset][metric] = scorer(self.tm.model, self.tm.data.X_test, self.tm.data.y_test)
-            return self.performances[dataset][metric]
-        elif dataset == "training_data":
+        model = self.tm.model
+        if data_slice:
+            X, y = self._slice_data_with_slicing_function(getattr(self.tm.data, dataset), data_slice)
+            dataset = f"{dataset}_{data_slice}"
+        elif data_slice is None and dataset == "testing_data":
+            X, y = self.tm.data.X_test, self.tm.data.y_test
+        elif data_slice is None and dataset == "training_data":
             if self.tm.data.X_train is None or self.tm.data.y_train is None:
                 raise ValueError("Training data not specified in DataContext.")
             else:
-                self.performances[dataset][metric] = scorer(self.tm.model, self.tm.data.X_train, self.tm.data.y_train)
-                return self.performances[dataset][metric]
+                X, y = self.tm.data.X_train, self.tm.data.y_train
         else:
             raise ValueError(
                 "Method reserved for testing on datasets within the DataContext: {'testing_data', 'training_data'}."
             )
+        self.performances[dataset][metric] = scorer(model, X, y)
+        return self.performances[dataset][metric]
 
     def _compute_permutation_feature_importance(
         self, dataset: str, permutation_kwargs: Optional[Dict[str, Any]]
