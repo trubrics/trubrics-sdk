@@ -4,7 +4,9 @@ allow you to tailor trubrics to your needs, and transform user feedback into mea
 The `ModelValidator` object can be used to build your own custom validations. Create a class and inherit from
 `ModelValidator`, feeding in your DataContext and a [model](models.md).
 
-!!!example
-    :::examples.cli.custom_validator
+For best practices on creating a CustomValidator, follow the same conventions as [the `ModelValidator` object](validator_object.md) that are displayed in this example:
 
-As seen in the example source code above, the conventions follow those of [the `ModelValidator` object](validator_object.md).
+!!!example
+    ```py
+    --8<-- "examples/cli/custom_validator.py"
+    ```
