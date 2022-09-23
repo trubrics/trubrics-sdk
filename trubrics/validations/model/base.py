@@ -173,7 +173,22 @@ class ModelValidator:
         include_global_performance: bool = False,
         severity: Optional[str] = None,
     ):
-        """Validation to ensure different slices of data have similar levels of performance."""
+        """Validation to ensure that different slices of data have similar levels of performance.
+
+        Validates that a list of model performances on different data slices from a given dataset has a lower
+        standard deviation than a given threshold value.
+
+        Args:
+            metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
+                    custom scorer fed in when initialising the ModelValidator object.
+            dataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.
+            data_slices: a list of of data slices, specified in the slicing_functions parameter of ModelValidator.
+            std_threshold: the standard deviation threshold that must be superior to the standard deviation of all \
+                data slice performances.
+            include_global_performance: whether or not to include the dataset global performance in the list.
+            severity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. \
+                      If None, defaults to 'error'.
+        """
         return self._validate_performance_std_across_slices(
             metric, dataset, data_slices, std_threshold, include_global_performance
         )
