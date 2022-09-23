@@ -1,6 +1,6 @@
 import timeit
 from collections import defaultdict
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -153,64 +153,34 @@ class ModelValidator:
         return bool(performance > threshold), {"performance": performance}
 
     @validation_output
-    def validate_biased_performance_across_category(
-        self, metric: str, category: str, threshold: float, severity: Optional[str] = None
+    def validate_performance_std_across_slices(
+        self,
+        metric: str,
+        dataset: str,
+        data_slices: List[str],
+        std_threshold: float,
+        include_global_performance: bool = False,
+        severity: Optional[str] = None,
     ):
-        """Biased performance validation on a category.
+        """ """
+        return self._validate_performance_std_across_slices(
+            metric, dataset, data_slices, std_threshold, include_global_performance
+        )
 
-        Calculates various performance for all values in a category and validates for
-        the maximum difference in performance inferior to the threshold value.
-
-        Args:
-            metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
-                    custom scorer fed in when initialising the ModelValidator object.
-            category: categorical feature to split data on
-            threshold: maximum difference in performance
-            severity: severity of the validation. Can be either ['error', 'warning', 'experiment']. \
-                      If None, defaults to 'error'.
-
-        Returns:
-            True for success, false otherwise. With a results dictionary giving the maximum performance difference.
-        """
-        return self._validate_biased_performance_across_category(metric, category, threshold)
-
-    def _validate_biased_performance_across_category(
-        self, metric: str, category: str, threshold: float
+    def _validate_performance_std_across_slices(
+        self,
+        metric: str,
+        dataset: str,
+        data_slices: List[str],
+        std_threshold: float,
+        include_global_performance: bool = False,
     ) -> validation_output_type:
-        """
-        TODO:
-            - More complex threshold function
-            - Modify cardinality
-
-            To add to output report:
-
-            - Performance across all category values
-            - Show distributions of category variables
-            - Performance plots of results
-        """
-        scorer = self._scorer(metric)
-        test_data = self.tm.data.testing_data
-        cat_values = list(test_data[category].unique())
-        if len(cat_values) > 20:
-            raise ValueError(f"Cardinality of {len(cat_values)} too high for performance test.")
-        if len(cat_values) < 1:
-            raise ValueError(f"Category '{category}' has a single value.")
-        if category not in test_data.columns:
-            # TODO: check when categorical columns are specified
-            raise KeyError(f"Column '{category}' not found in dataset.")
-        result: Dict[str, Union[int, float]] = {}
-        for value in cat_values:
-            if value not in [np.nan, None]:
-                value = f"'{value}'" if isinstance(value, str) else value
-                filtered_data = test_data.query(f"`{category}`=={value}")
-                result[value] = scorer(
-                    self.tm.model,
-                    filtered_data.loc[:, self.tm.data.features],
-                    filtered_data[self.tm.data.target],
-                )
-        max_performance_difference = max(result.values()) - min(result.values())
-
-        return max_performance_difference < threshold, {"max_performance_difference": max_performance_difference}
+        performances: Dict[str, float] = {}
+        if include_global_performance:
+            performances[dataset] = self._score_data_context(metric, dataset, data_slice=None)
+        for data_slice in data_slices:
+            performances[f"{dataset}_{data_slice}"] = self._score_data_context(metric, dataset, data_slice)
+        return np.std(list(performances.values())) < std_threshold, performances  # type: ignore
 
     @validation_output
     def validate_test_performance_against_dummy(
@@ -463,15 +433,14 @@ class ModelValidator:
         return sliced_data.loc[:, self.tm.data.features], sliced_data.loc[:, self.tm.data.target]
 
     def _score_data_context(self, metric: str, dataset: str, data_slice: Optional[str]) -> float:
-        previously_computed_performance = self.performances.get(dataset, {}).get(metric)
+        renamed_dataset = f"{dataset}_{data_slice}" if data_slice else dataset
+        previously_computed_performance = self.performances.get(renamed_dataset, {}).get(metric)
         if previously_computed_performance:
             return previously_computed_performance
 
         scorer = self._scorer(metric)
-        model = self.tm.model
         if data_slice:
             X, y = self._slice_data_with_slicing_function(getattr(self.tm.data, dataset), data_slice)
-            dataset = f"{dataset}_{data_slice}"
         elif data_slice is None and dataset == "testing_data":
             X, y = self.tm.data.X_test, self.tm.data.y_test
         elif data_slice is None and dataset == "training_data":
@@ -483,8 +452,8 @@ class ModelValidator:
             raise ValueError(
                 "Method reserved for testing on datasets within the DataContext: {'testing_data', 'training_data'}."
             )
-        self.performances[dataset][metric] = scorer(model, X, y)
-        return self.performances[dataset][metric]
+        self.performances[renamed_dataset][metric] = scorer(self.tm.model, X, y)
+        return self.performances[renamed_dataset][metric]
 
     def _compute_permutation_feature_importance(
         self, dataset: str, permutation_kwargs: Optional[Dict[str, Any]]

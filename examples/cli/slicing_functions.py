@@ -1,5 +1,5 @@
 def age_young(df):
-    return df.loc[df["Age"] < 13, :]
+    return df.loc[df["Age"] < 4, :]
 
 
 def sex_female(df):
