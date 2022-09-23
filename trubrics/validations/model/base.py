@@ -33,6 +33,8 @@ class ModelValidator:
         self.performances: Dict[str, Dict[str, float]] = defaultdict(dict)
         # dict of feature importances {"dataset_name": {"feature_name": mean_value}}
         self.feature_importances: Dict[str, dict] = defaultdict(dict)
+        # dict of number of rows per data slice {"dataset_name": dataset_size}}
+        self.data_slice_sizes: Dict[str, float] = defaultdict()
 
     @validation_output
     def validate_minimum_functionality_in_range(
@@ -87,7 +89,10 @@ class ModelValidator:
 
         minimum_functionality_df["predictions"] = self.tm.predictions_minimum_functionality
         errors_df = filter_predictions_not_in_range(minimum_functionality_df, range_value, range_inclusive)
-        return len(errors_df) == 0, {"errors_df": errors_df.to_dict()} if len(errors_df) != 0 else {}
+        return (
+            len(errors_df) == 0,
+            {"number_of_failures": len(errors_df), "errors_df": errors_df.to_dict()} if len(errors_df) != 0 else {},
+        )
 
     @validation_output
     def validate_minimum_functionality(self, severity: Optional[str] = None):
@@ -117,7 +122,10 @@ class ModelValidator:
             raise ValueError("Specify minimum_functionality_data attribute in DataContext.")
         minimum_functionality_df["predictions"] = self.tm.predictions_minimum_functionality
         errors_df = minimum_functionality_df.loc[lambda x: x[self.tm.data.target] != x["predictions"], :]
-        return len(errors_df) == 0, {"errors_df": errors_df.to_dict()} if len(errors_df) != 0 else {}
+        return (
+            len(errors_df) == 0,
+            {"number_of_failures": len(errors_df), "errors_df": errors_df.to_dict()} if len(errors_df) != 0 else {},
+        )
 
     @validation_output
     def validate_performance_against_threshold(
@@ -150,7 +158,10 @@ class ModelValidator:
         self, metric: str, threshold: float, dataset: str = "testing_data", data_slice: Optional[str] = None
     ) -> validation_output_type:
         performance = self._score_data_context(metric, dataset, data_slice)
-        return bool(performance > threshold), {"performance": performance}
+        return bool(performance > threshold), {
+            "performance": performance,
+            "sample_size": self.data_slice_sizes[self._get_renamed_dataset(dataset, data_slice)],
+        }
 
     @validation_output
     def validate_performance_std_across_slices(
@@ -162,7 +173,7 @@ class ModelValidator:
         include_global_performance: bool = False,
         severity: Optional[str] = None,
     ):
-        """ """
+        """Validation to ensure different slices of data have similar levels of performance."""
         return self._validate_performance_std_across_slices(
             metric, dataset, data_slices, std_threshold, include_global_performance
         )
@@ -175,12 +186,16 @@ class ModelValidator:
         std_threshold: float,
         include_global_performance: bool = False,
     ) -> validation_output_type:
-        performances: Dict[str, float] = {}
-        if include_global_performance:
-            performances[dataset] = self._score_data_context(metric, dataset, data_slice=None)
+        output: Dict[str, Dict[str, Union[float, int]]] = {"performances": {}, "sample_sizes": {}}
         for data_slice in data_slices:
-            performances[f"{dataset}_{data_slice}"] = self._score_data_context(metric, dataset, data_slice)
-        return np.std(list(performances.values())) < std_threshold, performances  # type: ignore
+            output["performances"][f"{dataset}_{data_slice}"] = self._score_data_context(metric, dataset, data_slice)
+            output["sample_sizes"][f"{dataset}_{data_slice}"] = self.data_slice_sizes[
+                self._get_renamed_dataset(dataset, data_slice)
+            ]
+        if include_global_performance:
+            output["performances"][dataset] = self._score_data_context(metric, dataset, data_slice=None)
+            output["sample_sizes"][dataset] = self.data_slice_sizes[self._get_renamed_dataset(dataset, data_slice=None)]
+        return np.std(list(output["performances"].values())) < std_threshold, output  # type: ignore
 
     @validation_output
     def validate_test_performance_against_dummy(
@@ -232,11 +247,13 @@ class ModelValidator:
             dummy_model = Dummy(strategy=strategy)
 
         if data_slice:
-            X_train, y_train = self._slice_data_with_slicing_function(self.tm.data.training_data, data_slice)
-            X_test, y_test = self._slice_data_with_slicing_function(self.tm.data.testing_data, data_slice)
+            X_train, y_train = self._slice_data_with_slicing_function("training_data", data_slice)
+            X_test, y_test = self._slice_data_with_slicing_function("testing_data", data_slice)
+            sample_size = self.data_slice_sizes[self._get_renamed_dataset("testing_data", data_slice)]
         else:
             X_train, y_train = self.tm.data.X_train, self.tm.data.y_train
             X_test, y_test = self.tm.data.X_test, self.tm.data.y_test
+            sample_size = self.data_slice_sizes[self._get_renamed_dataset("testing_data", data_slice=None)]
 
         dummy_model.fit(X_train, y_train)
         dummy_performance = scorer(dummy_model, X_test, y_test)
@@ -244,6 +261,7 @@ class ModelValidator:
         return test_performance > dummy_performance, {
             "dummy_performance": dummy_performance,
             "test_performance": test_performance,
+            "sample_size": sample_size,
         }
 
     @validation_output
@@ -282,10 +300,17 @@ class ModelValidator:
         data_slice: Optional[str] = None,
     ) -> validation_output_type:
         test_score = self._score_data_context(metric, dataset="testing_data", data_slice=data_slice)
+        test_sample_size = self.data_slice_sizes[self._get_renamed_dataset("testing_data", data_slice)]
         train_score = self._score_data_context(metric, dataset="training_data", data_slice=data_slice)
+        train_sample_size = self.data_slice_sizes[self._get_renamed_dataset("training_data", data_slice)]
 
         outcome = test_score < train_score and test_score >= train_score - threshold
-        return outcome, {"train_score": train_score, "test_score": test_score}
+        return outcome, {
+            "train_performance": train_score,
+            "test_performance": test_score,
+            "train_sample_size": train_sample_size,
+            "test_sample_size": test_sample_size,
+        }
 
     @validation_output
     def validate_inference_time(self, threshold: float, n_executions: int = 100, severity: Optional[str] = None):
@@ -417,7 +442,8 @@ class ModelValidator:
                 )
         return scorer
 
-    def _slice_data_with_slicing_function(self, df: pd.DataFrame, data_slice: str):
+    def _slice_data_with_slicing_function(self, dataset: str, data_slice: str):
+        df = getattr(self.tm.data, dataset)
         if self.slicing_functions:
             if data_slice in self.slicing_functions:
                 sliced_data = self.slicing_functions[data_slice](df)
@@ -433,14 +459,14 @@ class ModelValidator:
         return sliced_data.loc[:, self.tm.data.features], sliced_data.loc[:, self.tm.data.target]
 
     def _score_data_context(self, metric: str, dataset: str, data_slice: Optional[str]) -> float:
-        renamed_dataset = f"{dataset}_{data_slice}" if data_slice else dataset
+        renamed_dataset = self._get_renamed_dataset(dataset, data_slice)
         previously_computed_performance = self.performances.get(renamed_dataset, {}).get(metric)
         if previously_computed_performance:
             return previously_computed_performance
 
         scorer = self._scorer(metric)
         if data_slice:
-            X, y = self._slice_data_with_slicing_function(getattr(self.tm.data, dataset), data_slice)
+            X, y = self._slice_data_with_slicing_function(dataset, data_slice)
         elif data_slice is None and dataset == "testing_data":
             X, y = self.tm.data.X_test, self.tm.data.y_test
         elif data_slice is None and dataset == "training_data":
@@ -452,8 +478,13 @@ class ModelValidator:
             raise ValueError(
                 "Method reserved for testing on datasets within the DataContext: {'testing_data', 'training_data'}."
             )
+        self.data_slice_sizes[renamed_dataset] = len(X)
         self.performances[renamed_dataset][metric] = scorer(self.tm.model, X, y)
         return self.performances[renamed_dataset][metric]
+
+    @staticmethod
+    def _get_renamed_dataset(dataset: str, data_slice: Optional[str]):
+        return f"{dataset}_{data_slice}" if data_slice else dataset
 
     def _compute_permutation_feature_importance(
         self, dataset: str, permutation_kwargs: Optional[Dict[str, Any]]
