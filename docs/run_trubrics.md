@@ -10,4 +10,4 @@ saved trubric from the CLI, you will need to create a python file `<trubrics_con
 
 -----
 
-:::trubrics.validations.run_context.TrubricRun
+:::trubrics.validations.run.TrubricRun

@@ -16,29 +16,21 @@ def test__validate_minimum_functionality_in_range_raises(validator_classifier):
 
 def test__validate_performance_against_threshold(validator_classifier):
     result = validator_classifier._validate_performance_against_threshold(metric="accuracy", threshold=0.7)
-    actual = False, {"performance": 0.5}
+    actual = False, {"performance": 0.5, "sample_size": 6}
     assert result == actual
 
 
-def test__validate_biased_performance_across_category(validator_classifier):
-    result = validator_classifier._validate_biased_performance_across_category(
-        metric="accuracy", category="Sex", threshold=0.2
-    )
-    actual = False, {"max_performance_difference": 0.6}
-    assert result == actual
-
-
-def test__validate_performance_against_dummy(validator_classifier):
-    result = validator_classifier._validate_performance_against_dummy(metric="accuracy", strategy="most_frequent")
+def test__validate_test_performance_against_dummy(validator_classifier):
+    result = validator_classifier._validate_test_performance_against_dummy(metric="accuracy", strategy="most_frequent")
     result[1]["dummy_performance"] = round(result[1]["dummy_performance"], 2)
 
-    actual = False, {"dummy_performance": 0.67, "test_performance": 0.5}
+    actual = False, {"dummy_performance": 0.67, "test_performance": 0.5, "sample_size": 6}
     assert result == actual
 
 
 def test__validate_performance_between_train_and_test(validator_classifier):
     result = validator_classifier._validate_performance_between_train_and_test(metric="accuracy", threshold=1)
-    actual = False, {"train_score": 1 / 3, "test_score": 0.5}
+    actual = False, {"train_performance": 1 / 3, "test_performance": 0.5, "train_sample_size": 6, "test_sample_size": 6}
     assert result == actual
 
 

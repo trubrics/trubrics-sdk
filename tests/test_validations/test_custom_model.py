@@ -5,7 +5,7 @@ class RuleBasedModel:
     """
     This example shows how we can wrap python code into a model that can be used by the ModelValidator.
 
-    Tip: A custom model is built with python class that must contain:
+    Tip: A custom model is built with a python class that must contain:
         - an attribute named _estimator_type (see attributes bellow).
         - a predict() method with a pandas dataframe input argument,
           that returns a pandas series / numpy array of predict values
@@ -39,14 +39,5 @@ model = RuleBasedModel()
 def test_performance_validation(data_context):
     model_validator = ModelValidator(data=data_context, model=model)
     result = model_validator._validate_performance_against_threshold(metric="accuracy", threshold=0.7)
-    actual = False, {"performance": 1 / 3}
-    assert result == actual
-
-
-def test_biased_performance_validation(data_context):
-    model_validator = ModelValidator(data=data_context, model=model)
-    result = model_validator._validate_biased_performance_across_category(
-        metric="accuracy", category="Sex", threshold=0.5
-    )
-    actual = True, {"max_performance_difference": 0.4}
+    actual = False, {"performance": 1 / 3, "sample_size": 6}
     assert result == actual
