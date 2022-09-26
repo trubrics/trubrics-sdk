@@ -1,6 +1,8 @@
 # Welcome to the trubrics-sdk
 -------
+
 <center>
+
 ![logo-gradient](./assets/logo-gradient.png)
 
 [trubrics.com](https://www.trubrics.com/home)
@@ -14,6 +16,7 @@ Trubrics grows confidence and trust in machine learning by bridging the gap betw
 <br>
 <br>
 <center>
+
 ![trubrics-explain](./assets/trubrics-explain.png)
 </center>
 
