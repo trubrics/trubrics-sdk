@@ -167,9 +167,9 @@ class ModelValidator:
     def validate_performance_std_across_slices(
         self,
         metric: str,
-        dataset: str,
         data_slices: List[str],
         std_threshold: float,
+        dataset: str = "testing_data",
         include_global_performance: bool = False,
         severity: Optional[str] = None,
     ):
@@ -181,24 +181,24 @@ class ModelValidator:
         Args:
             metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
                     custom scorer fed in when initialising the ModelValidator object.
-            dataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.
             data_slices: a list of of data slices, specified in the slicing_functions parameter of ModelValidator.
             std_threshold: the standard deviation threshold that must be superior to the standard deviation of all \
                 data slice performances.
+            dataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.
             include_global_performance: whether or not to include the dataset global performance in the list.
             severity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. \
                       If None, defaults to 'error'.
         """
         return self._validate_performance_std_across_slices(
-            metric, dataset, data_slices, std_threshold, include_global_performance
+            metric, data_slices, std_threshold, dataset, include_global_performance
         )
 
     def _validate_performance_std_across_slices(
         self,
         metric: str,
-        dataset: str,
         data_slices: List[str],
         std_threshold: float,
+        dataset: str = "testing_data",
         include_global_performance: bool = False,
     ) -> validation_output_type:
         output: Dict[str, Dict[str, Union[float, int]]] = {"performances": {}, "sample_sizes": {}}
@@ -332,8 +332,9 @@ class ModelValidator:
         """Validate the model's inference time on a single data point from the test set.
 
         Args:
-            threshold: number of seconds that the model inference time should be inferior to
-            n_executions: number of executions of the `.predict()` method for a single data point
+            threshold: number of seconds that the model inference time should be inferior to.
+            n_executions: number of executions of the `.predict()` method for a single data point. \
+                The inference time will be the mean of each of the n_executions.
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the model's \
@@ -351,9 +352,9 @@ class ModelValidator:
     @validation_output
     def validate_feature_in_top_n_important_features(
         self,
-        dataset: str,
         feature: str,
         top_n_features: int,
+        dataset: str = "testing_data",
         permutation_kwargs: Optional[Dict[str, Any]] = None,
         severity: Optional[str] = None,
     ):
@@ -364,20 +365,24 @@ class ModelValidator:
         modules/generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance).
 
         Args:
-            dataset: the name of a dataset from the DataContext to calculate feature importance on \
-                {'testing_data', 'training_data'}.
             feature: feature to assess.
             top_n_features: the number of most important features that the named feature must be ranked in. E.g. if
                             top_n_features=2, the feature must be within the top two most important features.
+            dataset: the name of a dataset from the DataContext to calculate feature importance on \
+                {'testing_data', 'training_data'}.
             permutation_kwargs: kwargs to pass into the sklearn.inspection.permutation_importance function.
 
         Returns:
             True for success, false otherwise. With a results dictionary giving the actual feature importance ranking.
         """
-        return self._validate_feature_in_top_n_important_features(dataset, feature, top_n_features, permutation_kwargs)
+        return self._validate_feature_in_top_n_important_features(feature, top_n_features, dataset, permutation_kwargs)
 
     def _validate_feature_in_top_n_important_features(
-        self, dataset: str, feature: str, top_n_features: int, permutation_kwargs: Optional[Dict[str, Any]] = None
+        self,
+        feature: str,
+        top_n_features: int,
+        dataset: str = "testing_data",
+        permutation_kwargs: Optional[Dict[str, Any]] = None,
     ) -> validation_output_type:
         count = 0
         feature_importance = self._compute_permutation_feature_importance(
