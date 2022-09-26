@@ -16,7 +16,7 @@ from trubrics.utils.trubrics_manager_connector import make_request
 
 class DataContext(BaseModel):
     """
-    The DataContext wraps data into a trubrics friendly format.
+    The DataContext wraps ML datasets into a trubrics friendly format.
 
     Note:
         The DataContext *must contain* at least a testing_data and a target attribute.
