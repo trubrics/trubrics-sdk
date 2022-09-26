@@ -9,7 +9,7 @@ class RuleBasedModel:
         - an attribute named _estimator_type (see attributes bellow).
         - a predict() method with a pandas dataframe input argument,
           that returns a pandas series / numpy array of predict values
-          (see source code bellow).
+          (see source code below).
 
     Attributes:
         _estimator_type: the estimator type can either be 'classifier' or 'regressor'.

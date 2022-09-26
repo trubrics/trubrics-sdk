@@ -42,7 +42,7 @@ else:
 st.markdown(prediction, unsafe_allow_html=True)
 
 st.title("Send model feedback")
-st_component.feedback(what_if_df=what_if_df, model_prediction=raw_prediction, tracking=True)
+sent = st_component.feedback(what_if_df=what_if_df, model_prediction=raw_prediction, tracking=False)
 
 st.title("View data")
 data_view = st.selectbox(label="", options=("View full test set", "View test set errors", "View split by target"))

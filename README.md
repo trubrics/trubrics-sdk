@@ -1,20 +1,27 @@
 # Welcome to the trubrics-sdk
+-------
 <center>
+![logo-gradient](./assets/logo-gradient.png)
 
-![logo-gradient](./docs/assets/logo-gradient.png)
-*Combine data science knowledge with business user feedback to validate machine learning.*
+[trubrics.com](https://www.trubrics.com/home)
 
-[Technical docs](https://trubrics.github.io/trubrics-sdk/) | [Website](https://www.trubrics.com/home)
+*Investigate models, collaborate across teams, validate machine learning.*
 </center>
 
-Trubrics bridges the gap between data scientists understanding of business challenges, and business users understanding of data science outputs. The trubrics-sdk is a python library to collect business user feedback for machine learning, combine feedback with data science knowledge into actionable validation points, and build repeatable validation checklists - a trubric.
+-------
+
+Trubrics grows confidence and trust in machine learning by bridging the gap between data scientists and business users. The trubrics-sdk is a python library to validate machine learning with data science and domain expertise. This is achieved by collecting business user feedback, combining feedback with data science knowledge to create actionable validation points, and building repeatable validation checklists - a trubric.
+<br>
+<br>
+<center>
+![trubrics-explain](./assets/trubrics-explain.png)
+</center>
 
 ## Key Features
 - Out of the box validations to build around models & datasets (currently supporting tabular data)
-- An object to write custom validations
-- A CLI tool to run validations against new models in a CI/CD/CT pipeline
+- Custom validations as python functions to validate your models
+- A CLI tool to run saved validations against new models in a CI/CD/CT pipeline
 - Python web development components (e.g. with [Streamlit](https://streamlit.io/)) to gather feedback from business users on models
-- A UI to track validation checklists per project - coming soon
 
 ## Install (Python 3.7+)
 ```console
@@ -24,7 +31,7 @@ Trubrics bridges the gap between data scientists understanding of business chall
 ## Create a trubric
 A trubric is a checklist of validations, and can be built by:
 
-1. Initialising `DataContext` object to wrap data into a trubrics friendly format
+1. Initialising `DataContext` object to wrap ML datasets into a trubrics friendly format
 ```py
 from trubrics.context import DataContext
 data_context = DataContext(
@@ -36,10 +43,14 @@ data_context = DataContext(
 2. Using the `ModelValidator` object to generate out of the box validations
 ```py
 from trubrics.validations import ModelValidator
-model_validator = ModelValidator(data=data_context, model=rf_model)
+model_validator = ModelValidator(data=data_context, model=model)
 validations = [
-    model_validator.validate_performance_against_threshold(metric="precision", threshold=0.8),
-    model_validator.validate_performance_against_threshold(metric="recall", threshold=0.7)
+    model_validator.validate_performance_against_threshold(
+        metric="precision", threshold=0.8
+    ),
+    model_validator.validate_performance_against_threshold(
+        metric="recall", threshold=0.7
+    )
 ]
 ```
 
@@ -52,17 +63,17 @@ trubric_context = TrubricContext(
     data_context_version=data_context.version,
     validations=validations,
 )
-trubric_context.save_local(path="/data")
+trubric_context.save_local(path="/local_data_folder")
 ```
 
-*See a full tutorial on the titanic dataset in our docs [here](https://trubrics.github.io/trubrics-sdk/notebooks/titanic-demo.html)*.
+*See a full tutorial on the titanic dataset [here](https://trubrics.github.io/trubrics-sdk/notebooks/titanic-demo.html)*.
 
 ## Collect model feedback
 Trubrics feedback components help you build python applications with your favourite library (e.g. [Streamlit](https://streamlit.io/)).
 These are aimed at collecting feedback on your models from business users and translating these into validation points.
 Build a feedback application by:
 
-1. As with [Create a Trubric](#create-a-trubric), initialise a `DataContext` to wrap your ML data into a trubrics friendly object
+1. As with [Create a Trubric](#create-a-trubric), initialise a `DataContext` to wrap your ML datasets into a trubrics friendly object
 ```py
 from trubrics.context import DataContext
 from sklearn.metrics import accuracy_score
@@ -96,4 +107,4 @@ st_component.feedback(what_if_df=what_if_df, model_prediction=raw_prediction, tr
 ```
 
 ## Watch our "Getting Started" demo
-[![img](docs/assets/trubrics-demo-youtube.png)](https://www.youtube.com/watch?v=I-lUGhHss5g)
+[![img](./assets/trubrics-demo-youtube.png)](https://www.youtube.com/watch?v=I-lUGhHss5g)
