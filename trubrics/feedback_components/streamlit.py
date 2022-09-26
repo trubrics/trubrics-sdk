@@ -108,8 +108,10 @@ class StreamlitComponent:
         single_test = FeedbackContext(feedback_type=feedback_type, metadata=metadata)
         if st.button("Send feedback"):
             save_validation_to_json(trubric_context=single_test, tracking=tracking)
+            st.markdown(
+                '<p style="color:Green;">Feedback saved & sent to the Data Science team.</p>', unsafe_allow_html=True
+            )
             logger.info(f"Predictions saved {'to Trubrics UI' if tracking else 'locally'}.")
-            st.balloons()
 
     def _collect_single_edge_case(self) -> Tuple[Union[str, int, None], str]:
         """
