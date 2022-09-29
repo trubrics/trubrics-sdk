@@ -1,12 +1,12 @@
 import pytest
 
-from trubrics.exceptions import EstimatorTypeError, SklearnMetricTypeError
+from trubrics.exceptions import EmptyDfError, EstimatorTypeError, SklearnMetricTypeError
 
 
 def test__validate_minimum_functionality(validator_classifier):
-    result = validator_classifier._validate_minimum_functionality()
-    actual = True, {}
-    assert result == actual
+    actual = validator_classifier._validate_minimum_functionality()
+    expected = True, {}
+    assert actual == expected
 
 
 def test__validate_minimum_functionality_in_range_raises(validator_classifier):
@@ -15,39 +15,33 @@ def test__validate_minimum_functionality_in_range_raises(validator_classifier):
 
 
 @pytest.mark.parametrize(
-    "kwargs,outcome,actual_result",
+    "kwargs,expected",
     [
         (
             {"metric": "accuracy", "threshold": 0.7, "dataset": "testing_data", "data_slice": None},
-            False,
-            {"performance": 0.5, "sample_size": 6},
+            (False, {"performance": 0.5, "sample_size": 6}),
         ),
         (
             {"metric": "accuracy", "threshold": 0.1, "dataset": "testing_data", "data_slice": None},
-            True,
-            {"performance": 0.5, "sample_size": 6},
+            (True, {"performance": 0.5, "sample_size": 6}),
         ),
         (
             {"metric": "my_custom_loss", "threshold": -0.7, "dataset": "testing_data", "data_slice": None},
-            True,
-            {"performance": -0.5, "sample_size": 6},
+            (True, {"performance": -0.5, "sample_size": 6}),
         ),
         (
             {"metric": "my_custom_loss", "threshold": -0.1, "dataset": "testing_data", "data_slice": None},
-            False,
-            {"performance": -0.5, "sample_size": 6},
+            (False, {"performance": -0.5, "sample_size": 6}),
         ),
         (
             {"metric": "accuracy", "threshold": 0.9, "dataset": "testing_data", "data_slice": "female"},
-            False,
-            {"performance": 0.0, "sample_size": 1},
+            (False, {"performance": 0.0, "sample_size": 1}),
         ),
     ],
 )
-def test__validate_performance_against_threshold(validator_classifier, kwargs, outcome, actual_result):
-    result = validator_classifier._validate_performance_against_threshold(**kwargs)
-    actual = outcome, actual_result
-    assert result == actual
+def test__validate_performance_against_threshold(validator_classifier, kwargs, expected):
+    actual = validator_classifier._validate_performance_against_threshold(**kwargs)
+    assert actual == expected
 
 
 @pytest.mark.parametrize(
@@ -70,18 +64,45 @@ def test__validate_performance_against_threshold_raises(validator_classifier, kw
         validator_classifier._validate_performance_against_threshold(**kwargs)
 
 
-def test__validate_test_performance_against_dummy(validator_classifier):
-    result = validator_classifier._validate_test_performance_against_dummy(metric="accuracy", strategy="most_frequent")
-    result[1]["dummy_performance"] = round(result[1]["dummy_performance"], 2)
+@pytest.mark.parametrize(
+    "kwargs,expected",
+    [
+        (
+            {"metric": "accuracy", "strategy": "most_frequent", "dummy_kwargs": None, "data_slice": None},
+            (False, {"dummy_performance": 0.67, "test_performance": 0.5, "sample_size": 6}),
+        ),
+        (
+            {"metric": "accuracy", "strategy": "constant", "dummy_kwargs": {"constant": 1}, "data_slice": None},
+            (True, {"dummy_performance": 0.33, "test_performance": 0.5, "sample_size": 6}),
+        ),
+        (
+            {"metric": "accuracy", "strategy": "most_frequent", "dummy_kwargs": None, "data_slice": "male"},
+            (False, {"dummy_performance": 0.6, "test_performance": 0.6, "sample_size": 5}),
+        ),
+    ],
+)
+def test__validate_test_performance_against_dummy(validator_classifier, kwargs, expected):
+    actual = validator_classifier._validate_test_performance_against_dummy(**kwargs)
+    actual[1]["dummy_performance"] = round(actual[1]["dummy_performance"], 2)
 
-    actual = False, {"dummy_performance": 0.67, "test_performance": 0.5, "sample_size": 6}
-    assert result == actual
+    assert actual == expected
 
 
-def test__validate_performance_between_train_and_test(validator_classifier):
-    result = validator_classifier._validate_performance_between_train_and_test(metric="accuracy", threshold=1)
-    actual = False, {"train_performance": 1 / 3, "test_performance": 0.5, "train_sample_size": 6, "test_sample_size": 6}
-    assert result == actual
+@pytest.mark.parametrize(
+    "kwargs,expected",
+    [
+        (
+            {"metric": "accuracy", "threshold": 0.2, "data_slice": None},
+            (
+                False,
+                {"train_performance": 1 / 3, "test_performance": 0.5, "train_sample_size": 6, "test_sample_size": 6},
+            ),
+        ),
+    ],
+)
+def test__validate_performance_between_train_and_test(validator_classifier, kwargs, expected):
+    actual = validator_classifier._validate_performance_between_train_and_test(**kwargs)
+    assert actual == expected
 
 
 def test__validate_inference_time(validator_classifier):
@@ -108,3 +129,21 @@ def test__validate_feature_importance_between_train_and_test(validator_classifie
         top_n_features=2, permutation_kwargs={"n_repeats": 1, "random_state": 88, "n_jobs": -1}
     )
     assert result[0] is False
+
+
+def test__scorer_raises(validator_classifier):
+    with pytest.raises(SklearnMetricTypeError):
+        validator_classifier._scorer(metric="some_random_metric")
+
+
+@pytest.mark.parametrize(
+    "dataset,data_slice,error",
+    [
+        ("testing_data", "test_slice_function", TypeError),
+        ("training_data", "children", EmptyDfError),
+        ("training_data", "undefined_data_slice", ValueError),
+    ],
+)
+def test__slice_data_with_slicing_function_raises(validator_classifier, dataset, data_slice, error):
+    with pytest.raises(error):
+        validator_classifier._slice_data_with_slicing_function(dataset=dataset, data_slice=data_slice)

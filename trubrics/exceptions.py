@@ -28,3 +28,7 @@ class SklearnMetricTypeError(Exception):
 
 class ModelPredictionError(Exception):
     """An exception signalling that the model can't predict on a given set."""
+
+
+class EmptyDfError(Exception):
+    """An exception signalling that the dataframe is empty."""

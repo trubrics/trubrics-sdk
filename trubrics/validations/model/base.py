@@ -9,7 +9,7 @@ from sklearn.dummy import DummyClassifier, DummyRegressor
 from sklearn.inspection import permutation_importance
 
 from trubrics.context import DataContext, TrubricsModel
-from trubrics.exceptions import EstimatorTypeError, SklearnMetricTypeError
+from trubrics.exceptions import EmptyDfError, EstimatorTypeError, SklearnMetricTypeError
 from trubrics.validations.validation_output import (
     validation_output,
     validation_output_type,
@@ -467,6 +467,13 @@ class ModelValidator:
         if self.slicing_functions:
             if data_slice in self.slicing_functions:
                 sliced_data = self.slicing_functions[data_slice](df)
+                if not isinstance(sliced_data, pd.DataFrame):
+                    raise TypeError(
+                        f"Slicing function '{data_slice}' returned type {type(sliced_data)} but must return"
+                        " pd.DataFrame."
+                    )
+                if len(sliced_data) == 0:
+                    raise EmptyDfError(f"Slice '{data_slice}' returned length 0 on the dataset: {dataset}.")
             else:
                 raise ValueError(
                     f"Slice '{data_slice}' does not exist in the slicing_functions parameter of the ModelValidator."
