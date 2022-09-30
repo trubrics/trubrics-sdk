@@ -33,10 +33,14 @@ A trubric is a checklist of validations, and can be built by:
 
 1. Initialising `DataContext` object to wrap ML datasets into a trubrics friendly format
     ```py
+    from trubrics.example import get_titanic_data_and_model
+    train_df, test_df, model = get_titanic_data_and_model()
+
     from trubrics.context import DataContext
     data_context = DataContext(
         testing_data=test_df,  # pandas dataframe of data to validate model on
-        target="target_column_name_in_test_df"
+        training_data=train_df,  # optional training data for certain validations
+        target="Survived"
     )
     ```
 
@@ -46,11 +50,11 @@ A trubric is a checklist of validations, and can be built by:
     model_validator = ModelValidator(data=data_context, model=model)
     validations = [
         model_validator.validate_performance_against_threshold(
-            metric="precision", threshold=0.8
+            metric="accuracy", threshold=0.7
         ),
-        model_validator.validate_performance_against_threshold(
-            metric="recall", threshold=0.7
-        )
+        model_validator.validate_performance_between_train_and_test(
+            metric="recall", threshold=0.3
+        ),
     ]
     ```
 
@@ -63,7 +67,7 @@ A trubric is a checklist of validations, and can be built by:
         data_context_version=data_context.version,
         validations=validations,
     )
-    trubric.save_local(path="/local_data_folder")
+    trubric.save_local(path=".")
     ```
 
 *See a full tutorial on the titanic dataset [here](https://trubrics.github.io/trubrics-sdk/notebooks/titanic-demo.html)*.
@@ -73,37 +77,41 @@ Trubrics feedback components help you build python applications with your favour
 These are aimed at collecting feedback on your models from business users and translating these into validation points.
 Build a feedback application by:
 
-1. As with [Create a Trubric](#create-a-trubric), initialise a `DataContext` to wrap your ML datasets into a trubrics friendly object
-```py
-from trubrics.context import DataContext
-data_context = DataContext(
-    testing_data=test_df,  # pandas dataframe of data to test against a model
-    target="target_column_name_in_test_df"
-)
-```
+1. As with the [ModelValidator](#validate-a-model-with-the-modelvalidator), initialise a `DataContext` to wrap your ML datasets into a trubrics friendly object
+    ```py
+    from trubrics.example import get_titanic_data_and_model
+    train_df, test_df, model = get_titanic_data_and_model()
+
+    from trubrics.context import DataContext
+    data_context = DataContext(
+        testing_data=test_df,  # pandas dataframe of data to validate model on
+        training_data=train_df,  # optional training data for certain validations
+        target="Survived"
+    )
+    ```
 
 2. Using the `StreamlitComponent` object to generate app components to collect feedback
-```python
-import streamlit as st
-from trubrics.feedback_components.streamlit import StreamlitComponent
+    ```python
+    import streamlit as st
+    from trubrics.feedback_components.streamlit import StreamlitComponent
 
-st_component = StreamlitComponent(model=model, data=data_context)
+    st_component = StreamlitComponent(model=model, data=data_context)
 
-with st.sidebar:
-    st.title("Modify features to test the model...")
-    what_if_df = st_component.generate_what_if(TESTING_DATA)
+    with st.sidebar:
+        st.title("Modify features to test the model...")
+        what_if_df = st_component.generate_what_if(TESTING_DATA)
 
-st.title("View model prediction")
-raw_prediction = st_component.model.estimator.predict(what_if_df)[0]  # type: ignore
-if raw_prediction:
-    prediction = '<p style="color:Green;">This passenger would have survived.</p>'
-else:
-    prediction = '<p style="color:Red;">This passenger would have died.</p>'
-st.markdown(prediction, unsafe_allow_html=True)
+    st.title("View model prediction")
+    raw_prediction = st_component.model.estimator.predict(what_if_df)[0]  # type: ignore
+    if raw_prediction:
+        prediction = '<p style="color:Green;">This passenger would have survived.</p>'
+    else:
+        prediction = '<p style="color:Red;">This passenger would have died.</p>'
+    st.markdown(prediction, unsafe_allow_html=True)
 
-st.title("Send model feedback")
-st_component.feedback(what_if_df=what_if_df, model_prediction=raw_prediction, tracking=True)
-```
+    st.title("Send model feedback")
+    st_component.feedback(what_if_df=what_if_df, model_prediction=raw_prediction, tracking=True)
+    ```
 
 ## Watch our "Getting Started" demo
 [![img](./assets/trubrics-demo-youtube.png)](https://www.youtube.com/watch?v=I-lUGhHss5g)
