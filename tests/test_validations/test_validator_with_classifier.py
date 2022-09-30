@@ -1,3 +1,4 @@
+import pandas as pd
 import pytest
 
 from trubrics.exceptions import EmptyDfError, EstimatorTypeError, SklearnMetricTypeError
@@ -147,3 +148,24 @@ def test__scorer_raises(validator_classifier):
 def test__slice_data_with_slicing_function_raises(validator_classifier, dataset, data_slice, error):
     with pytest.raises(error):
         validator_classifier._slice_data_with_slicing_function(dataset=dataset, data_slice=data_slice)
+
+
+def test__slice_data_with_slicing_function(validator_classifier):
+    expected_X = pd.DataFrame(
+        {
+            "Sex": ["female"],
+            "Embarked": ["C"],
+            "Title": ["Miss"],
+            "Pclass": [3],
+            "Age": [9.0],
+            "SibSp": [1],
+            "Parch": [1],
+            "Fare": [15.25],
+        },
+        index=[2],
+    )
+    expected_y = pd.Series(0, index=[2], name="Survived")
+
+    actual = validator_classifier._slice_data_with_slicing_function(dataset="training_data", data_slice="female")
+    pd.testing.assert_frame_equal(actual[0], expected_X)
+    pd.testing.assert_series_equal(actual[1], expected_y)
