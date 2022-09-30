@@ -106,6 +106,36 @@ def test__validate_performance_between_train_and_test(validator_classifier, kwar
     assert actual == expected
 
 
+@pytest.mark.parametrize(
+    "kwargs,expected",
+    [
+        (
+            {"metric": "accuracy", "data_slices": ["female"], "std_threshold": 0.2, "include_global_performance": True},
+            (
+                False,
+                {
+                    "performances": {"testing_data": 0.5, "testing_data_female": 0},
+                    "sample_sizes": {"testing_data": 6, "testing_data_female": 1},
+                },
+            ),
+        ),
+        (
+            {"metric": "accuracy", "data_slices": ["female", "male"], "std_threshold": 0.4},
+            (
+                True,
+                {
+                    "performances": {"testing_data_male": 0.6, "testing_data_female": 0},
+                    "sample_sizes": {"testing_data_male": 5, "testing_data_female": 1},
+                },
+            ),
+        ),
+    ],
+)
+def test__validate_performance_std_across_slices(validator_classifier, kwargs, expected):
+    actual = validator_classifier._validate_performance_std_across_slices(**kwargs)
+    assert actual == expected
+
+
 def test__validate_inference_time(validator_classifier):
     result = validator_classifier._validate_inference_time(threshold=0.1, n_executions=10)
     result[1]["inference_time"] = round(result[1]["inference_time"], 1)
