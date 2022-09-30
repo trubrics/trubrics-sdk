@@ -520,21 +520,20 @@ class ModelValidator:
         if previously_computed_importance:
             return previously_computed_importance
 
-        if permutation_kwargs is None:
-            permutation_kwargs = {"random_state": 88, "n_jobs": -1}
+        kwargs = {"random_state": 88, "n_jobs": -1}
+        if permutation_kwargs is not None:
+            kwargs.update(permutation_kwargs)
 
         if dataset == "testing_data":
             self.feature_importances[dataset] = dict(
-                permutation_importance(self.tm.model, self.tm.data.X_test, self.tm.data.y_test, **permutation_kwargs)
+                permutation_importance(self.tm.model, self.tm.data.X_test, self.tm.data.y_test, **kwargs)
             )
         elif dataset == "training_data":
             if self.tm.data.X_train is None or self.tm.data.y_train is None:
                 raise ValueError("Training data not specified in DataContext.")
             else:
                 self.feature_importances[dataset] = dict(
-                    permutation_importance(
-                        self.tm.model, self.tm.data.X_train, self.tm.data.y_train, **permutation_kwargs
-                    )
+                    permutation_importance(self.tm.model, self.tm.data.X_train, self.tm.data.y_train, **kwargs)
                 )
         else:
             raise ValueError(
