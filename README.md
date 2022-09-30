@@ -57,16 +57,16 @@ validations = [
 ]
 ```
 
-3. Saving a .json of all validations locally using a `TrubricsContext` object
+3. Saving a .json of all validations locally using a `Trubric` object
 ```py
-from trubrics.context import TrubricContext
-trubric_context = TrubricContext(
+from trubrics.validations import Trubric
+trubric = Trubric(
     name="my_first_trubric",
     data_context_name=data_context.name,
     data_context_version=data_context.version,
     validations=validations,
 )
-trubric_context.save_local(path="/local_data_folder")
+trubric.save_local(path="/local_data_folder")
 ```
 
 *See a full tutorial on the titanic dataset [here](https://trubrics.github.io/trubrics-sdk/notebooks/titanic-demo.html)*.
@@ -79,7 +79,6 @@ Build a feedback application by:
 1. As with [Create a Trubric](#create-a-trubric), initialise a `DataContext` to wrap your ML datasets into a trubrics friendly object
 ```py
 from trubrics.context import DataContext
-from sklearn.metrics import accuracy_score
 data_context = DataContext(
     testing_data=test_df,  # pandas dataframe of data to test against a model
     target="target_column_name_in_test_df"

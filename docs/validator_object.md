@@ -25,7 +25,7 @@ The `ModelValidator` object respects the following conventions:
     ```
 
 ## The `validation_output` decorator
-The validation output decorator transforms the output of a validation function into a `ValidationContext`*. For this transformation, it is necessary for the validation function to respect the return type `Tuple[bool, Dict[str, Union[str, int, float]]]`.
+The validation output decorator transforms the output of a validation function into a `Validation`*. For this transformation, it is necessary for the validation function to respect the return type `Tuple[bool, Dict[str, Union[str, int, float]]]`.
 
-???note "The `ValidationContext`*"
-    :::trubrics.context.ValidationContext
+???note "`Validation`*"
+    :::trubrics.validations.dataclass.Validation

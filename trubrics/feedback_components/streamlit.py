@@ -5,8 +5,9 @@ import streamlit as st
 from loguru import logger
 from pandas.api.types import is_numeric_dtype
 
-from trubrics.context import DataContext, FeedbackContext, TrubricsModel
+from trubrics.context import DataContext, TrubricsModel
 from trubrics.exceptions import PandasSchemaError
+from trubrics.feedback_components.dataclass import Feedback
 from trubrics.utils.loader import save_validation_to_json
 from trubrics.utils.pandas import schema_is_equal
 
@@ -105,7 +106,7 @@ class StreamlitComponent:
         else:
             raise NotImplementedError()
 
-        single_test = FeedbackContext(feedback_type=feedback_type, metadata=metadata)
+        single_test = Feedback(feedback_type=feedback_type, metadata=metadata)
         if st.button("Send feedback"):
             save_validation_to_json(trubric_context=single_test, tracking=tracking)
             st.markdown(

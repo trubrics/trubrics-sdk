@@ -31,7 +31,7 @@ class CustomValidator(ModelValidator):
             This method is separated from validate_performance_for_different_fares
             to apply @validation_output and for unit testing.
 
-            The @validation_output decorator allows you to generate a ValidationContext,
+            The @validation_output decorator allows you to generate a Validation object,
             and must be used to be able to save your validation as part of a Trubric.
             This decorator requires you to return values with the same type as validation_output_type.
         """

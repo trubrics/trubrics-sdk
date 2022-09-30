@@ -4,8 +4,8 @@ import pytest
 
 from examples.cli.custom_scorer import custom_scorers
 from examples.cli.slicing_functions import slicing_functions
-from trubrics.context import DataContext, TrubricContext
-from trubrics.validations import ModelValidator
+from trubrics.context import DataContext
+from trubrics.validations import ModelValidator, Trubric
 
 
 @pytest.fixture
@@ -47,4 +47,4 @@ def validator_classifier(data_context, classifier_model):
 @pytest.fixture
 def trubric():
     trubric_filename = "assets/tests/classifier_test_trubric.json"
-    return TrubricContext.parse_file(trubric_filename)
+    return Trubric.parse_file(trubric_filename)

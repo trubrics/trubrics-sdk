@@ -2,8 +2,8 @@ import pytest
 
 from examples.cli.custom_scorer import custom_scorers
 from examples.cli.custom_validator import CustomValidator
-from trubrics.context import TrubricContext
 from trubrics.exceptions import UnknownValidationError
+from trubrics.validations import Trubric
 from trubrics.validations.run import TrubricRun, run_trubric
 
 
@@ -49,7 +49,7 @@ def test_run_trubric_raises(data_context, classifier_model):
             }
         ],
     }
-    trubric = TrubricContext.parse_obj(trubric_dict)
+    trubric = Trubric.parse_obj(trubric_dict)
     run_context = TrubricRun(
         data_context=data_context,
         model=classifier_model,
