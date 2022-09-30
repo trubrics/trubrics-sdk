@@ -169,3 +169,8 @@ def test__slice_data_with_slicing_function(validator_classifier):
     actual = validator_classifier._slice_data_with_slicing_function(dataset="training_data", data_slice="female")
     pd.testing.assert_frame_equal(actual[0], expected_X)
     pd.testing.assert_series_equal(actual[1], expected_y)
+
+
+def test__score_data_context_raises(validator_classifier):
+    with pytest.raises(ValueError):
+        validator_classifier._score_data_context(metric="accuracy", dataset="something", data_slice=None)
