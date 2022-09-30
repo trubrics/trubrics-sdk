@@ -12,66 +12,63 @@
 
 -------
 
-Trubrics grows confidence and trust in machine learning by bridging the gap between data scientists and business users. The trubrics-sdk is a python library to validate machine learning with data science and domain expertise. This is achieved by collecting business user feedback, combining feedback with data science knowledge to create actionable validation points, and building repeatable validation checklists - a trubric.
-<br>
-<br>
+The trubrics-sdk is a python library for validating machine learning with data science and domain expertise. This is achieved by collecting business user feedback, creating actionable validation points by combining the feedback with data science knowledge, and building repeatable validation checklists - a trubric.
+
+## Key Features
+- Python web development components (e.g. with [Streamlit](https://streamlit.io/)) to gather feedback from business users on models with the **trubrics FeedbackCollector**.
+- Out of the box & custom validations (python functions) to build around models & datasets with the **trubrics ModelValidator** (currently supporting tabular data).
+- **Trubrics CLI** tool to run a list of saved validations (a **trubric**) against new models in a CI/CD/CT pipeline.
 <center>
 
 ![trubrics-explain](./assets/trubrics-explain.png)
 </center>
-
-## Key Features
-- Out of the box validations to build around models & datasets (currently supporting tabular data)
-- Custom validations as python functions to validate your models
-- A CLI tool to run saved validations against new models in a CI/CD/CT pipeline
-- Python web development components (e.g. with [Streamlit](https://streamlit.io/)) to gather feedback from business users on models
 
 ## Install (Python 3.7+)
 ```console
 (venv)$ pip install trubrics
 ```
 
-## Create a trubric
+## Validate a model with the ModelValidator
 A trubric is a checklist of validations, and can be built by:
 
 1. Initialising `DataContext` object to wrap ML datasets into a trubrics friendly format
-```py
-from trubrics.context import DataContext
-data_context = DataContext(
-    testing_data=test_df,  # pandas dataframe of data to test against a model
-    target="target_column_name_in_test_df"
-)
-```
+    ```py
+    from trubrics.context import DataContext
+    data_context = DataContext(
+        testing_data=test_df,  # pandas dataframe of data to validate model on
+        target="target_column_name_in_test_df"
+    )
+    ```
 
 2. Using the `ModelValidator` object to generate out of the box validations
-```py
-from trubrics.validations import ModelValidator
-model_validator = ModelValidator(data=data_context, model=model)
-validations = [
-    model_validator.validate_performance_against_threshold(
-        metric="precision", threshold=0.8
-    ),
-    model_validator.validate_performance_against_threshold(
-        metric="recall", threshold=0.7
-    )
-]
-```
+    ```py
+    from trubrics.validations import ModelValidator
+    model_validator = ModelValidator(data=data_context, model=model)
+    validations = [
+        model_validator.validate_performance_against_threshold(
+            metric="precision", threshold=0.8
+        ),
+        model_validator.validate_performance_against_threshold(
+            metric="recall", threshold=0.7
+        )
+    ]
+    ```
 
 3. Saving a .json of all validations locally using a `Trubric` object
-```py
-from trubrics.validations import Trubric
-trubric = Trubric(
-    name="my_first_trubric",
-    data_context_name=data_context.name,
-    data_context_version=data_context.version,
-    validations=validations,
-)
-trubric.save_local(path="/local_data_folder")
-```
+    ```py
+    from trubrics.validations import Trubric
+    trubric = Trubric(
+        name="my_first_trubric",
+        data_context_name=data_context.name,
+        data_context_version=data_context.version,
+        validations=validations,
+    )
+    trubric.save_local(path="/local_data_folder")
+    ```
 
 *See a full tutorial on the titanic dataset [here](https://trubrics.github.io/trubrics-sdk/notebooks/titanic-demo.html)*.
 
-## Collect model feedback
+## Collect model feedback with the FeedbackCollector
 Trubrics feedback components help you build python applications with your favourite library (e.g. [Streamlit](https://streamlit.io/)).
 These are aimed at collecting feedback on your models from business users and translating these into validation points.
 Build a feedback application by:
