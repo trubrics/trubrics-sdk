@@ -181,8 +181,12 @@ def test__score_data_context(validator_classifier):
     dataset = "testing_data"
 
     expected_score = 0.5
-    actual = validator_classifier._score_data_context(metric=metric, dataset=dataset, data_slice=None)
-    expected_attribute_update = validator_classifier.performances[dataset][metric]
+    expected_data_slice_size = 6
 
-    assert actual == expected_attribute_update
+    actual = validator_classifier._score_data_context(metric=metric, dataset=dataset, data_slice=None)
+    actual_attribute_update = validator_classifier.performances[dataset][metric]
+    actual_data_slice_size = validator_classifier.data_slice_sizes[dataset]
+
+    assert actual == actual_attribute_update
     assert actual == expected_score
+    assert actual_data_slice_size == expected_data_slice_size
