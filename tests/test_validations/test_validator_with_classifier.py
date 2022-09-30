@@ -174,3 +174,15 @@ def test__slice_data_with_slicing_function(validator_classifier):
 def test__score_data_context_raises(validator_classifier):
     with pytest.raises(ValueError):
         validator_classifier._score_data_context(metric="accuracy", dataset="something", data_slice=None)
+
+
+def test__score_data_context(validator_classifier):
+    metric = "accuracy"
+    dataset = "testing_data"
+
+    expected_score = 0.5
+    actual = validator_classifier._score_data_context(metric=metric, dataset=dataset, data_slice=None)
+    expected_attribute_update = validator_classifier.performances[dataset][metric]
+
+    assert actual == expected_attribute_update
+    assert actual == expected_score
