@@ -90,12 +90,12 @@ Build a feedback application by:
     )
     ```
 
-2. Using the `StreamlitComponent` object to generate app components to collect user feedback
+2. Using the `FeedbackCollector` object to generate app components to collect user feedback
     ```python
     import streamlit as st
-    from trubrics.feedback_components.streamlit import StreamlitComponent
+    from trubrics.feedback import FeedbackCollector
 
-    st_component = StreamlitComponent(model=model, data=data_context)
+    st_component = FeedbackCollector(model=model, data=data_context)
 
     with st.sidebar:
         st.title("Modify features to test the model...")

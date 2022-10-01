@@ -7,12 +7,12 @@ from pandas.api.types import is_numeric_dtype
 
 from trubrics.context import DataContext, TrubricsModel
 from trubrics.exceptions import PandasSchemaError
-from trubrics.feedback_components.dataclass import Feedback
+from trubrics.feedback.dataclass import Feedback
 from trubrics.utils.loader import save_validation_to_json
 from trubrics.utils.pandas import schema_is_equal
 
 
-class StreamlitComponent:
+class FeedbackCollector:
     def __init__(self, data: DataContext, model: Any):
         self.trubrics_model = TrubricsModel(data=data, model=model)
         self.model_type = self.trubrics_model.model_type

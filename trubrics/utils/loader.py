@@ -2,7 +2,7 @@ import json
 
 import requests  # type: ignore
 
-from trubrics.feedback_components.dataclass import Feedback
+from trubrics.feedback.dataclass import Feedback
 
 
 def save_validation_to_json(trubric_context: Feedback, tracking: bool = False) -> None:

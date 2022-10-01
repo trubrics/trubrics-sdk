@@ -4,14 +4,11 @@ lint:
 local-build:
 	@pip install -e .
 
-train-titanic:
-	@python examples/training/titanic.py
-
 streamlit-demo:
-	@streamlit run examples/streamlit/app_generate_trubric.py
+	@streamlit run examples/app_generate_trubric.py
 
 streamlit-titanic:
-	@streamlit run examples/streamlit/feedback_app_titanic.py
+	@streamlit run examples/classification_titanic/feedack_app_titanic.py
 
 docs-serve:
 	@mkdocs serve

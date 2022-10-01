@@ -1,33 +1,28 @@
-import joblib
-import pandas as pd
 import streamlit as st
 
-from examples.training import titanic_config
 from trubrics.context import DataContext
-from trubrics.feedback_components.streamlit import StreamlitComponent
+from trubrics.example import get_titanic_data_and_model
+from trubrics.example import titanic_config as tc
+from trubrics.feedback import FeedbackCollector
 
 
 # @st.cache
 def init_data():
-    try:
-        TRAINING_DATA = pd.read_csv(titanic_config.LOCAL_TRAIN_FILENAME)
-        TESTING_DATA = pd.read_csv(titanic_config.LOCAL_TEST_FILENAME)
-        model = joblib.load(titanic_config.LOCAL_MODEL_FILENAME)
-    except FileNotFoundError:
-        raise FileNotFoundError("To generate these files, run `make train-titanic`")
+    train_df, test_df, model = get_titanic_data_and_model()
+
     # init data context
     data_context = DataContext(
-        training_data=TRAINING_DATA,
-        testing_data=TESTING_DATA,
-        target=titanic_config.TARGET,
-        categorical_columns=titanic_config.CATEGORICAL_COLUMNS,
-        business_columns=titanic_config.BUSINESS_COLUMNS,
+        training_data=train_df,
+        testing_data=test_df,
+        target="Survived",
+        categorical_columns=tc.CATEGORICAL_COLUMNS,
+        business_columns=tc.BUSINESS_COLUMNS,
     )
     return data_context, model
 
 
 data_context, model = init_data()
-st_component = StreamlitComponent(data=data_context, model=model)
+st_component = FeedbackCollector(data=data_context, model=model)
 
 with st.sidebar:
     st.title("Modify features to test the model...")
