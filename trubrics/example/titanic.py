@@ -10,13 +10,13 @@ from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 import trubrics.example.titanic_config as tc
 
 
-def test_data():
+def read_test_data():
     stream = pkg_resources.resource_stream(__name__, "titanic_data.csv")
     return pd.read_csv(stream)
 
 
 def get_titanic_data_and_model():
-    df = test_data()
+    df = read_test_data()
     preprocessed_train = df.pipe(preprocess)
 
     numerical_cols = [col for col in preprocessed_train.columns if col not in tc.CATEGORICAL_COLUMNS + [tc.TARGET]]

@@ -107,7 +107,7 @@ def run(
 def init(
     trubrics_api_url: Optional[str] = None,
     trubric_run_path: str = typer.Option(
-        ..., prompt="Enter the path to your trubric run .py file (e.g. examples/cli/trubric_run.py)"
+        ..., prompt="Enter the path to your trubric run .py file (e.g. examples/classification_titanic/trubric_run.py)"
     ),
     trubric_config_path: str = typer.Option(
         ".", prompt="Enter a path to save your .trubrics_config.json. The default path is"

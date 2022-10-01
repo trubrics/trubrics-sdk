@@ -11,7 +11,7 @@ streamlit-demo:
 	@streamlit run examples/streamlit/app_generate_trubric.py
 
 streamlit-titanic:
-	@streamlit run examples/streamlit/app-titanic.py
+	@streamlit run examples/streamlit/feedback_app_titanic.py
 
 docs-serve:
 	@mkdocs serve
@@ -33,12 +33,12 @@ test-coverage:
 example-run-trubric:
 	@trubrics run \
 	--no-save-ui \
-	--trubric-config-path "examples/cli" \
-	--trubric-output-file-path "examples/data" \
+	--trubric-config-path "examples/classification_titanic" \
+	--trubric-output-file-path "examples/classification_titanic" \
 	--trubric-output-file-name "my_new_trubric.json"
 
 save-titanic-tutorial-notebook:
 	@python -m ipykernel install --user --name=trubrics-venv
 	@jupyter nbconvert \
-	--execute examples/notebooks/titanic-demo.ipynb \
+	--execute examples/classification_titanic/titanic-demo.ipynb \
 	--to html --output-dir docs/notebooks/

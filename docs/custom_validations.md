@@ -8,5 +8,5 @@ For best practices on creating a CustomValidator, follow the same conventions as
 
 !!!example
     ```py
-    --8<-- "examples/cli/custom_validator.py"
+    --8<-- "examples/classification_titanic/custom_validator.py"
     ```

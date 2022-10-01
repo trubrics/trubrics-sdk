@@ -10,4 +10,4 @@ Building a feedback component starts with initialising a DataContext:
 Then you can create your streamlit app with something like:
 --8<-- "docs/snippets/streamlit_feedback.md"
 
-A full example can be seen in `examples/app-titanic.py`, and run with `make streamit-demo`.
+A full example can be seen in `examples/feedback_app_titanic.py`, and run with `make streamit-demo`.

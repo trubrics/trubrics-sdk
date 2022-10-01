@@ -1,0 +1,464 @@
+{
+    "trubric_name": "my_first_trubric",
+    "model_name": "my_model",
+    "model_version": 0.1,
+    "data_context_name": "my_first_dataset",
+    "data_context_version": 0.1,
+    "metadata": {
+        "tag": "master"
+    },
+    "validations": [
+        {
+            "validation_type": "validate_minimum_functionality",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {}
+            },
+            "explanation": "Minimum functionality validation.\n\nValidates that a model correctly predicts all points in a given set of data. This dataset must be set\nin the `minimum_functionality_data` parameter of the DataContext.\n\nArgs:\nseverity: severity of the validation. Can be either ['error', 'warning', 'experiment']. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving all data points that were not correctly predicted by the model.\n",
+            "outcome": "fail",
+            "severity": "warning",
+            "result": {
+                "number_of_failures": 2,
+                "errors_df": {
+                    "Sex": {
+                        "852": "female",
+                        "36": "male"
+                    },
+                    "Embarked": {
+                        "852": "C",
+                        "36": "C"
+                    },
+                    "Title": {
+                        "852": "Miss",
+                        "36": "Mr"
+                    },
+                    "Pclass": {
+                        "852": 3,
+                        "36": 3
+                    },
+                    "Age": {
+                        "852": 9.0,
+                        "36": null
+                    },
+                    "SibSp": {
+                        "852": 1,
+                        "36": 0
+                    },
+                    "Parch": {
+                        "852": 1,
+                        "36": 0
+                    },
+                    "Fare": {
+                        "852": 15.25,
+                        "36": 7.23
+                    },
+                    "Survived": {
+                        "852": 0,
+                        "36": 1
+                    },
+                    "predictions": {
+                        "852": 1,
+                        "36": 0
+                    }
+                }
+            }
+        },
+        {
+            "validation_type": "validate_performance_against_threshold",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "accuracy",
+                    "threshold": 0.8,
+                    "data_slice": "children"
+                }
+            },
+            "explanation": "Performance validation versus a fixed threshold value.\n\nCompares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nthreshold: the performance threshold that the model must attain.\ndataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual model performance calculated.\n",
+            "outcome": "pass",
+            "severity": "error",
+            "result": {
+                "performance": 0.9090909090909091,
+                "sample_size": 11
+            }
+        },
+        {
+            "validation_type": "validate_performance_against_threshold",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "accuracy",
+                    "threshold": 0.8,
+                    "data_slice": "male"
+                }
+            },
+            "explanation": "Performance validation versus a fixed threshold value.\n\nCompares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nthreshold: the performance threshold that the model must attain.\ndataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual model performance calculated.\n",
+            "outcome": "pass",
+            "severity": "error",
+            "result": {
+                "performance": 0.8078817733990148,
+                "sample_size": 203
+            }
+        },
+        {
+            "validation_type": "validate_performance_against_threshold",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "recall",
+                    "threshold": 0.7
+                }
+            },
+            "explanation": "Performance validation versus a fixed threshold value.\n\nCompares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nthreshold: the performance threshold that the model must attain.\ndataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual model performance calculated.\n",
+            "outcome": "pass",
+            "severity": "warning",
+            "result": {
+                "performance": 0.7184466019417476,
+                "sample_size": 295
+            }
+        },
+        {
+            "validation_type": "validate_performance_against_threshold",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "precision",
+                    "threshold": 0.7
+                }
+            },
+            "explanation": "Performance validation versus a fixed threshold value.\n\nCompares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nthreshold: the performance threshold that the model must attain.\ndataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual model performance calculated.\n",
+            "outcome": "pass",
+            "severity": "error",
+            "result": {
+                "performance": 0.7047619047619048,
+                "sample_size": 295
+            }
+        },
+        {
+            "validation_type": "validate_performance_against_threshold",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "f1",
+                    "threshold": 0.7
+                }
+            },
+            "explanation": "Performance validation versus a fixed threshold value.\n\nCompares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nthreshold: the performance threshold that the model must attain.\ndataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual model performance calculated.\n",
+            "outcome": "pass",
+            "severity": "experiment",
+            "result": {
+                "performance": 0.7115384615384616,
+                "sample_size": 295
+            }
+        },
+        {
+            "validation_type": "validate_performance_against_threshold",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "my_custom_loss",
+                    "threshold": -0.7
+                }
+            },
+            "explanation": "Performance validation versus a fixed threshold value.\n\nCompares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nthreshold: the performance threshold that the model must attain.\ndataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual model performance calculated.\n",
+            "outcome": "pass",
+            "severity": "experiment",
+            "result": {
+                "performance": -0.203,
+                "sample_size": 295
+            }
+        },
+        {
+            "validation_type": "validate_performance_between_train_and_test",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "recall",
+                    "threshold": 0.3,
+                    "data_slice": "male"
+                }
+            },
+            "explanation": "Performance validation comparing training and test data scores.\n\nScores the test set and the train set in the DataContext, and validates whether the test score is inferior to but also within a certain range of the train score. Can be used to validate for overfitting\non the training set.\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nthreshold: a positive value representing the maximum allowable difference between the train and test score.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either ['error', 'warning', 'experiment']. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the model's performance on test and train sets.\n",
+            "outcome": "fail",
+            "severity": "error",
+            "result": {
+                "train_performance": 0.9428571428571428,
+                "test_performance": 0.3333333333333333,
+                "train_sample_size": 374,
+                "test_sample_size": 203
+            }
+        },
+        {
+            "validation_type": "validate_performance_between_train_and_test",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "my_custom_loss",
+                    "threshold": 0.2
+                }
+            },
+            "explanation": "Performance validation comparing training and test data scores.\n\nScores the test set and the train set in the DataContext, and validates whether the test score is inferior to but also within a certain range of the train score. Can be used to validate for overfitting\non the training set.\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nthreshold: a positive value representing the maximum allowable difference between the train and test score.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either ['error', 'warning', 'experiment']. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the model's performance on test and train sets.\n",
+            "outcome": "pass",
+            "severity": "error",
+            "result": {
+                "train_performance": -0.01,
+                "test_performance": -0.203,
+                "train_sample_size": 596,
+                "test_sample_size": 295
+            }
+        },
+        {
+            "validation_type": "validate_test_performance_against_dummy",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "accuracy"
+                }
+            },
+            "explanation": "Performance validation of testing data versus a dummy baseline model.\n\nTrains a DummyClassifier / DummyRegressor from [sklearn](https://scikit-learn.org/stable/modules/classes.html?highlight=dummy#module-sklearn.dummy) and compares performance against the model on the test set.\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nstrategy: strategy of scikit-learns dummy model.\ndummy_kwargs: kwargs to be passed to dummy model.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either ['error', 'warning', 'experiment']. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the model's actual performance on the test set and the dummy model's performance.\n",
+            "outcome": "pass",
+            "severity": "error",
+            "result": {
+                "dummy_performance": 0.6508474576271186,
+                "test_performance": 0.7966101694915254,
+                "sample_size": 295
+            }
+        },
+        {
+            "validation_type": "validate_test_performance_against_dummy",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "accuracy",
+                    "strategy": "constant",
+                    "dummy_kwargs": {
+                        "constant": 0
+                    },
+                    "data_slice": "male"
+                }
+            },
+            "explanation": "Performance validation of testing data versus a dummy baseline model.\n\nTrains a DummyClassifier / DummyRegressor from [sklearn](https://scikit-learn.org/stable/modules/classes.html?highlight=dummy#module-sklearn.dummy) and compares performance against the model on the test set.\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nstrategy: strategy of scikit-learns dummy model.\ndummy_kwargs: kwargs to be passed to dummy model.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either ['error', 'warning', 'experiment']. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the model's actual performance on the test set and the dummy model's performance.\n",
+            "outcome": "fail",
+            "severity": "error",
+            "result": {
+                "dummy_performance": 0.8078817733990148,
+                "test_performance": 0.8078817733990148,
+                "sample_size": 203
+            }
+        },
+        {
+            "validation_type": "validate_performance_std_across_slices",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "accuracy",
+                    "dataset": "testing_data",
+                    "data_slices": [
+                        "male",
+                        "children"
+                    ],
+                    "std_threshold": 0.07
+                }
+            },
+            "explanation": "Validation to ensure that different slices of data have similar levels of performance.\n\nValidates that a list of model performances on different data slices from a given dataset has a lower\nstandard deviation than a given threshold value.\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\ndata_slices: a list of of data slices, specified in the slicing_functions parameter of ModelValidator.\nstd_threshold: the standard deviation threshold that must be superior to the standard deviation of all data slice performances.\ndataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.\ninclude_global_performance: whether or not to include the dataset global performance in the list.\nseverity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. If None, defaults to 'error'.\n",
+            "outcome": "pass",
+            "severity": "error",
+            "result": {
+                "performances": {
+                    "testing_data_male": 0.8078817733990148,
+                    "testing_data_children": 0.9090909090909091
+                },
+                "sample_sizes": {
+                    "testing_data_male": 203,
+                    "testing_data_children": 11
+                }
+            }
+        },
+        {
+            "validation_type": "validate_performance_std_across_slices",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "recall",
+                    "dataset": "training_data",
+                    "data_slices": [
+                        "male",
+                        "female"
+                    ],
+                    "std_threshold": 0.05,
+                    "include_global_performance": true
+                }
+            },
+            "explanation": "Validation to ensure that different slices of data have similar levels of performance.\n\nValidates that a list of model performances on different data slices from a given dataset has a lower\nstandard deviation than a given threshold value.\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\ndata_slices: a list of of data slices, specified in the slicing_functions parameter of ModelValidator.\nstd_threshold: the standard deviation threshold that must be superior to the standard deviation of all data slice performances.\ndataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.\ninclude_global_performance: whether or not to include the dataset global performance in the list.\nseverity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. If None, defaults to 'error'.\n",
+            "outcome": "pass",
+            "severity": "error",
+            "result": {
+                "performances": {
+                    "training_data_male": 0.9428571428571428,
+                    "training_data_female": 1.0,
+                    "training_data": 0.9832635983263598
+                },
+                "sample_sizes": {
+                    "training_data_male": 374,
+                    "training_data_female": 222,
+                    "training_data": 596
+                }
+            }
+        },
+        {
+            "validation_type": "validate_feature_in_top_n_important_features",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "dataset": "testing_data",
+                    "feature": "Sex",
+                    "top_n_features": 3
+                }
+            },
+            "explanation": "Feature importance validation for top n features.\n\nValidates that a given feature is in the top n most important features. For calculation of feature importance we are using sklearn's [permutation_importance](https://scikit-learn.org/stable/ modules/generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance).\n\nArgs:\nfeature: feature to assess.\ntop_n_features: the number of most important features that the named feature must be ranked in. E.g. if\ntop_n_features=2, the feature must be within the top two most important features.\ndataset: the name of a dataset from the DataContext to calculate feature importance on {'testing_data', 'training_data'}.\npermutation_kwargs: kwargs to pass into the sklearn.inspection.permutation_importance function.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual feature importance ranking.\n",
+            "outcome": "pass",
+            "severity": "error",
+            "result": {
+                "feature_importance_ranking": 0,
+                "feature_importance": {
+                    "Sex": 0.08135593220338981,
+                    "Embarked": -0.0020338983050847805,
+                    "Title": 0.04203389830508475,
+                    "Pclass": 0.01830508474576269,
+                    "Age": 0.01762711864406776,
+                    "SibSp": 0.009491525423728775,
+                    "Parch": 0.0006779661016948823,
+                    "Fare": 0.015593220338983027
+                }
+            }
+        },
+        {
+            "validation_type": "validate_feature_in_top_n_important_features",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "dataset": "training_data",
+                    "feature": "Age",
+                    "top_n_features": 2,
+                    "permutation_kwargs": {
+                        "n_repeats": 1,
+                        "random_state": 88,
+                        "n_jobs": -1
+                    }
+                }
+            },
+            "explanation": "Feature importance validation for top n features.\n\nValidates that a given feature is in the top n most important features. For calculation of feature importance we are using sklearn's [permutation_importance](https://scikit-learn.org/stable/ modules/generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance).\n\nArgs:\nfeature: feature to assess.\ntop_n_features: the number of most important features that the named feature must be ranked in. E.g. if\ntop_n_features=2, the feature must be within the top two most important features.\ndataset: the name of a dataset from the DataContext to calculate feature importance on {'testing_data', 'training_data'}.\npermutation_kwargs: kwargs to pass into the sklearn.inspection.permutation_importance function.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual feature importance ranking.\n",
+            "outcome": "fail",
+            "severity": "error",
+            "result": {
+                "feature_importance_ranking": 2,
+                "feature_importance": {
+                    "Sex": 0.14261744966442946,
+                    "Embarked": 0.057046979865771785,
+                    "Title": 0.10067114093959728,
+                    "Pclass": 0.08724832214765099,
+                    "Age": 0.12080536912751672,
+                    "SibSp": 0.05536912751677847,
+                    "Parch": 0.02348993288590595,
+                    "Fare": 0.1459731543624161
+                }
+            }
+        },
+        {
+            "validation_type": "validate_feature_importance_between_train_and_test",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {}
+            },
+            "explanation": "Permutation feature importance comparison between train and test sets.\n\nValidates that the ranking of top n features is the same for both test and train sets. For calculation of feature importance we are using sklearn's [permutation_importance](https://scikit-learn.org/stable/modules /generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance).\n\nArgs:\ntop_n_features: the number of most important features to consider for comparison between train and test sets. E.g. if top_n_features=2, the train and test sets must have the same 2 most important features, in the same order.\npermutation_kwargs: kwargs to pass into the sklearn.inspection.permutation_importance function.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual feature importance ranking.\n",
+            "outcome": "fail",
+            "severity": "error",
+            "result": {
+                "training_feature_importance": {
+                    "Embarked": -0.0020338983050847805,
+                    "Parch": 0.0006779661016948823,
+                    "SibSp": 0.009491525423728775,
+                    "Fare": 0.015593220338983027,
+                    "Age": 0.01762711864406776,
+                    "Pclass": 0.01830508474576269,
+                    "Title": 0.04203389830508475,
+                    "Sex": 0.08135593220338981
+                },
+                "testing_feature_importance": {
+                    "Parch": 0.02348993288590595,
+                    "SibSp": 0.05536912751677847,
+                    "Embarked": 0.057046979865771785,
+                    "Pclass": 0.08724832214765099,
+                    "Title": 0.10067114093959728,
+                    "Age": 0.12080536912751672,
+                    "Sex": 0.14261744966442946,
+                    "Fare": 0.1459731543624161
+                }
+            }
+        },
+        {
+            "validation_type": "validate_feature_importance_between_train_and_test",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "top_n_features": 1
+                }
+            },
+            "explanation": "Permutation feature importance comparison between train and test sets.\n\nValidates that the ranking of top n features is the same for both test and train sets. For calculation of feature importance we are using sklearn's [permutation_importance](https://scikit-learn.org/stable/modules /generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance).\n\nArgs:\ntop_n_features: the number of most important features to consider for comparison between train and test sets. E.g. if top_n_features=2, the train and test sets must have the same 2 most important features, in the same order.\npermutation_kwargs: kwargs to pass into the sklearn.inspection.permutation_importance function.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual feature importance ranking.\n",
+            "outcome": "fail",
+            "severity": "error",
+            "result": {
+                "training_feature_importance": {
+                    "Embarked": -0.0020338983050847805,
+                    "Parch": 0.0006779661016948823,
+                    "SibSp": 0.009491525423728775,
+                    "Fare": 0.015593220338983027,
+                    "Age": 0.01762711864406776,
+                    "Pclass": 0.01830508474576269,
+                    "Title": 0.04203389830508475,
+                    "Sex": 0.08135593220338981
+                },
+                "testing_feature_importance": {
+                    "Parch": 0.02348993288590595,
+                    "SibSp": 0.05536912751677847,
+                    "Embarked": 0.057046979865771785,
+                    "Pclass": 0.08724832214765099,
+                    "Title": 0.10067114093959728,
+                    "Age": 0.12080536912751672,
+                    "Sex": 0.14261744966442946,
+                    "Fare": 0.1459731543624161
+                }
+            }
+        },
+        {
+            "validation_type": "validate_inference_time",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "threshold": 0.04,
+                    "n_executions": 100
+                }
+            },
+            "explanation": "Validate the model's inference time on a single data point from the test set.\n\nArgs:\nthreshold: number of seconds that the model inference time should be inferior to.\nn_executions: number of executions of the `.predict()` method for a single data point. The inference time will be the mean of each of the n_executions.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the model's average inference time (in seconds).\n",
+            "outcome": "pass",
+            "severity": "error",
+            "result": {
+                "inference_time": 0.022801712919999984
+            }
+        },
+        {
+            "validation_type": "validate_performance_for_different_fares",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "fare_cutoff": 25
+                }
+            },
+            "explanation": "Validate the models performance for expensive vs cheap tickets.\n\nArgs:\nfare_cutoff: value to split the fare column on\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving all the number of errors by fare split.\n",
+            "outcome": "pass",
+            "severity": "warning",
+            "result": {
+                "number_of_errors_by_fare_ratio": 1.308
+            }
+        }
+    ]
+}
