@@ -113,8 +113,11 @@ Build a feedback application by:
     st_component.feedback(what_if_df=what_if_df, model_prediction=raw_prediction, tracking=True)
     ```
 
-*Run our example on the titanic with the cli command `trubrics example-titanic-app`*.
-
+*Run our example on the titanic with the cli command:*
+```console
+(venv)$ trubrics example-titanic-app
+```
+![img](assets/titanic-feedback-example.png)
 
 ## Watch our "Getting Started" demo
 [![img](./assets/trubrics-demo-youtube.png)](https://www.youtube.com/watch?v=I-lUGhHss5g)
