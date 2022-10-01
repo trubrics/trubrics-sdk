@@ -20,4 +20,4 @@ Run the streamlit app to collect user feedback on your model
 ```
 
 ## 4 Create a trubric of validation points
-Follow along in `jupyter lab` by running the cells in the `examples/titanic-demo.ipynb`, or take a look at the notebook [here](notebooks/titanic-demo.html).
+Follow along in `jupyter lab` by running the cells in the `examples/classification_titanic/titanic-demo.ipynb`, or take a look at the notebook [here](notebooks/titanic-demo.html).

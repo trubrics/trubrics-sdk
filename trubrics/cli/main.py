@@ -107,7 +107,7 @@ def run(
 def init(
     trubrics_api_url: Optional[str] = None,
     trubric_run_path: str = typer.Option(
-        ..., prompt="Enter the path to your trubric run .py file (e.g. examples/cli/trubric_run.py)"
+        ..., prompt="Enter the path to your trubric run .py file (e.g. examples/classification_titanic/trubric_run.py)"
     ),
     trubric_config_path: str = typer.Option(
         ".", prompt="Enter a path to save your .trubrics_config.json. The default path is"
@@ -151,6 +151,19 @@ def init(
         "w",
     ) as file:
         file.write(json.dumps(res, indent=4))
+
+
+@app.command()
+def example_titanic_app():
+    """Run the titanic user feedback collector app."""
+    import os
+
+    import streamlit.cli
+
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, "../example/feedback_app_titanic.py")
+    args = []
+    streamlit.cli._main_run(filename, args)
 
 
 def _import_module(module_path: str):

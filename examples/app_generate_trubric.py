@@ -3,8 +3,8 @@ import pandas as pd
 import streamlit as st
 from sklearn.metrics import SCORERS
 
-from trubrics.context import DataContext, TrubricContext
-from trubrics.validations import ModelValidator
+from trubrics.context import DataContext
+from trubrics.validations import ModelValidator, Trubric
 from trubrics.validations.run import TrubricRun, run_trubric
 
 
@@ -106,7 +106,7 @@ if model_ and test_data and train_data:
             st.write(inference_time.dict())
 
         with tab2:
-            tc = TrubricContext(data_context_name="data", data_context_version=0.1, validations=validations)
+            tc = Trubric(data_context_name="data", data_context_version=0.1, validations=validations)
 
             path = st.text_input("Filepath to save trubric to:")
             if st.button("Save trubric locally"):
@@ -115,7 +115,7 @@ if model_ and test_data and train_data:
                 st.markdown(msg, unsafe_allow_html=True)
 
             if st.button("Run saved trubric"):
-                trubric = TrubricContext.parse_file(f"{path}/my_trubric.json")
+                trubric = Trubric.parse_file(f"{path}/my_trubric.json")
 
                 run_context = TrubricRun(
                     data_context=data_context,  # type: ignore

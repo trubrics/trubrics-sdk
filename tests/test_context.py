@@ -1,7 +1,8 @@
 import pytest
 
-from trubrics.context import DataContext, ValidationContext
+from trubrics.context import DataContext
 from trubrics.exceptions import PandasSchemaError
+from trubrics.validations.dataclass import Validation
 
 
 def test_data_context_attributes(dummy_testing_data):
@@ -46,4 +47,4 @@ def test_data_context_raises(dummy_testing_data, training_data_rename_cols, kwar
 )
 def test_validation_context_raises(kwargs, error_type):
     with pytest.raises(error_type):
-        ValidationContext(validation_type="validate_something", validation_kwargs={"a kwarg": None}, **kwargs)
+        Validation(validation_type="validate_something", validation_kwargs={"a kwarg": None}, **kwargs)

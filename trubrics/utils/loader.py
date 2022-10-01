@@ -2,10 +2,10 @@ import json
 
 import requests  # type: ignore
 
-from trubrics.context import FeedbackContext
+from trubrics.feedback.dataclass import Feedback
 
 
-def save_validation_to_json(trubric_context: FeedbackContext, tracking: bool = False) -> None:
+def save_validation_to_json(trubric_context: Feedback, tracking: bool = False) -> None:
     test_json = trubric_context.json()
     if tracking:
         url = "http://localhost:8000"
@@ -25,7 +25,7 @@ def save_validation_to_json(trubric_context: FeedbackContext, tracking: bool = F
 
 def get_business_feedback_data(
     tracking: bool = False,
-) -> FeedbackContext:
+) -> Feedback:
     if tracking:
         raise ValueError("to be replaced with read from test tracking API")
     else:

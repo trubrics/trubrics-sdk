@@ -3,9 +3,9 @@ from typing import Any, Dict, Optional
 from pydantic import BaseModel, validator
 from sklearn.metrics._scorer import _BaseScorer
 
-from trubrics.context import DataContext, TrubricContext
+from trubrics.context import DataContext
 from trubrics.exceptions import UnknownValidationError
-from trubrics.validations import ModelValidator
+from trubrics.validations import ModelValidator, Trubric
 
 
 class TrubricRun(BaseModel):
@@ -19,7 +19,7 @@ class TrubricRun(BaseModel):
 
     data_context: DataContext
     model: Any
-    trubric_context: TrubricContext
+    trubric_context: Trubric
     custom_validator: Optional[Any] = None
     custom_scorers: Optional[Dict[str, Any]] = None
     slicing_functions: Optional[Dict[str, Any]] = None

@@ -5,7 +5,5 @@ streamlit==1.11.1
 scikit-learn==1.0.2
 typeguard==2.13.3
 pydantic==1.9.1
-google-auth==2.10.0
-google-auth-oauthlib==0.5.2
 typer==0.6.1
 loguru==0.6.0

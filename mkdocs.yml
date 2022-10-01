@@ -45,16 +45,14 @@ markdown_extensions:
 nav:
   - Getting Started: index.md
   - Tutorials:
-    - Titanic classifier example: classifier_tutorial.md
     - Titanic classifier notebook: notebooks/titanic-demo.html
-  - Contexts: context.md
-  - Features:
-    - Models: models.md
+  - The DataContext: data_context.md
+  - Building validations:
+    - Compatible models: models.md
     - Validations:
       - The ModelValidator object: validator_object.md
       - Out-of-the-box validations: validations.md
       - Custom validations: custom_validations.md
     - Running trubrics (CLI): run_trubrics.md
-    - Collecting user feedback: feedback.md
-    - (WIP) Logging trubrics to the UI: log_trubrics.md
+  - Collecting user feedback: feedback.md
 copyright: Copyright © 2022 Trubrics Ltd. All rights reserved. Trubrics and the Trubrics logo are trademarks of Trubrics Ltd.

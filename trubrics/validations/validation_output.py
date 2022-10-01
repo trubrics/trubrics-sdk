@@ -5,8 +5,9 @@ from typing import Any, Callable, Dict, Tuple, Union
 import numpy as np
 from typeguard import check_type
 
-from trubrics.context import TrubricsModel, ValidationContext
+from trubrics.context import TrubricsModel
 from trubrics.exceptions import ValidationOutputError
+from trubrics.validations.dataclass import Validation
 
 validation_output_type = Tuple[Union[bool, np.bool_], Dict[str, Union[dict, str, int, float, np.generic]]]
 
@@ -15,7 +16,7 @@ def validation_output(func: Callable) -> Callable:
     """Decorative function for validation point outputs."""
 
     @wraps(func)
-    def inner(*args, **kwargs) -> ValidationContext:
+    def inner(*args, **kwargs) -> Validation:
         output = func(*args, **kwargs)
 
         try:
@@ -52,7 +53,7 @@ def validation_output(func: Callable) -> Callable:
             )
         stripped_docstring = "\n".join(" ".join(line.split()) for line in func.__doc__.split("\n"))
 
-        return ValidationContext(
+        return Validation(
             validation_type=func.__name__,
             validation_kwargs={"args": typed_args, "kwargs": typed_kwargs},
             explanation=stripped_docstring,
