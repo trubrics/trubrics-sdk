@@ -28,38 +28,30 @@ The trubrics-sdk is a python library for validating machine learning with data s
 (venv)$ pip install trubrics
 ```
 
-## Initialise a DataContext
-The `DataContext` wraps ML datasets and metadata into a trubrics friendly object, and must be initialised before using the [ModelValidator](#validate-a-model-with-the-modelvalidator) or the [FeedbackCollector](#collect-user-feedback-with-the-feedbackcollector). The `DataContext` requires a testing_data pandas dataframe, and the name of the target value column. Optionally, training_data may be specified, as in the following example:
-```py
-from trubrics.example import get_titanic_data_and_model
-train_df, test_df, model = get_titanic_data_and_model()
+## Validate a model with the ModelValidator
+There are three basic steps to creating model validations with the trubrics-sdk:
+1. Initialise a `DataContext`, that wraps ML datasets and metadata into a trubrics friendly object. This step is also relevant for building a user feedback application with the [FeedbackCollector](#collect-user-feedback-with-the-feedbackcollector).
+2. Feed the `DataContext` and an ML model (scikit-learn or [any other model](https://trubrics.github.io/trubrics-sdk/models/)) into the `ModelValidator`, that holds a number of [out-of-the-box validations](https://trubrics.github.io/trubrics-sdk/validations/) and can be used to build [custom validations](https://trubrics.github.io/trubrics-sdk/custom_validations/).
+3. Group the list of validations created into a `Trubric`, that can then be saved to a local .json file.
 
+Try out these steps by creating your own Trubric with this example:
+```py
 from trubrics.context import DataContext
+from trubrics.example import get_titanic_data_and_model
+from trubrics.validations import ModelValidator, Trubric
+
+_, test_df, model = get_titanic_data_and_model()
+
 data_context = DataContext(
     testing_data=test_df,  # pandas dataframe of data to validate model on
-    training_data=train_df,  # optional training data for certain validations
     target="Survived",
 )
-```
 
-## Validate a model with the ModelValidator
-The `ModelValidator` holds a number of out-of-the-box validations that can be directly applied to the `DataContext` and an ML model:
-```py
-from trubrics.validations import ModelValidator
 model_validator = ModelValidator(data=data_context, model=model)
 validations = [
-    model_validator.validate_performance_against_threshold(
-        metric="accuracy", threshold=0.7
-    ),
-    model_validator.validate_performance_between_train_and_test(
-        metric="recall", threshold=0.3
-    ),
+    model_validator.validate_performance_against_threshold(metric="accuracy", threshold=0.7),
+    model_validator.validate_feature_in_top_n_important_features(feature="Age", top_n_features=3),
 ]
-```
-
-The list of validations above can then be saved to a local .json file as a **trubric**:
-```py
-from trubrics.validations import Trubric
 trubric = Trubric(
     name="my_first_trubric",
     data_context_name=data_context.name,
@@ -68,6 +60,7 @@ trubric = Trubric(
 )
 trubric.save_local(path=".")
 ```
+
 The trubric defines the gold standard of validations required for the project, and may be used to validate any combination of model and `DataContext`.
 
 *See a full tutorial on the titanic dataset [here](https://trubrics.github.io/trubrics-sdk/notebooks/titanic-demo.html)*.
