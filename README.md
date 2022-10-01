@@ -72,7 +72,7 @@ A trubric is a checklist of validations, and can be built by:
 
 *See a full tutorial on the titanic dataset [here](https://trubrics.github.io/trubrics-sdk/notebooks/titanic-demo.html)*.
 
-## Collect model feedback with the FeedbackCollector
+## Collect user feedback with the FeedbackCollector
 Trubrics feedback components help you build python applications with your favourite library (e.g. [Streamlit](https://streamlit.io/)).
 These are aimed at collecting feedback on your models from business users and translating these into validation points.
 Build a feedback application by:
@@ -90,7 +90,7 @@ Build a feedback application by:
     )
     ```
 
-2. Using the `StreamlitComponent` object to generate app components to collect feedback
+2. Using the `StreamlitComponent` object to generate app components to collect user feedback
     ```python
     import streamlit as st
     from trubrics.feedback_components.streamlit import StreamlitComponent

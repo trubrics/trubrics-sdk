@@ -15,7 +15,7 @@ The `ModelValidator` object respects the following conventions:
     and must return a boolean variable that indicates a pass / fail of the validation, and a dictionary that holds
     contextual information that is calculated during the validation run. This method is unit tested and documented.
     - The second method has the same name, without the underscore prefix e.g. "validate_something". This method is used to call
-    the validation, and formats the output with the [the `validation_output` decorator](#the-validation_output-decorator).
+    the validation, and formats the output with the [`validation_output` decorator](#the-validation_output-decorator).
 
 !!!example "Example of a validation method decorated with @validation_output"
     ```py
