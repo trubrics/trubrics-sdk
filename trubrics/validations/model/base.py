@@ -5,6 +5,7 @@ from typing import Any, Callable, Dict, List, Optional, Union
 import numpy as np
 import pandas as pd
 import sklearn.metrics
+from loguru import logger
 from sklearn.dummy import DummyClassifier, DummyRegressor
 from sklearn.inspection import permutation_importance
 
@@ -610,23 +611,21 @@ class ModelValidator:
         if previously_computed_importance:
             return previously_computed_importance
 
-        kwargs = {"random_state": 88, "n_jobs": -1}
+        kwargs = {"n_repeats": 10, "random_state": 88, "n_jobs": -1}
         if permutation_kwargs is not None:
             kwargs.update(permutation_kwargs)
 
         if dataset == "testing_data":
-            self.feature_importances[dataset] = dict(
-                permutation_importance(self.tm.model, self.tm.data.X_test, self.tm.data.y_test, **kwargs)
-            )
+            X, y = self.tm.data.X_test, self.tm.data.y_test
         elif dataset == "training_data":
             if self.tm.data.X_train is None or self.tm.data.y_train is None:
                 raise ValueError("Training data not specified in DataContext.")
             else:
-                self.feature_importances[dataset] = dict(
-                    permutation_importance(self.tm.model, self.tm.data.X_train, self.tm.data.y_train, **kwargs)
-                )
+                X, y = self.tm.data.X_train, self.tm.data.y_train
         else:
             raise ValueError(
                 "Method reserved for testing on datasets within the DataContext: {'testing_data', 'training_data'}."
             )
+        logger.info(f"Computing permutation feature importance for {dataset} with {kwargs['n_repeats']} permutations.")
+        self.feature_importances[dataset] = dict(permutation_importance(self.tm.model, X, y, **kwargs))
         return self.feature_importances[dataset]
