@@ -153,6 +153,19 @@ def init(
         file.write(json.dumps(res, indent=4))
 
 
+@app.command()
+def example_titanic_app():
+    """Run the titanic user feedback collector app."""
+    import os
+
+    import streamlit.cli
+
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, "../example/feedback_app_titanic.py")
+    args = []
+    streamlit.cli._main_run(filename, args)
+
+
 def _import_module(module_path: str):
     try:
         spec = importlib.util.spec_from_file_location("module.name", module_path)

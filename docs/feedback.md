@@ -8,4 +8,4 @@ To build a trubrics FeedbackCollector, start by initialising a DataContext
 Then you can create your streamlit app, like the following example:
 --8<-- "docs/snippets/streamlit_feedback.md"
 
-A full example can be seen in `examples/feedback_app_titanic.py`, and run with `make streamit-demo`.
+A full example can be seen in `trubrics/example/feedback_app_titanic.py`, and run with `trubrics example-titanic-app`.

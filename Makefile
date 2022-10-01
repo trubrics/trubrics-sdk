@@ -7,9 +7,6 @@ local-build:
 streamlit-demo:
 	@streamlit run examples/app_generate_trubric.py
 
-streamlit-titanic:
-	@streamlit run examples/classification_titanic/feedack_app_titanic.py
-
 docs-serve:
 	@mkdocs serve
 
@@ -39,3 +36,6 @@ save-titanic-tutorial-notebook:
 	@jupyter nbconvert \
 	--execute examples/classification_titanic/titanic-demo.ipynb \
 	--to html --output-dir docs/notebooks/
+
+streamlit-titanic:
+	@streamlit run trubrics/example/feedback_app_titanic.py  
