@@ -17,7 +17,7 @@ The trubrics-sdk is a python library for validating machine learning with data s
 ## Key Features
 - Python web development components (e.g. with [Streamlit](https://streamlit.io/)) to gather feedback from business users on models with the **trubrics FeedbackCollector**.
 - Out of the box & custom validations (python functions) to build around models & datasets with the **trubrics ModelValidator** (currently supporting tabular data).
-- **Trubrics CLI** tool to run a list of saved validations (a **trubric**) against new models in a CI/CD/CT pipeline.
+- **Trubrics CLI** tool to run a list of saved validations (a **trubric**) against new models or datasets in a CI/CD/CT pipeline.
 <center>
 
 ![trubrics-explain](./assets/trubrics-explain.png)
