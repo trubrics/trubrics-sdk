@@ -56,5 +56,4 @@ nav:
       - Custom validations: custom_validations.md
     - Running trubrics (CLI): run_trubrics.md
     - Collecting user feedback: feedback.md
-    - (WIP) Logging trubrics to the UI: log_trubrics.md
 copyright: Copyright © 2022 Trubrics Ltd. All rights reserved. Trubrics and the Trubrics logo are trademarks of Trubrics Ltd.
