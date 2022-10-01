@@ -109,7 +109,7 @@ The FeedbackController includes various methods to facilitate building an applic
     st.text(collector.what_if_prediction)
 
     st.title("Send model feedback")
-    collector.feedback(path=".", file_name="feedback.json")
+    collector.save_feedback(path=".", file_name="feedback.json")
     ```
 
 *Run our demo user feedback app on the titanic dataset & model with the cli command:*

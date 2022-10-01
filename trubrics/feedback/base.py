@@ -71,7 +71,7 @@ class FeedbackCollector:
         self.what_if_df = out_df
         self.what_if_prediction = self.trubrics_model.model.predict(out_df)[0]
 
-    def feedback(self, path: str, file_name: str):
+    def save_feedback(self, path: str, file_name: str):
         """Get user feedback and save"""
         feedback_type: str = st.selectbox(
             "Choose feedback type:",

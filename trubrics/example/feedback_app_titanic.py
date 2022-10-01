@@ -38,7 +38,7 @@ else:
 st.markdown(prediction, unsafe_allow_html=True)
 
 st.title("Send model feedback")
-collector.feedback(path=".", file_name="feedback.json")
+collector.save_feedback(path=".", file_name="feedback.json")
 
 st.title("View data")
 data_view = st.selectbox(label="", options=("View full test set", "View test set errors", "View split by target"))
