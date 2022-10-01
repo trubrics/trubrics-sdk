@@ -40,10 +40,20 @@ class ModelValidator:
     def validate_minimum_functionality_in_range(
         self, range_value: Union[int, float] = 0, range_inclusive: bool = True, severity: Optional[str] = None
     ):
-        """Minimum functionality validation for a range output.
+        """**Minimum functionality validation for a range output.**
 
         Validates that a model correctly predicts all points in a given set of data, within a range of values.
         This dataset must be set in the `minimum_functionality_data` parameter of the DataContext.
+
+        Example:
+            ```py
+            from trubrics.validations import ModelValidator
+            model_validator = ModelValidator(data=data_context, model=model)
+            model_validator.validate_minimum_functionality_in_range(
+                range_value=0,
+                range_inclusive=True
+            )
+            ```
 
         Args:
             range_value: a value that is added to and subtracted from the target value for a given prediction,
@@ -96,10 +106,17 @@ class ModelValidator:
 
     @validation_output
     def validate_minimum_functionality(self, severity: Optional[str] = None):
-        """Minimum functionality validation.
+        """**Minimum functionality validation.**
 
         Validates that a model correctly predicts all points in a given set of data. This dataset must be set
         in the `minimum_functionality_data` parameter of the DataContext.
+
+        Example:
+            ```py
+            from trubrics.validations import ModelValidator
+            model_validator = ModelValidator(data=data_context, model=model)
+            model_validator.validate_minimum_functionality()
+            ```
 
         Args:
             severity: severity of the validation. Can be either ['error', 'warning', 'experiment']. \
@@ -136,9 +153,19 @@ class ModelValidator:
         data_slice: Optional[str] = None,
         severity: Optional[str] = None,
     ):
-        """Performance validation versus a fixed threshold value.
+        """**Performance validation versus a fixed threshold value.**
 
         Compares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.
+
+        Example:
+            ```py
+            from trubrics.validations import ModelValidator
+            model_validator = ModelValidator(data=data_context, model=model)
+            model_validator.validate_performance_against_threshold(
+                metric="recall",
+                threshold=0.8
+            )
+            ```
 
         Args:
             metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
@@ -173,10 +200,24 @@ class ModelValidator:
         include_global_performance: bool = False,
         severity: Optional[str] = None,
     ):
-        """Validation to ensure that different slices of data have similar levels of performance.
+        """**Performance validation comparing data slices.**
 
         Validates that a list of model performances on different data slices from a given dataset has a lower
         standard deviation than a given threshold value.
+
+        Example:
+            ```py
+            from trubrics.validations import ModelValidator
+            slicing_functions = {"female": lambda x: x[x["Sex"]=="female"], "male": lambda x: x[x["Sex"]=="male"]}
+            model_validator = ModelValidator(data=data_context, model=model, slicing_functions=slicing_functions)
+            model_validator.validate_performance_std_across_slices(
+                metric="recall",
+                dataset="training_data",
+                data_slices=["male", "female"],
+                std_threshold=0.05,
+                include_global_performance=True
+            )
+            ```
 
         Args:
             metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
@@ -221,11 +262,21 @@ class ModelValidator:
         data_slice: Optional[str] = None,
         severity: Optional[str] = None,
     ):
-        """Performance validation of testing data versus a dummy baseline model.
+        """**Performance validation of testing data versus a dummy baseline model.**
 
         Trains a DummyClassifier / DummyRegressor from \
         [sklearn](https://scikit-learn.org/stable/modules/classes.html?highlight=dummy#module-sklearn.dummy)\
         and compares performance against the model on the test set.
+
+        Example:
+            ```py
+            from trubrics.validations import ModelValidator
+            model_validator = ModelValidator(data=data_context, model=model)
+            model_validator.validate_test_performance_against_dummy(
+                metric="accuracy",
+                strategy="stratified"
+            )
+            ```
 
         Args:
             metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
@@ -287,11 +338,21 @@ class ModelValidator:
         data_slice: Optional[str] = None,
         severity: Optional[str] = None,
     ):
-        """Performance validation comparing training and test data scores.
+        """**Performance validation comparing training and test data scores.**
 
         Scores the test set and the train set in the DataContext, and validates whether the test score is \
         inferior to but also within a certain range of the train score. Can be used to validate for overfitting
         on the training set.
+
+        Example:
+            ```py
+            from trubrics.validations import ModelValidator
+            model_validator = ModelValidator(data=data_context, model=model)
+            model_validator.validate_performance_between_train_and_test(
+                metric="recall",
+                threshold=0.3
+            )
+            ```
 
         Args:
             metric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a \
@@ -329,7 +390,16 @@ class ModelValidator:
 
     @validation_output
     def validate_inference_time(self, threshold: float, n_executions: int = 100, severity: Optional[str] = None):
-        """Validate the model's inference time on a single data point from the test set.
+        """**Model inference time validation.**
+
+        Validate the model's inference time on a single data point from the test set.
+
+        Example:
+            ```py
+            from trubrics.validations import ModelValidator
+            model_validator = ModelValidator(data=data_context, model=model)
+            model_validator.validate_inference_time(threshold=0.04, n_executions=100)
+            ```
 
         Args:
             threshold: number of seconds that the model inference time should be inferior to.
@@ -358,11 +428,22 @@ class ModelValidator:
         permutation_kwargs: Optional[Dict[str, Any]] = None,
         severity: Optional[str] = None,
     ):
-        """Feature importance validation for top n features.
+        """**Feature importance validation for top n features.**
 
         Validates that a given feature is in the top n most important features. For calculation of feature \
         importance we are using sklearn's [permutation_importance](https://scikit-learn.org/stable/\
         modules/generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance).
+
+        Example:
+            ```py
+            from trubrics.validations import ModelValidator
+            model_validator = ModelValidator(data=data_context, model=model)
+            model_validator.validate_feature_in_top_n_important_features(
+                dataset="testing_data",
+                feature="feature_a",
+                top_n_features=2,
+            )
+            ```
 
         Args:
             feature: feature to assess.
@@ -406,11 +487,20 @@ class ModelValidator:
     def validate_feature_importance_between_train_and_test(
         self, top_n_features: Optional[int] = None, permutation_kwargs: Optional[Dict[str, Any]] = None
     ):
-        """Permutation feature importance comparison between train and test sets.
+        """**Permutation feature importance validation between train and test sets.**
 
         Validates that the ranking of top n features is the same for both test and train sets. For calculation of \
         feature importance we are using sklearn's [permutation_importance](https://scikit-learn.org/stable/modules\
         /generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance).
+
+        Example:
+            ```py
+            from trubrics.validations import ModelValidator
+            model_validator = ModelValidator(data=data_context, model=model)
+            model_validator.validate_feature_importance_between_train_and_test(
+                top_n_features=1
+            )
+            ```
 
         Args:
             top_n_features: the number of most important features to consider for comparison between train and test \

@@ -442,7 +442,7 @@
             "outcome": "pass",
             "severity": "error",
             "result": {
-                "inference_time": 0.02120967771000002
+                "inference_time": 0.025600353879999992
             }
         },
         {
