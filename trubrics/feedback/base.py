@@ -2,13 +2,11 @@ from typing import Any, Optional, Tuple, Union
 
 import pandas as pd
 import streamlit as st
-from loguru import logger
 from pandas.api.types import is_numeric_dtype
 
 from trubrics.context import DataContext, TrubricsModel
 from trubrics.exceptions import PandasSchemaError
 from trubrics.feedback.dataclass import Feedback
-from trubrics.utils.loader import save_validation_to_json
 from trubrics.utils.pandas import schema_is_equal
 
 
@@ -16,8 +14,10 @@ class FeedbackCollector:
     def __init__(self, data: DataContext, model: Any):
         self.trubrics_model = TrubricsModel(data=data, model=model)
         self.model_type = self.trubrics_model.model_type
+        self.what_if_df = None
+        self.what_if_prediction = None
 
-    def generate_what_if(self, wi_data: Optional[pd.DataFrame] = None) -> pd.DataFrame:
+    def generate_what_if(self, wi_data: Optional[pd.DataFrame] = None):
         """
         Generate a what-if tool based on a DataFrame input.
         If no DataFrame specified, the DataContext testing data is used.
@@ -41,7 +41,9 @@ class FeedbackCollector:
             else:
                 renamed_col = col
             if self.trubrics_model.data.categorical_columns is None:
-                raise ValueError("Categorical columns must be specified for the What-If tool.")
+                raise ValueError(
+                    "A list of categorical_columns must be specified in the DataContext for the What-If tool."
+                )
             if col in self.trubrics_model.data.categorical_columns:
                 if is_numeric_dtype(dtype.type):
                     out_df[col] = [
@@ -66,11 +68,10 @@ class FeedbackCollector:
                 ]
             else:
                 raise NotImplementedError(f"Columns '{col}' type is not recognised.")
-        return out_df
+        self.what_if_df = out_df
+        self.what_if_prediction = self.trubrics_model.model.predict(out_df)[0]
 
-    def feedback(
-        self, what_if_df: pd.DataFrame, model_prediction: Union[str, int, bool, float], tracking: bool = False
-    ):
+    def feedback(self, path: str, file_name: str):
         """Get user feedback and save"""
         feedback_type: str = st.selectbox(
             "Choose feedback type:",
@@ -82,37 +83,40 @@ class FeedbackCollector:
             ),
         )
 
-        metadata = {}
-        what_if_input = what_if_df.to_dict("records")[0]
-        if feedback_type == "Other":
-            metadata["description"] = st.text_input(label="", value="Send free text feedback here")
-            metadata["what_if_input"] = what_if_input
-            metadata["model_prediction"] = model_prediction
-
-        elif feedback_type == "Single prediction error":
-            metadata["corrected_prediction"], metadata["description"] = self._collect_single_edge_case()
-            metadata["what_if_input"] = what_if_input
-
-        elif feedback_type == "Important features":
-            (
-                metadata["selected_feature"],
-                metadata["top_n_feature"],
-                metadata["description"],
-            ) = self._collect_important_features_feedback()
-
-        elif feedback_type == "Bias":
-            metadata["description"] = "Feedback on bias."
-
+        if self.what_if_df is None:
+            st.text("What-if tool must be set to generate feedback.")
         else:
-            raise NotImplementedError()
+            metadata = {}
+            what_if_input = self.what_if_df.to_dict("records")[0]
+            if feedback_type == "Other":
+                metadata["description"] = st.text_input(label="", value="Send free text feedback here")
+                metadata["what_if_input"] = what_if_input
+                metadata["model_prediction"] = self.what_if_prediction
 
-        single_test = Feedback(feedback_type=feedback_type, metadata=metadata)
-        if st.button("Send feedback"):
-            save_validation_to_json(trubric_context=single_test, tracking=tracking)
-            st.markdown(
-                '<p style="color:Green;">Feedback saved & sent to the Data Science team.</p>', unsafe_allow_html=True
-            )
-            logger.info(f"Predictions saved {'to Trubrics UI' if tracking else 'locally'}.")
+            elif feedback_type == "Single prediction error":
+                metadata["corrected_prediction"], metadata["description"] = self._collect_single_edge_case()
+                metadata["what_if_input"] = what_if_input
+
+            elif feedback_type == "Important features":
+                (
+                    metadata["selected_feature"],
+                    metadata["top_n_feature"],
+                    metadata["description"],
+                ) = self._collect_important_features_feedback()
+
+            elif feedback_type == "Bias":
+                metadata["description"] = "Feedback on bias."
+
+            else:
+                raise NotImplementedError()
+
+            single_test = Feedback(feedback_type=feedback_type, metadata=metadata)
+            if st.button("Send feedback"):
+                single_test.save_local(path=path, file_name=file_name)
+                st.markdown(
+                    '<p style="color:Green;">Feedback saved & sent to the Data Science team.</p>',
+                    unsafe_allow_html=True,
+                )
 
     def _collect_single_edge_case(self) -> Tuple[Union[str, int, None], str]:
         """
