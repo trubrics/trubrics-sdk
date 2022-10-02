@@ -1,4 +1,4 @@
-# Compatible models with Trubrics
+# Compatible models with the ModelValidator
 
 ## 1. Load a scikit-learn model
 Trubrics integrates natively with the [scikit-learn API](https://scikit-learn.org/stable/modules/classes.html), meaning any sklearn model may be inserted directly into a [ModelValidator](validator_object.md) to create validations. This also means that we encourage you to use scikit's [Pipeline](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline) object to include all model processing transformations in a single object.

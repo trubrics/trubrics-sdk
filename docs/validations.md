@@ -1,4 +1,7 @@
 # Out-of-the-box model validations
+The trubrics library comes with [out-of-the-box validations](validations.md) that you can test against your models in a
+couple of lines of code. These validations are held in the `ModelValidator` object, that can be instantiated
+with a [DataContext](data_context.md) and a [model](models.md). This object can also be used to build [custom validations](custom_validations.md).
 
 ## Minimum Functionality
 :::trubrics.validations.ModelValidator.validate_minimum_functionality

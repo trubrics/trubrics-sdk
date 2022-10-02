@@ -1,4 +1,4 @@
-# Running trubrics (CLI)
+# Running trubrics from the CLI
 Once you have built a trubric of validations, you will want to test different data / models against that trubric.
 This will help you to ensure safe deployment of newly trained models directly from CI/CD/CT pipelines.
 
@@ -13,8 +13,6 @@ Create a python file `<trubric_run_file>.py` that loads datasets / models to val
 
     !!!tip "TrubricRun requirements"
     :::trubrics.validations.run.TrubricRun
-
-
 
 ## 2. Generate run config
 Initialise a run config in the terminal to save a `.trubrics_config.json` file to a specified path. Be guided by the CLI prompts by running:

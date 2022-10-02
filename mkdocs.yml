@@ -47,12 +47,11 @@ nav:
   - Tutorials:
     - Titanic classifier notebook: notebooks/titanic-demo.html
   - The DataContext: data_context.md
-  - Building validations:
+  - The ModelValidator:
     - Compatible models: models.md
-    - The ModelValidator object: validator_object.md
-    - Validations:
-      - Out-of-the-box validations: validations.md
-      - Custom validations: custom_validations.md
-    - Running trubrics (CLI): run_trubrics.md
-  - Collecting user feedback: feedback.md
+    - Metrics: metrics.md
+    - Out-of-the-box validations: validations.md
+    - Custom validations: custom_validations.md
+  - The Trubrics CLI: run_trubrics.md
+  - The FeedbackCollector: feedback.md
 copyright: Copyright © 2022 Trubrics Ltd. All rights reserved. Trubrics and the Trubrics logo are trademarks of Trubrics Ltd.
