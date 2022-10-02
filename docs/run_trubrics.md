@@ -1,18 +1,19 @@
-# Running trubrics
+# Running trubrics (CLI)
 Once you have built a trubric of validations, you will want to test different data / models against that trubric.
 This will help you to ensure safe deployment of newly trained models directly from CI/CD/CT pipelines.
 
 Complete these three steps to run trubrics from the CLI tool:
-
 ## 1. Initialise TrubricRun
-Create a python file `<trubric_run_file>.py` that holds the necessary code to run all validations. This file **must contain** a `RUN_CONTEXT` variable with a value of `TrubricRun`, as in the example below. It is this `RUN_CONTEXT` variable that is read into the CLI tool at runtime.
+Create a python file `<trubric_run_file>.py` that loads datasets / models to validate and holds the necessary code to run all validations. This file must contain a `RUN_CONTEXT` variable with a value of `TrubricRun`, as in the example below. It is this `RUN_CONTEXT` variable that is read into the CLI tool at runtime.
 
 ???example "Example of `<trubric_run_file>.py`"
     ```py
     ---8<-- "examples/classification_titanic/trubric_run.py"
     ```
 
-:::trubrics.validations.run.TrubricRun
+    !!!tip "TrubricRun requirements"
+    :::trubrics.validations.run.TrubricRun
+
 
 
 ## 2. Generate run config
