@@ -120,7 +120,7 @@ if model_ and test_data and train_data:
                 run_context = TrubricRun(
                     data_context=data_context,  # type: ignore
                     model=model,  # type: ignore
-                    trubric_context=trubric,
+                    trubric=trubric,
                 )
 
                 all_validation_results = run_trubric(run_context)

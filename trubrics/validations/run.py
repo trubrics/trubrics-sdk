@@ -9,17 +9,21 @@ from trubrics.validations import ModelValidator, Trubric
 
 
 class TrubricRun(BaseModel):
-    """The TrubricRun object to group all necessary contexts in order for a run.
+    """The TrubricRun object to group all necessary code for a run. Load data and models from
+    remote locations or locally for validation within a pipeline.
+
     Attributes:
         data_context: a data context to validate a model on
         model: a model to validate
-        trubric_context: a trubric context listing all validations to execute
+        trubric: a Trubric object listing all validations to execute
         custom_validator: an optional custom validator
+        custom_scorers: an optional dict of custom scorers for computing custom metrics
+        slicing_functions: an optional dict of slicing functions
     """
 
     data_context: DataContext
     model: Any
-    trubric_context: Trubric
+    trubric: Trubric
     custom_validator: Optional[Any] = None
     custom_scorers: Optional[Dict[str, Any]] = None
     slicing_functions: Optional[Dict[str, Any]] = None
@@ -53,7 +57,7 @@ def run_trubric(tr: TrubricRun):
             custom_scorers=tr.custom_scorers,
             slicing_functions=tr.slicing_functions,
         )
-    for validation in tr.trubric_context.validations:
+    for validation in tr.trubric.validations:
         args = validation.validation_kwargs["args"]
         kwargs = validation.validation_kwargs["kwargs"]
         try:
