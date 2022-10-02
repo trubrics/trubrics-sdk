@@ -49,8 +49,8 @@ nav:
   - The DataContext: data_context.md
   - Building validations:
     - Compatible models: models.md
+    - The ModelValidator object: validator_object.md
     - Validations:
-      - The ModelValidator object: validator_object.md
       - Out-of-the-box validations: validations.md
       - Custom validations: custom_validations.md
     - Running trubrics (CLI): run_trubrics.md

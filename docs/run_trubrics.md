@@ -39,4 +39,10 @@ Run all validations from the terminal. Be guided by the CLI prompts by running:
 
 ???example "Run the titanic example"
     If the repository is cloned, you can run this file with the following command from a terminal:
-    ---8<-- "docs/snippets/trubrics_cli.md"
+    ```console
+    (venv)$ trubrics run \
+            --no-save-ui \
+            --trubric-config-path "examples/classification_titanic" \
+            --trubric-output-file-path "examples/classification_titanic" \
+            --trubric-output-file-name "my_new_trubric.json"
+    ```

@@ -21,6 +21,8 @@
 ----
 
 ## Feature Importance
+Feature importance calculation for the following validations is based on sklearn's [permutation_importance](https://scikit-learn.org/stable/modules/generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance).
+
 :::trubrics.validations.ModelValidator.validate_feature_in_top_n_important_features
 ----
 :::trubrics.validations.ModelValidator.validate_feature_importance_between_train_and_test

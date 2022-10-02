@@ -432,8 +432,7 @@ class ModelValidator:
         """**Feature importance validation for top n features.**
 
         Validates that a given feature is in the top n most important features. For calculation of feature \
-        importance we are using sklearn's [permutation_importance](https://scikit-learn.org/stable/\
-        modules/generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance).
+        importance we are using sklearn's permutation_importance.
 
         Example:
             ```py
@@ -491,8 +490,7 @@ class ModelValidator:
         """**Permutation feature importance validation between train and test sets.**
 
         Validates that the ranking of top n features is the same for both test and train sets. For calculation of \
-        feature importance we are using sklearn's [permutation_importance](https://scikit-learn.org/stable/modules\
-        /generated/sklearn.inspection.permutation_importance.html#sklearn.inspection.permutation_importance).
+        feature importance we are using sklearn's permutation_importance.
 
         Example:
             ```py
