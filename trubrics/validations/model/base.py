@@ -626,6 +626,6 @@ class ModelValidator:
             raise ValueError(
                 "Method reserved for testing on datasets within the DataContext: {'testing_data', 'training_data'}."
             )
-        logger.info(f"Computing permutation feature importance for {dataset} with {kwargs['n_repeats']} permutations.")
+        logger.debug(f"Computing permutation feature importance for {dataset} with {kwargs['n_repeats']} permutations.")
         self.feature_importances[dataset] = dict(permutation_importance(self.tm.model, X, y, **kwargs))
         return self.feature_importances[dataset]
