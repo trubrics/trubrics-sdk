@@ -1,12 +1,15 @@
-def age_young(df):
+import pandas as pd
+
+
+def age_young(df: pd.DataFrame) -> pd.DataFrame:
     return df.loc[df["Age"] < 4, :]
 
 
-def sex_female(df):
+def sex_female(df: pd.DataFrame) -> pd.DataFrame:
     return df.loc[df["Sex"] == "female", :]
 
 
-def sex_male(df):
+def sex_male(df: pd.DataFrame) -> pd.DataFrame:
     return df.loc[df["Sex"] == "male", :]
 
 
