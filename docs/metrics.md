@@ -2,7 +2,7 @@
 Many validations in the `ModelValidator` require the computation of a metric to validate. It is good practice to recompute these metrics outside of your training pipeline to avoid errors in passing on pre-computed metrics. As performance computation can be expensive in compute, a given metric is calculated once on a given dataset, and stored in the `ModelValidator` for use by any following validations. The dataset can be any datasets present in the [DataContext](data_context.md), or any [slices](#3-data-slicing-functions) of these datasets.
 
 !!!example
-    For example, here the `ModelValidator` computes recall on the test set for the first validation, and then uses this value also in the second validation.
+    For example, here the `ModelValidator` computes recall on the test set for the first validation, and then uses this stored value in the second validation.
     ```py
     from trubrics.validations import ModelValidator
     model_validator = ModelValidator(data=data_context, model=model)
