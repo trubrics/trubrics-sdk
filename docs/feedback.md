@@ -1,4 +1,46 @@
 # Gather feedback from business users
-The trubrics FeedbackCollector enables business users to provide feedback on your models behaviour. The feedback can then be translated into validation points. To achieve this, the trubrics FeedbackCollector integrates with Streamlit to help build python applications on top of your model for the business user to interact with.
 
-A full example can be seen in `trubrics/example/feedback_app_titanic.py`, and run with `trubrics example-titanic-app`.
+Trubrics feedback components help you build python applications with your favourite library (e.g. [Streamlit](https://streamlit.io/)).
+These are aimed at collecting feedback on your models from business users and translating these into validation points.
+
+As with the ModelValidator, the `DataContext` is initialised and fed into the `FeedbackCollector`:
+```python
+import streamlit as st
+from trubrics.example import get_titanic_data_and_model
+from trubrics.context import DataContext
+from trubrics.feedback import FeedbackCollector
+
+train_df, test_df, model = get_titanic_data_and_model()
+data_context = DataContext(
+    testing_data=test_df,
+    training_data=train_df,
+    target="Survived",
+    categorical_columns=["Sex", "Embarked", "Title"],  # for the FeedbackCollector, categorical columns must be specified in the DataContext
+)
+
+collector = FeedbackCollector(data=data_context, model=model)
+```
+
+The FeedbackController includes various methods to facilitate building an application with streamlit:
+
+- **What-if experimentation**: generate a series of user inputs from the testing_data of the `DataContext`
+    ```python
+    with st.sidebar:
+        st.title("Modify features to test the model...")
+        collector.generate_what_if()
+    ```
+
+- **Feedback collection**: save various feedback types to a local .json file
+    ```python
+    st.title("View model prediction")
+    st.text(collector.what_if_prediction)
+
+    st.title("Send model feedback")
+    collector.save_feedback(path=".", file_name="feedback.json")
+    ```
+
+*Run our demo user feedback app on the titanic dataset & model with the cli command:*
+```console
+(venv)$ trubrics example-titanic-app
+```
+![img](assets/titanic-feedback-example.png)
