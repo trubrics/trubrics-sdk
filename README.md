@@ -88,7 +88,7 @@ data_context = DataContext(
 collector = FeedbackCollector(data=data_context, model=model)
 ```
 
-The FeedbackController includes various methods to facilitate building an application with streamlit:
+The FeedbackCollector includes various methods to facilitate building an application with streamlit:
 
 - **What-if experimentation**: generate a series of user inputs from the testing_data of the `DataContext`
     ```python
