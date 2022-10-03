@@ -2,8 +2,10 @@ import joblib
 import pandas as pd
 import pytest
 
-from trubrics.context import DataContext, TrubricContext
-from trubrics.validations import ModelValidator
+from examples.classification_titanic.custom_scorer import custom_scorers
+from examples.classification_titanic.slicing_functions import slicing_functions
+from trubrics.context import DataContext
+from trubrics.validations import ModelValidator, Trubric
 
 
 @pytest.fixture
@@ -36,10 +38,13 @@ def classifier_model():
 
 @pytest.fixture
 def validator_classifier(data_context, classifier_model):
-    return ModelValidator(data=data_context, model=classifier_model)
+    slicing_functions["test_slice_function"] = lambda df: df.shape
+    return ModelValidator(
+        data=data_context, model=classifier_model, custom_scorers=custom_scorers, slicing_functions=slicing_functions
+    )
 
 
 @pytest.fixture
 def trubric():
     trubric_filename = "assets/tests/classifier_test_trubric.json"
-    return TrubricContext.parse_file(trubric_filename)
+    return Trubric.parse_file(trubric_filename)

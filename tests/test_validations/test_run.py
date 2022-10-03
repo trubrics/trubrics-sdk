@@ -1,9 +1,9 @@
 import pytest
 
-from examples.cli.custom_scorer import custom_scorers
-from examples.cli.custom_validator import CustomValidator
-from trubrics.context import TrubricContext
+from examples.classification_titanic.custom_scorer import custom_scorers
+from examples.classification_titanic.custom_validator import CustomValidator
 from trubrics.exceptions import UnknownValidationError
+from trubrics.validations import Trubric
 from trubrics.validations.run import TrubricRun, run_trubric
 
 
@@ -12,7 +12,7 @@ def test_run_trubric(data_context, classifier_model, trubric):
         data_context=data_context,
         model=classifier_model,
         custom_validator=CustomValidator,
-        trubric_context=trubric,
+        trubric=trubric,
         custom_scorers=custom_scorers,
     )
     all_validation_results = run_trubric(run_context)
@@ -49,11 +49,11 @@ def test_run_trubric_raises(data_context, classifier_model):
             }
         ],
     }
-    trubric = TrubricContext.parse_obj(trubric_dict)
+    trubric = Trubric.parse_obj(trubric_dict)
     run_context = TrubricRun(
         data_context=data_context,
         model=classifier_model,
-        trubric_context=trubric,
+        trubric=trubric,
         custom_scorers=custom_scorers,
     )
     all_validation_results = run_trubric(run_context)
