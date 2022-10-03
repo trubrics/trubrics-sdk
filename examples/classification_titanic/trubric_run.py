@@ -14,12 +14,12 @@ data_context = DataContext(
     training_data=train_df,
     target="Survived",
 )
-trubric_context = Trubric.parse_file("examples/classification_titanic/my_first_trubric.json")
+trubric = Trubric.parse_file("examples/classification_titanic/my_first_trubric.json")
 
 RUN_CONTEXT = TrubricRun(
     data_context=data_context,
     model=model,
-    trubric_context=trubric_context,
+    trubric=trubric,
     custom_validator=CustomValidator,
     custom_scorers=custom_scorers,
     slicing_functions=slicing_functions,

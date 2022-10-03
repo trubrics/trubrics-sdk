@@ -20,7 +20,8 @@ The trubrics-sdk is a python library for validating machine learning with data s
 - **Trubrics CLI** tool to run a list of saved validations (a **trubric**) against new models or datasets in a CI/CD/CT pipeline.
 <center>
 
-![trubrics-explain](./assets/trubrics-explain.png)
+![](./assets/trubrics-explain-dark.png#gh-dark-mode-only)
+![](./assets/trubrics-explain-light.png#gh-light-mode-only)
 </center>
 
 ## Install (Python 3.7+)
@@ -88,7 +89,7 @@ data_context = DataContext(
 collector = FeedbackCollector(data=data_context, model=model)
 ```
 
-The FeedbackController includes various methods to facilitate building an application with streamlit:
+The FeedbackCollector includes various methods to facilitate building an application with streamlit:
 
 - **What-if experimentation**: generate a series of user inputs from the testing_data of the `DataContext`
     ```python

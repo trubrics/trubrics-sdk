@@ -119,8 +119,6 @@ class DataContext(BaseModel):
 
 
 class TrubricsModel(BaseModel):
-    """ """
-
     data: DataContext
     model: Any
 

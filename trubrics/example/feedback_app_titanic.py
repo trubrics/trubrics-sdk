@@ -5,7 +5,7 @@ from trubrics.example import get_titanic_data_and_model
 from trubrics.example import titanic_config as tc
 from trubrics.feedback import FeedbackCollector
 
-st.set_page_config(page_title="User Feedback Titanic", page_icon="assets/logo-flavicon.png")
+st.set_page_config(page_title="User Feedback Titanic", page_icon="assets/logo-favicon.png")
 
 
 # @st.cache
