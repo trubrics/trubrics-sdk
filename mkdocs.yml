@@ -53,6 +53,6 @@ nav:
     - Out-of-the-box validations: validations.md
     - Custom validations: custom_validations.md
     - Save validations as a trubric: save_trubric.md
-  - The Trubrics CLI: run_trubrics.md
+  - The Trubrics CLI: trubrics_cli.md
   - The FeedbackCollector: feedback.md
 copyright: Copyright © 2022 Trubrics Ltd. All rights reserved. Trubrics and the Trubrics logo are trademarks of Trubrics Ltd.

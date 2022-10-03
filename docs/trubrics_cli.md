@@ -11,8 +11,8 @@ Create a python file `<trubric_run_file>.py` that loads datasets / models to val
     ---8<-- "examples/classification_titanic/trubric_run.py"
     ```
 
-    !!!tip "TrubricRun requirements"
-    :::trubrics.validations.run.TrubricRun
+    !!!tip "TrubricRun object"
+        :::trubrics.validations.run.TrubricRun
 
 ## 2. Generate run config
 Initialise a run config in the terminal to save a `.trubrics_config.json` file to a specified path. Be guided by the CLI prompts by running:
@@ -27,7 +27,7 @@ Initialise a run config in the terminal to save a `.trubrics_config.json` file t
     The trubrics config holds information about where the code is to run trubrics, and any credentials for logging to the trubrics manager (coming soon).
 
 ## 3. Run from CLI
-Run all validations from the terminal. Be guided by the CLI prompts by running:
+Run all validations from the terminal from the [TrubricRun](#1-initialise-trubricrun). This command also saves a new trubric .json with each validation's new outcome and results to a given path. Be guided by the CLI prompts by running:
 
 ```console
 (venv)$ trubrics run
