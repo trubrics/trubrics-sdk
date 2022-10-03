@@ -17,7 +17,7 @@ plugins:
 theme:
   name: material
   logo: assets/logo-white.png
-  favicon: assets/logo-flavicon.png
+  favicon: assets/logo-favicon.png
   palette:
     scheme: slate
   font:
