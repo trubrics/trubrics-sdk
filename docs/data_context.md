@@ -1,14 +1,14 @@
 # The DataContext
 
-Data sits at the heart of all ML projects, and plays a central role in using the trubrics-sdk. We have decided to group all ML datasets and metadata into a single object: the `DataContext`. Initialising this object is the first step to either [building validations with `ModelValidator`](validations.md) or [collecting user feedback with the `FeedbackCollector`](feedback.md).
+Data sits at the heart of all ML projects, thus also playing a central role in using the trubrics-sdk. We have decided to group all ML datasets and metadata into a single object: the `DataContext`. Initialising this object is the first step to both [building validations with `ModelValidator`](validations.md) and [collecting user feedback with the `FeedbackCollector`](feedback.md).
 
 ## Getting started with the DataContext
-The most basic level of ML validation can be performed on a single dataset (of data that has not be seen during model training) and a single model. This dataset must contain:
+The most basic level of ML validation can be performed on **a single dataset** (of data that has not been seen during model training) and **a single model**. This `testing_data` dataset must contain:
 
 - all features that were used to train the model (no extra columns permitted)
 - the target variable to predict
 
-This is all you require to provide to the `DataContext` to start building validations:
+This is the minimum requirement for the `DataContext` to start building validations:
 
 !!!example
 
