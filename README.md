@@ -112,6 +112,3 @@ The FeedbackCollector includes various methods to facilitate building an applica
 (venv)$ trubrics example-titanic-app
 ```
 ![img](assets/titanic-feedback-example.png)
-
-## Watch our "Getting Started" demo
-[![img](./assets/trubrics-demo-youtube.png)](https://www.youtube.com/watch?v=I-lUGhHss5g)
