@@ -1,3 +1,6 @@
+upgrade-pip:
+	@python3 -m pip install --upgrade pip
+
 lint:
 	@pre-commit run --all-files
 
@@ -10,12 +13,10 @@ streamlit-demo:
 docs-serve:
 	@mkdocs serve
 
-install:
-	@python -m pip install --upgrade pip
+install: upgrade-pip
 	@pip install -r requirements.txt
 
-install-dev: local-build
-	@python -m pip install --upgrade pip
+install-dev: upgrade-pip local-build
 	@pip install -r requirements-dev.txt
 
 test:
