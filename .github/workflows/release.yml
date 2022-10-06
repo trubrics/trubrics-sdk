@@ -29,6 +29,9 @@ jobs:
         --wheel
         --outdir dist/
         .
+    - name: Build Changelog
+      id: github_release
+      uses: mikepenz/release-changelog-builder-action@v3
     - name: Create github release
       if: startsWith(github.ref, 'refs/tags')
       uses: softprops/action-gh-release@v1
