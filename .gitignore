@@ -28,3 +28,6 @@ docs/models
 
 # tests
 .coverage
+
+# example data
+examples/timeseries_store_sales/store-sales-time-series-forecasting
