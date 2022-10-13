@@ -18,4 +18,4 @@ class Feedback(BaseModel):
             file_name = f"{self.feedback_type}.json"
         with open(Path(path) / file_name, "w") as file:
             file.write(self.json(indent=4))
-            logger.info(f"Trubric saved to {Path(path) / file_name}.")
+            logger.info(f"Feedback saved to {Path(path) / file_name}.")

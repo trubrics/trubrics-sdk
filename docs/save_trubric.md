@@ -51,7 +51,7 @@ Saved `Trubric`s can be run from the [CLI](trubrics_cli.md) or directly from a p
 
     # save new trubric .json
     new_trubric = trubric_run_context.trubric
-    new_trubric.validations = validations
+    new_trubric.validations = new_validations
     new_trubric.save_local(path=".", file_name="my_new_trubric.json")
     ```
 
