@@ -1,4 +1,4 @@
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 import streamlit as st
@@ -11,9 +11,9 @@ from trubrics.utils.pandas import schema_is_equal
 
 
 class FeedbackCollector:
-    def __init__(self, data: DataContext, model: Any):
+    def __init__(self, data: DataContext, model: Any, feedback_tags: Optional[List[str]] = None):
         self.trubrics_model = TrubricsModel(data=data, model=model)
-        self.model_type = self.trubrics_model.model_type
+        self.tags = feedback_tags
         self.what_if_df = None
         self.what_if_prediction = None
 
@@ -72,82 +72,29 @@ class FeedbackCollector:
         self.what_if_prediction = self.trubrics_model.model.predict(out_df)[0]
 
     def save_feedback(self, path: str, file_name: str):
-        """Get user feedback and save"""
-        feedback_type: str = st.selectbox(
-            "Choose feedback type:",
-            (
-                "Single prediction error",
-                "Bias",
-                "Important features",
-                "Other",
-            ),
-        )
-
-        if self.what_if_df is None:
-            st.text("What-if tool must be set to generate feedback.")
-        else:
-            metadata = {}
+        """Get user feedback and save."""
+        metadata: Dict[str, Any] = {}
+        if self.what_if_df is not None:
             what_if_input = self.what_if_df.to_dict("records")[0]
-            if feedback_type == "Other":
-                metadata["description"] = st.text_input(label="", value="Send free text feedback here")
-                metadata["what_if_input"] = what_if_input
-                metadata["model_prediction"] = self.what_if_prediction
+            metadata["what_if_input"] = what_if_input
+            metadata["model_prediction"] = self.what_if_prediction
 
-            elif feedback_type == "Single prediction error":
-                metadata["corrected_prediction"], metadata["description"] = self._collect_single_edge_case()
-                metadata["what_if_input"] = what_if_input
-
-            elif feedback_type == "Important features":
-                (
-                    metadata["selected_feature"],
-                    metadata["top_n_feature"],
-                    metadata["description"],
-                ) = self._collect_important_features_feedback()
-
-            elif feedback_type == "Bias":
-                metadata["description"] = "Feedback on bias."
-
-            else:
-                raise NotImplementedError()
-
-            single_test = Feedback(feedback_type=feedback_type, metadata=metadata)
-            if st.button("Send feedback"):
-                single_test.save_local(path=path, file_name=file_name)
-                st.markdown(
-                    '<p style="color:Green;">Feedback saved & sent to the Data Science team.</p>',
-                    unsafe_allow_html=True,
-                )
-
-    def _collect_single_edge_case(self) -> Tuple[Union[str, int, None], str]:
-        """
-        Collect correct prediction for the single edge case flag.
-        """
-        st.write(
-            self.__feedback_type_description(
-                "you are signalling that the combination of all features is a critical edge case that we must test for."
+        with st.form("form", clear_on_submit=True):
+            title = st.text_input(label="Title", help="Give the issue an explicit title.", key="title")
+            description = st.text_input(
+                label="Description", help="Detail the issue you have observed.", key="description"
             )
-        )
-        corrected_prediction = st.selectbox(
-            "The model prediction for this edge case should be:",
-            tuple(self.trubrics_model.data.testing_data[self.trubrics_model.data.target].unique()),
-        )
-        description = "A single edge case."
-        return corrected_prediction, description
-
-    def _collect_important_features_feedback(self) -> Tuple[str, int, str]:
-        st.write(
-            self.__feedback_type_description(
-                "you are signalling that a given feature must be in the top N most important features."
-            )
-        )
-        features = self.trubrics_model.data.features
-        selected_feature = st.selectbox("Choose model feature:", (features))
-        top_n_feature = st.slider(
-            "The selected feature should be in the top ... features:", min_value=1, max_value=len(features)
-        )
-        description = "Most important features."
-        return selected_feature, top_n_feature, description
-
-    @staticmethod
-    def __feedback_type_description(error_description: str) -> str:
-        return f"Feedback type description: {error_description}"
+            submitted = st.form_submit_button("Send feedback")
+            if submitted:
+                if len(title) == 0 or len(description) == 0:
+                    st.markdown(
+                        '<p style="color:Red;">Please specify a feedback title and a description.</p>',
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    single_test = Feedback(title=title, description=description, tags=self.tags, metadata=metadata)
+                    single_test.save_local(path=path, file_name=file_name)
+                    st.markdown(
+                        '<p style="color:Green;">Feedback saved & sent to the Data Science team.</p>',
+                        unsafe_allow_html=True,
+                    )
