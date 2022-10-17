@@ -21,7 +21,6 @@ jobs:
       with:
         body: ${{ steps.extract-release-notes.outputs.release_notes }}
         files: dist/*.whl
-
     - name: Set up Python 3.9
       uses: actions/setup-python@v3
       with:
