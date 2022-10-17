@@ -3,14 +3,25 @@ name: Release package
 on:
   push:
     tags:
-    - '*'
+      - v*
 
 jobs:
   build-and-publish:
     name: Build and publish Python dist to PyPI
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Extract release notes
+      id: extract-release-notes
+      uses: ffurrer2/extract-release-notes@v1
+    - name: Create github release
+      if: startsWith(github.ref, 'refs/tags')
+      uses: softprops/action-gh-release@v1
+      with:
+        body: ${{ steps.extract-release-notes.outputs.release_notes }}
+        files: dist/*.whl
+
     - name: Set up Python 3.9
       uses: actions/setup-python@v3
       with:
@@ -29,17 +40,6 @@ jobs:
         --wheel
         --outdir dist/
         .
-    - name: Build Changelog
-      id: github_release
-      uses: mikepenz/release-changelog-builder-action@v3
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Create github release
-      if: startsWith(github.ref, 'refs/tags')
-      uses: softprops/action-gh-release@v1
-      with:
-        body: ${{steps.github_release.outputs.changelog}}
-        files: dist/*.whl
     - name: Publish distribution 📦 to PyPI
       if: startsWith(github.ref, 'refs/tags')
       uses: pypa/gh-action-pypi-publish@master

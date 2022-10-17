@@ -6,9 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2022-10-14
+### Fixed
+- Fixed github action to display changelog to release tag
 
 ## [1.0.1] - 2022-10-13
-### Changed
+### Fixed
 - Fixed save feedback log
 - FeedbackCollector has simplified feedback form
 
