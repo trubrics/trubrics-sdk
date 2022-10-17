@@ -1,4 +1,4 @@
-name: test package
+name: test release
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-publish:
-    name: Build and publish Python dist to PyPI
+    name: test release
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
