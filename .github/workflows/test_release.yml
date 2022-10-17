@@ -3,7 +3,7 @@ name: test release
 on:
   push:
     tags:
-      - test*
+      - v1.0.2
 
 jobs:
   build-and-publish:

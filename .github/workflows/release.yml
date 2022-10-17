@@ -4,8 +4,8 @@ on:
   push:
     branches-ignore:
       - fix_ci
-    tags:
-      - v*
+    # tags:
+    #   - v*
 
 jobs:
   build-and-publish:
