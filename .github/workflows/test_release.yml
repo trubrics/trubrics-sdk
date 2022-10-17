@@ -2,8 +2,10 @@ name: test release
 
 on:
   push:
+    branches:
+      - fix_ci
     tags:
-      - test*
+      - v*
 
 jobs:
   build-and-publish:
@@ -21,7 +23,7 @@ jobs:
       uses: mindsers/changelog-reader-action@v2
       with:
         version: ${{  github.ref_name }}
-        validation_level: warn
+        validation_level: debug
     - name: Create github release
       if: startsWith(github.ref, 'refs/tags')
       uses: softprops/action-gh-release@v1
