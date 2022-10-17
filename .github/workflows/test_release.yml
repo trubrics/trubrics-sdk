@@ -29,11 +29,27 @@ jobs:
         --wheel
         --outdir dist/
         .
-    - name: Build Changelog
-      id: github_release
-      uses: mikepenz/release-changelog-builder-action@v3
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Echo release
-      run: echo ${{steps.github_release.outputs.changelog}}
-  
+    - name: Get version from tag
+      id: tag_name
+      run: |
+        echo ::set-output name=current_version::${GITHUB_REF#refs/tags/v}
+      shell: bash
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Get Changelog Entry
+      id: changelog_reader
+      uses: mindsers/changelog-reader-action@v2
+      with:
+        validation_level: warn
+        version: ${{ steps.tag_name.outputs.current_version }}
+        path: ./CHANGELOG.md
+    - name: Create/update release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: ${{ steps.changelog_reader.outputs.version }}
+        name: Release ${{ steps.changelog_reader.outputs.version }}
+        body: ${{ steps.changelog_reader.outputs.changes }}
+        prerelease: ${{ steps.changelog_reader.outputs.status == 'prereleased' }}
+        draft: ${{ steps.changelog_reader.outputs.status == 'unreleased' }}
+        allowUpdates: true
+        token: ${{ secrets.GITHUB_TOKEN }}
