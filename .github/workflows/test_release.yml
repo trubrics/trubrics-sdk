@@ -2,8 +2,6 @@ name: test release
 
 on:
   push:
-    branches:
-      - fix_ci
     tags:
       - v*
 

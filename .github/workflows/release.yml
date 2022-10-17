@@ -2,8 +2,8 @@ name: Release package
 
 on:
   push:
-    branches:
-      - main
+    branches-ignore:
+      - fix_ci
     tags:
       - v*
 
