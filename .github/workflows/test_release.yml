@@ -2,8 +2,8 @@ name: test package
 
 on:
   push:
-    branches:
-      - "fix_ci"
+    tags:
+      - test*
 
 jobs:
   build-and-publish:
