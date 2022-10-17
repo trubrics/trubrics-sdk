@@ -10,21 +10,21 @@ jobs:
     name: test release
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
     - name: Checkout code
       uses: actions/checkout@v2
+    - name: GitHub Tag Name example
+      run: |
+        echo "Tag name from GITHUB_REF_NAME: $GITHUB_REF_NAME"
+        echo "Tag name from github.ref_name: ${{  github.ref_name }}"
     - name: Get Changelog Entry
       id: changelog_reader
       uses: mindsers/changelog-reader-action@v2
       with:
+        version: ${{  github.ref_name }}"
         validation_level: warn
-    - name: Create/update release
-      uses: ncipollo/release-action@v1
+    - name: Create github release
+      if: startsWith(github.ref, 'refs/tags')
+      uses: softprops/action-gh-release@v1
       with:
-        tag: ${{ steps.changelog_reader.outputs.version }}
-        name: Release ${{ steps.changelog_reader.outputs.version }}
         body: ${{ steps.changelog_reader.outputs.changes }}
-        prerelease: ${{ steps.changelog_reader.outputs.status == 'prereleased' }}
-        draft: ${{ steps.changelog_reader.outputs.status == 'unreleased' }}
-        allowUpdates: true
-        token: ${{ secrets.GITHUB_TOKEN }}
+        files: dist/*.whl
