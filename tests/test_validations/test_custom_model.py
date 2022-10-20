@@ -35,8 +35,8 @@ class RuleBasedModel:
 model = RuleBasedModel()
 
 
-def test_performance_validation(data_context):
+def test__validate_performance_against_threshold(data_context):
     model_validator = ModelValidator(data=data_context, model=model)
     result = model_validator._validate_performance_against_threshold(metric="accuracy", threshold=0.7)
-    actual = False, {"performance": 1 / 3, "sample_size": 6}
+    actual = False, {"performance": 2 / 3, "sample_size": 6}
     assert result == actual
