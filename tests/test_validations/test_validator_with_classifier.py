@@ -36,7 +36,7 @@ def test__validate_minimum_functionality_in_range_raises(validator_classifier):
         ),
         (
             {"metric": "accuracy", "threshold": 0.9, "dataset": "testing_data", "data_slice": "female"},
-            (False, {"performance": 0.0, "sample_size": 1}),
+            (True, {"performance": 1.0, "sample_size": 1}),
         ),
     ],
 )
@@ -70,15 +70,15 @@ def test__validate_performance_against_threshold_raises(validator_classifier, kw
     [
         (
             {"metric": "accuracy", "strategy": "most_frequent", "dummy_kwargs": None, "data_slice": None},
-            (False, {"dummy_performance": 0.67, "test_performance": 0.5, "sample_size": 6}),
-        ),
-        (
-            {"metric": "accuracy", "strategy": "constant", "dummy_kwargs": {"constant": 1}, "data_slice": None},
             (True, {"dummy_performance": 0.33, "test_performance": 0.5, "sample_size": 6}),
         ),
         (
+            {"metric": "accuracy", "strategy": "constant", "dummy_kwargs": {"constant": 1}, "data_slice": None},
+            (False, {"dummy_performance": 0.67, "test_performance": 0.5, "sample_size": 6}),
+        ),
+        (
             {"metric": "accuracy", "strategy": "most_frequent", "dummy_kwargs": None, "data_slice": "male"},
-            (False, {"dummy_performance": 0.6, "test_performance": 0.6, "sample_size": 5}),
+            (False, {"dummy_performance": 0.4, "test_performance": 0.4, "sample_size": 5}),
         ),
     ],
 )
@@ -93,10 +93,17 @@ def test__validate_test_performance_against_dummy(validator_classifier, kwargs, 
     "kwargs,expected",
     [
         (
-            {"metric": "accuracy", "threshold": 0.2, "data_slice": None},
+            {"metric": "accuracy", "threshold": 0.51, "data_slice": None},
+            (
+                True,
+                {"train_performance": 1, "test_performance": 0.5, "train_sample_size": 6, "test_sample_size": 6},
+            ),
+        ),
+        (
+            {"metric": "my_custom_loss", "threshold": 0.5, "data_slice": None},
             (
                 False,
-                {"train_performance": 1 / 3, "test_performance": 0.5, "train_sample_size": 6, "test_sample_size": 6},
+                {"train_performance": -0.0, "test_performance": -0.5, "train_sample_size": 6, "test_sample_size": 6},
             ),
         ),
     ],
@@ -114,17 +121,17 @@ def test__validate_performance_between_train_and_test(validator_classifier, kwar
             (
                 False,
                 {
-                    "performances": {"testing_data": 0.5, "testing_data_female": 0},
+                    "performances": {"testing_data": 0.5, "testing_data_female": 1.0},
                     "sample_sizes": {"testing_data": 6, "testing_data_female": 1},
                 },
             ),
         ),
         (
-            {"metric": "accuracy", "data_slices": ["female", "male"], "std_threshold": 0.4},
+            {"metric": "accuracy", "data_slices": ["female", "male"], "std_threshold": 0.31},
             (
                 True,
                 {
-                    "performances": {"testing_data_male": 0.6, "testing_data_female": 0},
+                    "performances": {"testing_data_male": 0.4, "testing_data_female": 1.0},
                     "sample_sizes": {"testing_data_male": 5, "testing_data_female": 1},
                 },
             ),
@@ -194,7 +201,7 @@ def test__slice_data_with_slicing_function(validator_classifier):
         },
         index=[2],
     )
-    expected_y = pd.Series(0, index=[2], name="Survived")
+    expected_y = pd.Series(1, index=[2], name="Survived")
 
     actual = validator_classifier._slice_data_with_slicing_function(dataset="training_data", data_slice="female")
     pd.testing.assert_frame_equal(actual[0], expected_X)
