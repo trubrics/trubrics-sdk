@@ -107,8 +107,11 @@ The FeedbackCollector includes various methods to facilitate building an applica
     collector.save_feedback(path=".", file_name="feedback.json")
     ```
 
-*Run our demo user feedback app on the titanic dataset & model with the cli command:*
+*View our demo user feedback app on the titanic dataset & model on [Hugging Face Spaces](https://huggingface.co/spaces/trubrics/trubrics-titanic-demo) or run it locally with the cli command:*
 ```console
 (venv)$ trubrics example-titanic-app
 ```
 ![img](assets/titanic-feedback-example.png)
+
+## Watch our getting started demo
+[![img](assets/yt-gs.png)](https://www.youtube.com/watch?v=gMK2ut_I4a0)
