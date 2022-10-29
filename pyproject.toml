@@ -8,3 +8,7 @@ line-length = 120
 [tool.mypy]
 mypy_path = "trubrics"
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = 'streamlit.*'
+ignore_errors = true
