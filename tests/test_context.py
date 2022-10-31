@@ -30,6 +30,7 @@ def test_data_context_attributes(dummy_testing_data):
         ({}, {"categorical_columns": ["feature"]}, KeyError),
         ({}, {"categorical_columns": ["target"]}, KeyError),
         ({}, {"business_columns": {"feature 1": "feature"}}, KeyError),
+        ({}, {"features": ["feature"]}, PandasSchemaError),
     ],
 )
 def test_data_context_raises(dummy_testing_data, training_data_rename_cols, kwargs, error_type):

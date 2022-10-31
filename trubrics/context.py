@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional
 
 import pandas as pd
 from loguru import logger
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, root_validator, validator
 
 from trubrics.exceptions import (
     EstimatorTypeError,
@@ -29,6 +29,7 @@ class DataContext(BaseModel):
         training_data: Dataframe of the training data.
         minimum_functionality_data: Dataframe of the minimum functionality of a model. This contains samples that
                                     the model should never fail on.
+        features: list of model features. If None, all columns except the target column are set as features.
         categorical_columns: List of categorical names of the train & test datasets.
         business_columns: Mapping between dataset column names and comprehensible column names to be displayed to users.
     """
@@ -39,6 +40,7 @@ class DataContext(BaseModel):
     target: str
     training_data: Optional[pd.DataFrame] = None
     minimum_functionality_data: Optional[pd.DataFrame] = None
+    features: Optional[List[str]] = None
     categorical_columns: Optional[List[str]] = None
     business_columns: Optional[Dict[str, str]] = None
 
@@ -46,11 +48,6 @@ class DataContext(BaseModel):
         allow_mutation = False
         arbitrary_types_allowed = True
         extra = "forbid"
-
-    @property
-    def features(self) -> List[str]:
-        """Features are here defined as all testing column names excluding the target feature."""
-        return [col for col in self.testing_data.columns if col != self.target]
 
     @property
     def X_test(self) -> pd.DataFrame:
@@ -78,6 +75,22 @@ class DataContext(BaseModel):
         if self.business_columns is None:
             raise TypeError("Business columns must be set to rename testing features.")
         return self.testing_data.rename(columns=self.business_columns)
+
+    @root_validator
+    def validate_features(cls, values) -> List[str]:
+        """Features are here defined as all testing column names excluding the target feature.
+
+        Note:
+            @root_validator is used here to allow for @properties to use self.features.
+        """
+        v = values["features"]
+        if v is None:
+            values["features"] = [col for col in values["testing_data"].columns if col != values["target"]]
+        elif set(v).issubset(set(values["testing_data"].columns)):
+            values["features"] = v
+        else:
+            raise PandasSchemaError("All features must be present in testing_data.")
+        return values
 
     @validator("target")
     def target_column_must_be_in_data(cls, v, values):

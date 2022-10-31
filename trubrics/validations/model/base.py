@@ -27,6 +27,10 @@ class ModelValidator:
     ):
         self.tm = TrubricsModel(data=data, model=model)
         self.model_type = self.tm.model_type
+        if self.tm.data.features is None:
+            raise ValueError("Features can't be None")
+        else:
+            self.features = self.tm.data.features
         self.custom_scorers = custom_scorers
         self.slicing_functions = slicing_functions
 
@@ -470,13 +474,13 @@ class ModelValidator:
             dataset=dataset, permutation_kwargs=permutation_kwargs
         )
         importances_mean = feature_importance["importances_mean"]
-        feature_index = self.tm.data.features.index(feature)
+        feature_index = self.features.index(feature)
         for importance in importances_mean:
             if importance > importances_mean[feature_index]:
                 count += 1
 
         feature_importances_dict = {
-            key: value for key, value in zip(self.tm.data.features, feature_importance["importances_mean"])
+            key: value for key, value in zip(self.features, feature_importance["importances_mean"])
         }
         return count < top_n_features, {
             "feature_importance_ranking": count,
@@ -521,10 +525,8 @@ class ModelValidator:
         test_fi = self._compute_permutation_feature_importance(
             dataset="training_data", permutation_kwargs=permutation_kwargs
         )
-        ordered_train_fi = {
-            value: key for key, value in sorted(zip(train_fi["importances_mean"], self.tm.data.features))
-        }
-        ordered_test_fi = {value: key for key, value in sorted(zip(test_fi["importances_mean"], self.tm.data.features))}
+        ordered_train_fi = {value: key for key, value in sorted(zip(train_fi["importances_mean"], self.features))}
+        ordered_test_fi = {value: key for key, value in sorted(zip(test_fi["importances_mean"], self.features))}
 
         if top_n_features:
             top_n_features = -top_n_features
@@ -572,7 +574,7 @@ class ModelValidator:
                 "In order to use data slices, add all slicing functions to the slicing_functions parameter of the"
                 " ModelValidator."
             )
-        return sliced_data.loc[:, self.tm.data.features], sliced_data.loc[:, self.tm.data.target]
+        return sliced_data.loc[:, self.features], sliced_data.loc[:, self.tm.data.target]
 
     def _score_data_context(self, metric: str, dataset: str, data_slice: Optional[str]) -> float:
         renamed_dataset = self._get_renamed_dataset(dataset, data_slice)
