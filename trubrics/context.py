@@ -29,6 +29,7 @@ class DataContext(BaseModel):
         training_data: Dataframe of the training data.
         minimum_functionality_data: Dataframe of the minimum functionality of a model. This contains samples that
                                     the model should never fail on.
+        features: list of model features. If None, all columns except the target column are set as features.
         categorical_columns: List of categorical names of the train & test datasets.
         business_columns: Mapping between dataset column names and comprehensible column names to be displayed to users.
     """
