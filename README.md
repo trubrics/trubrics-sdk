@@ -68,8 +68,7 @@ The trubric defines the gold standard of validations required for the project, a
 *See a full tutorial on the titanic dataset [here](https://trubrics.github.io/trubrics-sdk/notebooks/titanic-demo.html)*.
 
 ## Collect user feedback with the FeedbackCollector
-Trubrics feedback components help you to collect feedback on your models with your favourite python library.
-These are aimed at collecting feedback on your models from business users and translating these into validation points.
+Trubrics feedback components help you to collect feedback on your models with your favourite python library. Once feedback has been collected from business users, it is to be translated into validation points to ensure repeatable checking throughout the lifetime of the model. Add the trubrics feedback component to your ML apps now to start collecting feedback:
 
 <table>
 <tr>
@@ -143,9 +142,9 @@ demo.launch()
 </tr>
 </table>
 
-*View our demo user feedback app on the titanic dataset & model on [Hugging Face Spaces](https://huggingface.co/spaces/trubrics/trubrics-titanic-demo) or run it locally with the cli command:*
+You can view our demo user feedback app on the titanic dataset & model on [Hugging Face Spaces](https://huggingface.co/spaces/trubrics/trubrics-titanic-demo), or run it locally with the CLI command:
 ```console
-(venv)$ trubrics example-titanic-app
+(venv)$ trubrics example-app
 ```
 ![img](assets/titanic-feedback-example.png)
 
