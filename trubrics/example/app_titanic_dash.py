@@ -1,7 +1,7 @@
 import dash_bootstrap_components as dbc
 from dash import Dash, html
 
-from trubrics.feedback.collect.dash import collect_feedback_dash
+from trubrics.feedback import collect_feedback_dash
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 

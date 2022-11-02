@@ -15,7 +15,7 @@
 The trubrics-sdk is a python library for validating machine learning with data science and domain expertise. This is achieved by collecting business user feedback, creating actionable validation points by combining the feedback with data science knowledge, and building repeatable validation checklists - a trubric.
 
 ## Key Features
-- Python web development components (e.g. with [Streamlit](https://streamlit.io/)) to gather feedback from business users on models with the **trubrics FeedbackCollector**.
+- Collect feedback from business users on models with python web development components with [Streamlit](https://streamlit.io/), [Dash](https://dash.plotly.com/) or [Gradio](https://gradio.app/).
 - Out of the box & custom validations (python functions) to build around models & datasets with the **trubrics ModelValidator** (currently supporting tabular data).
 - **Trubrics CLI** tool to run a list of saved validations (a **trubric**) against new models or datasets in a CI/CD/CT pipeline.
 <center>
@@ -68,44 +68,61 @@ The trubric defines the gold standard of validations required for the project, a
 *See a full tutorial on the titanic dataset [here](https://trubrics.github.io/trubrics-sdk/notebooks/titanic-demo.html)*.
 
 ## Collect user feedback with the FeedbackCollector
-Trubrics feedback components help you build python applications with your favourite library (e.g. [Streamlit](https://streamlit.io/)).
+Trubrics feedback components help you build python applications with your favourite library ([Streamlit](https://streamlit.io/), [Dash](https://dash.plotly.com/) or [Gradio](https://gradio.app/)).
 These are aimed at collecting feedback on your models from business users and translating these into validation points.
 
-As with the ModelValidator, the `DataContext` is initialised and fed into the `FeedbackCollector`:
-```python
-import streamlit as st
-from trubrics.example import get_titanic_data_and_model
-from trubrics.context import DataContext
-from trubrics.feedback import FeedbackCollector
+<table>
+<tr>
+<th> Streamlit </th>
+<th> Dash </th>
+<th> Gradio </th>
+</tr>
+<tr>
+<td style=vertical-align:top>
 
-train_df, test_df, model = get_titanic_data_and_model()
-data_context = DataContext(
-    testing_data=test_df,
-    training_data=train_df,
-    target="Survived",
-    categorical_columns=["Sex", "Embarked", "Title"],  # for the FeedbackCollector, categorical columns must be specified in the DataContext
-)
+```py
+from trubrics.feedback import collect_feedback_streamlit
 
-collector = FeedbackCollector(data=data_context, model=model)
+collect_feedback_streamlit(path=".")
 ```
 
-The FeedbackCollector includes various methods to facilitate building an application with streamlit:
+</td>
+<td style=vertical-align:top>
 
-- **What-if experimentation**: generate a series of user inputs from the testing_data of the `DataContext`
-    ```python
-    with st.sidebar:
-        st.title("Modify features to test the model...")
-        collector.generate_what_if()
-    ```
+```py
+from dash import Dash, html
 
-- **Feedback collection**: save various feedback types to a local .json file
-    ```python
-    st.title("View model prediction")
-    st.text(collector.what_if_prediction)
+from trubrics.feedback import collect_feedback_dash
 
-    st.title("Send model feedback")
-    collector.save_feedback(path=".", file_name="feedback.json")
-    ```
+app = Dash(__name__)
+
+app.layout = html.Div(
+    [
+        collect_feedback_dash(path=".")
+    ]
+)
+
+if __name__ == "__main__":
+    app.run_server(debug=True)
+```
+
+</td>
+<td style=vertical-align:top>
+
+```py
+import gradio as gr
+
+from trubrics.feedback import collect_feedback_gradio
+
+with gr.Blocks() as demo:
+    collect_feedback_gradio(path=".")
+
+demo.launch()
+```
+
+</td>
+</tr>
+</table>
 
 *View our demo user feedback app on the titanic dataset & model on [Hugging Face Spaces](https://huggingface.co/spaces/trubrics/trubrics-titanic-demo) or run it locally with the cli command:*
 ```console
