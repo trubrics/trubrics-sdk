@@ -32,7 +32,7 @@ The trubrics-sdk is a python library for validating machine learning with data s
 ## Validate a model with the ModelValidator
 There are three basic steps to creating model validations with the trubrics-sdk:
 
-1. Initialise a `DataContext`, that wraps ML datasets and metadata into a trubrics friendly object. This step is also relevant for building a user feedback application with the [FeedbackCollector](#collect-user-feedback-with-the-feedbackcollector).
+1. Initialise a `DataContext`, that wraps ML datasets and metadata into a trubrics friendly object.
 2. Feed the `DataContext` and an ML model (scikit-learn or [any other model](https://trubrics.github.io/trubrics-sdk/models/)) into the `ModelValidator`, that holds a number of [out-of-the-box validations](https://trubrics.github.io/trubrics-sdk/validations/) and can also be used to build [custom validations](https://trubrics.github.io/trubrics-sdk/custom_validations/).
 3. Group the list of validations created into a `Trubric`, that can then be saved to a local .json file.
 

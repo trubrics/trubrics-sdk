@@ -59,7 +59,7 @@ There are two additional datasets that can be used in the `DataContext` for diff
     ```
 
 ## Data features metadata
-There are two extra attributes that hold metadata for the [FeedbackCollector](feedback.md):
+There are two extra attributes that hold metadata:
 
 - `features`: used for specifying the features of the model. This can be useful for when making data slices on a specific column that is not a model feature, for example.
 - `categorical_columns`: used for distinguishing between different input widgets in the what-if component
