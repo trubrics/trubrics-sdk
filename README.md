@@ -68,7 +68,7 @@ The trubric defines the gold standard of validations required for the project, a
 *See a full tutorial on the titanic dataset [here](https://trubrics.github.io/trubrics-sdk/notebooks/titanic-demo.html)*.
 
 ## Collect user feedback with the FeedbackCollector
-Trubrics feedback components help you to collect feedback on your models with your favourite python library. Once feedback has been collected from business users, it is to be translated into validation points to ensure repeatable checking throughout the lifetime of the model. Add the trubrics feedback component to your ML apps now to start collecting feedback:
+Trubrics feedback components help you to collect feedback on your models with your favourite python library. Once feedback has been collected from business users, it should be translated into validation points to ensure repeatable checking throughout the lifetime of the model. Add the trubrics feedback component to your ML apps now to start collecting feedback:
 
 <table>
 <tr>
@@ -86,7 +86,12 @@ Trubrics feedback components help you to collect feedback on your models with yo
 ```py
 from trubrics.feedback import collect_feedback_streamlit
 
-collect_feedback_streamlit(path=".")
+collect_feedback_streamlit(
+    path=".",  # path to feedback .json file
+    file_name=None,  # file name, if None defaults to feedback.json
+    metadata=None,  # a dict of any metadata to save from you app
+    tags=None  # a list of any tags for this feedback file
+)
 ```
 
 </td>
@@ -109,7 +114,12 @@ app = Dash(__name__)
 
 app.layout = html.Div(
     [
-        collect_feedback_dash(path=".")
+        collect_feedback_dash(
+            path=".",  # path to feedback .json file
+            file_name=None,  # file name, if None defaults to feedback.json
+            metadata=None,  # a dict of any metadata to save from you app
+            tags=None  # a list of any tags for this feedback file
+        )
     ]
 )
 
@@ -133,7 +143,12 @@ import gradio as gr
 from trubrics.feedback import collect_feedback_gradio
 
 with gr.Blocks() as demo:
-    collect_feedback_gradio(path=".")
+    collect_feedback_gradio(
+        path=".",  # path to feedback .json file
+        file_name=None,  # file name, if None defaults to feedback.json
+        metadata=None,  # a dict of any metadata to save from you app
+        tags=None  # a list of any tags for this feedback file
+    )
 
 demo.launch()
 ```
@@ -142,7 +157,7 @@ demo.launch()
 </tr>
 </table>
 
-You can view our demo user feedback app on the titanic dataset & model on [Hugging Face Spaces](https://huggingface.co/spaces/trubrics/trubrics-titanic-demo), or run it locally with the CLI command:
+You can view our demo user feedback app, using the streamlit feedback collector and an example experimentation tool, on the titanic dataset & model on [Hugging Face Spaces](https://huggingface.co/spaces/trubrics/trubrics-titanic-demo), or run it locally with the CLI command:
 ```console
 (venv)$ trubrics example-app
 ```
