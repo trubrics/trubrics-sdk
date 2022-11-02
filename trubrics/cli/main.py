@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Optional
@@ -153,17 +154,25 @@ def init(
         file.write(json.dumps(res, indent=4))
 
 
+def _framework_callback(value: str):
+    if value not in ["gradio", "streamlit", "dash"]:
+        raise typer.BadParameter("Only 'gradio', 'dash' or 'streamlit' frameworks are supported.")
+    return value
+
+
 @app.command()
-def example_titanic_app():
+def example_app(framework: str = typer.Option("streamlit", callback=_framework_callback)):
     """Run the titanic user feedback collector app."""
-    import os
-
-    import streamlit.cli
-
     dirname = os.path.dirname(__file__)
-    filename = os.path.join(dirname, "../example/feedback_app_titanic.py")
-    args = []
-    streamlit.cli._main_run(filename, args)
+    filename = os.path.join(dirname, f"../example/app_titanic_{framework}.py")
+    if framework == "streamlit":
+        import streamlit.cli
+
+        streamlit.cli._main_run(filename)
+    elif framework in ["gradio", "dash"]:
+        import subprocess
+
+        subprocess.call(["python3", filename])
 
 
 def _import_module(module_path: str):

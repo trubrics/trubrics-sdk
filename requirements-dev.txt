@@ -14,7 +14,7 @@ isort==5.10.1
 flake8==4.0.1
 
 #typing
-mypy==0.950
+mypy==0.982
 pandas-stubs==1.2.0.58
 types-requests==2.27.25
 

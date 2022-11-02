@@ -209,12 +209,3 @@ class TrubricsModel(BaseModel):
         for _class, _proba in zip(self.model.classes_, self.model.predict_proba(self.data.X_test).T):
             probabilities[_class] = _proba
         return probabilities
-
-    @property
-    def testing_data_errors(self):
-        return self._filter_errors(self.data.testing_data)
-
-    def _filter_errors(self, df):
-        predict_col = f"{self.data.target}_predictions"
-        assign_kwargs = {predict_col: self.predictions_test}
-        return df.assign(**assign_kwargs).loc[lambda x: x[self.data.target] != x[predict_col], :]
