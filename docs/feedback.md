@@ -1,7 +1,7 @@
 # Gather feedback from business users
 
 Trubrics feedback components help you build python applications with your favourite library (e.g. [Streamlit](https://streamlit.io/)).
-These are aimed at collecting feedback on your models from business users and translating these into validation points.
+These are aimed at collecting feedback on your models from business users, for further translation into validation points.
 
 As with the ModelValidator, the `DataContext` is initialised and fed into the `FeedbackCollector`:
 ```python

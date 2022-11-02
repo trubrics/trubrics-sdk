@@ -68,17 +68,21 @@ The trubric defines the gold standard of validations required for the project, a
 *See a full tutorial on the titanic dataset [here](https://trubrics.github.io/trubrics-sdk/notebooks/titanic-demo.html)*.
 
 ## Collect user feedback with the FeedbackCollector
-Trubrics feedback components help you build python applications with your favourite library ([Streamlit](https://streamlit.io/), [Dash](https://dash.plotly.com/) or [Gradio](https://gradio.app/)).
+Trubrics feedback components help you to collect feedback on your models with your favourite python library.
 These are aimed at collecting feedback on your models from business users and translating these into validation points.
 
 <table>
 <tr>
-<th> Streamlit </th>
-<th> Dash </th>
-<th> Gradio </th>
+<th> Framework </th>
+<th style="text-align:center"> Getting Started Code Snippets </th>
 </tr>
 <tr>
-<td style=vertical-align:top>
+<td>
+
+[Streamlit](https://streamlit.io/)
+
+</td>
+<td>
 
 ```py
 from trubrics.feedback import collect_feedback_streamlit
@@ -87,7 +91,15 @@ collect_feedback_streamlit(path=".")
 ```
 
 </td>
-<td style=vertical-align:top>
+</tr>
+<tr>
+<td>
+
+[Dash](https://dash.plotly.com/)
+
+</td>
+
+<td>
 
 ```py
 from dash import Dash, html
@@ -107,7 +119,14 @@ if __name__ == "__main__":
 ```
 
 </td>
-<td style=vertical-align:top>
+</tr>
+<tr>
+<td>
+
+[Gradio](https://gradio.app/)
+
+</td>
+<td>
 
 ```py
 import gradio as gr
