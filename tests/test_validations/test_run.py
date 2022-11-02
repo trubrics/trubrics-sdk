@@ -20,7 +20,7 @@ def test_run_trubric(data_context, classifier_model, trubric):
     actuals = (
         ("validate_minimum_functionality", "error", "pass"),
         ("validate_performance_against_threshold", "experiment", "pass"),
-        ("validate_performance_for_different_fares", "warning", "fail"),
+        ("validate_master_age", "warning", "pass"),
     )
 
     for actual, result in zip(actuals, all_validation_results):
