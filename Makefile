@@ -43,3 +43,6 @@ streamlit-titanic:
 
 gradio-titanic:
 	@python trubrics/example/app_titanic_gradio.py
+
+dash-titanic:
+	@python trubrics/example/app_titanic_dash.py

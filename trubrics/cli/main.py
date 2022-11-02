@@ -155,8 +155,8 @@ def init(
 
 
 def _framework_callback(value: str):
-    if value not in ["gradio", "streamlit"]:
-        raise typer.BadParameter("Only 'gradio' or 'streamlit' frameworks are supported.")
+    if value not in ["gradio", "streamlit", "dash"]:
+        raise typer.BadParameter("Only 'gradio', 'dash' or 'streamlit' frameworks are supported.")
     return value
 
 
@@ -169,10 +169,10 @@ def example_app(framework: str = typer.Option("streamlit", callback=_framework_c
         import streamlit.cli
 
         streamlit.cli._main_run(filename)
-    elif framework == "gradio":
+    elif framework in ["gradio", "dash"]:
         import subprocess
 
-        subprocess.call(["python", filename])
+        subprocess.call(["python3", filename])
 
 
 def _import_module(module_path: str):
