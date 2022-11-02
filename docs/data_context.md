@@ -5,7 +5,7 @@ Data sits at the heart of all ML projects, thus also playing a central role in u
 ## Getting started with the DataContext
 The most basic level of ML validation can be performed on **a single dataset** (of data that has not been seen during model training) and **a single model**. This `testing_data` dataset must contain:
 
-- all features that were used to train the model (no extra columns permitted)
+- all features that were used to train the model
 - the target variable to predict
 
 This is the minimum requirement for the `DataContext` to start building validations:
@@ -59,8 +59,9 @@ There are two additional datasets that can be used in the `DataContext` for diff
     ```
 
 ## Data features metadata
-There are two extra attributes that hold metadata for the [FeedbackCollector](feedback.md):
+There are two extra attributes that hold metadata:
 
+- `features`: used for specifying the features of the model. This can be useful for when making data slices on a specific column that is not a model feature, for example.
 - `categorical_columns`: used for distinguishing between different input widgets in the what-if component
 - `business_columns`: used for renaming dataset columns with a different name for business user understanding
 
@@ -71,6 +72,7 @@ There are two extra attributes that hold metadata for the [FeedbackCollector](fe
     data_context = DataContext(
         testing_data=test_df,
         target="target_variable",
+        features=["feature_a", "feature_b"],
         categorical_columns=["feature_a", "feature_b"],
         business_columns={"feature_a": "renamed_feature_a"},
     )

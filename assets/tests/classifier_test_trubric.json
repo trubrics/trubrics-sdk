@@ -79,11 +79,11 @@
             }
         },
         {
-            "validation_type": "validate_performance_for_different_fares",
+            "validation_type": "validate_master_age",
             "validation_kwargs": {
                 "args": [],
                 "kwargs": {
-                    "fare_cutoff": 25
+                    "age_limit_master": 13
                 }
             },
             "explanation": "some docstring",

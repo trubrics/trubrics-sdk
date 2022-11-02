@@ -38,7 +38,7 @@ def classifier_model():
 
 @pytest.fixture
 def validator_classifier(data_context, classifier_model):
-    slicing_functions["test_slice_function"] = lambda df: df.shape
+    slicing_functions["test_slice_function"] = lambda df: df.shape  # type: ignore
     return ModelValidator(
         data=data_context, model=classifier_model, custom_scorers=custom_scorers, slicing_functions=slicing_functions
     )
