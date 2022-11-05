@@ -51,21 +51,32 @@ class DataContext(BaseModel):
 
     @property
     def X_test(self) -> pd.DataFrame:
+        """
+         This method accepts the test dataset and return its feature
+
+        """
+
         """Feature testing dataframe."""
         return self.testing_data[self.features]
 
     @property
     def y_test(self) -> pd.Series:
+        """
+        This method accepts the test dataset and return the target value(Y_Val)
+
+        """
         """Target testing series."""
         return self.testing_data[self.target]
 
     @property
     def X_train(self) -> Optional[pd.DataFrame]:
+        """This method accepts testing data and returns the data as X_train data if its not null"""
         """Feature training dataframe."""
         return self.training_data[self.features] if self.training_data is not None else None
 
     @property
     def y_train(self) -> Optional[pd.Series]:
+        """This method accepts target series and returns it as Y_train if its not null"""
         """Target training series."""
         return self.training_data[self.target] if self.training_data is not None else None
 
@@ -94,6 +105,7 @@ class DataContext(BaseModel):
 
     @validator("target")
     def target_column_must_be_in_data(cls, v, values):
+        """This method checks whether target column is in testing data otherwise rises exception"""
         if v not in values["testing_data"].columns:
             raise KeyError("Target column must be in testing_data column names.")
         return v
