@@ -9,7 +9,7 @@ from trubrics.context import TrubricsModel
 from trubrics.exceptions import ValidationOutputError
 from trubrics.validations.dataclass import Validation
 
-validation_output_type = Tuple[Union[bool, np.bool_], Dict[str, Union[dict, str, int, float, np.generic]]]
+validation_output_type = Tuple[Union[bool, np.bool_], Dict[str, Union[list, dict, str, int, float, np.generic]]]
 
 
 def validation_output(func: Callable) -> Callable:
