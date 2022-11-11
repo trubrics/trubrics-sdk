@@ -1,0 +1,99 @@
+{
+    "trubric_name": "my_first_trubric",
+    "model_name": "my_model",
+    "model_version": 0.1,
+    "data_context_name": "my_first_dataset",
+    "data_context_version": 0.1,
+    "metadata": {
+        "tag": "master"
+    },
+    "validations": [
+        {
+            "validation_type": "validate_master_age",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "age_limit_master": 13
+                }
+            },
+            "explanation": "Validate that passengers with the title \"master\" are younger than a certain age\n\nArgs:\nage_limit_master: cut off value for master\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving dict of errors.\n",
+            "outcome": "pass",
+            "severity": "error",
+            "result": {
+                "errors_df": {
+                    "Sex": {},
+                    "Embarked": {},
+                    "Title": {},
+                    "Pclass": {},
+                    "Age": {},
+                    "SibSp": {},
+                    "Parch": {},
+                    "Fare": {},
+                    "Survived": {}
+                }
+            }
+        },
+        {
+            "validation_type": "validate_model_scores_females_higher",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {}
+            },
+            "explanation": "We want the model to score female passengers with a higher probability of survival,\nso we are validating the average scores are higher for females than for males.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving mean scores for both populations.\n",
+            "outcome": "pass",
+            "severity": "experiment",
+            "result": {
+                "score_female": 0.859,
+                "score_male": 0.128
+            }
+        },
+        {
+            "validation_type": "validate_cv_scores",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "cv": 5,
+                    "threshold_std": 0.05,
+                    "metric": "precision"
+                }
+            },
+            "explanation": "\nValidate that std of CV scores is inferior to a threshold.\n\nTODO:\n- Check for .fit() method for custom estimators\n",
+            "outcome": "pass",
+            "severity": "error",
+            "result": {
+                "test_scores": [
+                    0.7560975609756098,
+                    0.74,
+                    0.7678571428571429,
+                    0.8043478260869565,
+                    0.717391304347826
+                ],
+                "std_test_scores": 0.029045691840416596
+            }
+        },
+        {
+            "validation_type": "validate_cv_scores",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "cv": 5,
+                    "threshold_std": 0.05,
+                    "metric": "recall"
+                }
+            },
+            "explanation": "\nValidate that std of CV scores is inferior to a threshold.\n\nTODO:\n- Check for .fit() method for custom estimators\n",
+            "outcome": "fail",
+            "severity": "error",
+            "result": {
+                "test_scores": [
+                    0.6888888888888889,
+                    0.7254901960784313,
+                    0.8269230769230769,
+                    0.74,
+                    0.8048780487804879
+                ],
+                "std_test_scores": 0.051190344523039874
+            }
+        }
+    ]
+}
