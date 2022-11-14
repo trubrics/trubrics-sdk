@@ -32,7 +32,6 @@ def test_run_trubric(data_context, classifier_model, trubric):
 def test_run_trubric_raises(data_context, classifier_model):
     trubric_dict = {
         "name": "my_first_trubric",
-        "metric": "accuracy",
         "model_name": "my_model",
         "model_version": 0.1,
         "data_context_name": "my_first_dataset",
