@@ -10,7 +10,7 @@ class CustomValidator(ModelValidator):
     def __init__(self, data: DataContext, model, custom_scorers=None, slicing_functions=None):
         super().__init__(data, model, custom_scorers, slicing_functions)
 
-    def _validate_master_is_younger_than(self, age_limit_master) -> validation_output_type:
+    def _validate_master_age(self, age_limit_master) -> validation_output_type:
         """
         Write your custom validation function here.
 
@@ -28,7 +28,7 @@ class CustomValidator(ModelValidator):
         return len(errors_df) == 0, {"errors_df": errors_df.to_dict()}
 
     @validation_output
-    def validate_master_is_younger_than(self, age_limit_master: int, severity=None):
+    def validate_master_age(self, age_limit_master: int, severity=None):
         """Validate that passengers with the title "master" are younger than a certain age
 
         Args:
@@ -37,4 +37,4 @@ class CustomValidator(ModelValidator):
         Returns:
             True for success, false otherwise. With a results dictionary giving dict of errors.
         """
-        return self._validate_master_is_younger_than(age_limit_master)
+        return self._validate_master_age(age_limit_master)
