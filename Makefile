@@ -39,4 +39,10 @@ save-titanic-tutorial-notebook:
 	--to html --output-dir docs/notebooks/
 
 streamlit-titanic:
-	@streamlit run trubrics/example/feedback_app_titanic.py  
+	@streamlit run trubrics/example/app_titanic_streamlit.py
+
+gradio-titanic:
+	@python trubrics/example/app_titanic_gradio.py
+
+dash-titanic:
+	@python trubrics/example/app_titanic_dash.py

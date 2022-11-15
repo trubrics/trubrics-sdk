@@ -18,7 +18,7 @@ class RuleBasedModel:
         ```py
         rule_based = RuleBasedModel()
 
-        from trubrics.validation import ModelValidator
+        from trubrics.validations import ModelValidator
         model_validator = ModelValidator(data=data_context, model=rule_based)
         ```
     """

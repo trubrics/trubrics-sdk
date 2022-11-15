@@ -1,5 +1,5 @@
 {
-    "trubric_name": "my_first_trubric",
+    "name": "my_first_trubric",
     "model_name": "my_model",
     "model_version": 0.1,
     "data_context_name": "my_first_dataset",
@@ -79,11 +79,11 @@
             }
         },
         {
-            "validation_type": "validate_performance_for_different_fares",
+            "validation_type": "validate_master_age",
             "validation_kwargs": {
                 "args": [],
                 "kwargs": {
-                    "fare_cutoff": 25
+                    "age_limit_master": 13
                 }
             },
             "explanation": "some docstring",

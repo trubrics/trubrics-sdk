@@ -67,7 +67,7 @@ class Trubric(BaseModel):
     Dataclass for a trubric, or set of validation points. Must be serialisable to .json.
 
     Attributes:
-        name: Trubric name.
+        name: trubric name
         model_name: model name
         model_version: model version
         data_context_name: data context name (from DataContext)
@@ -76,7 +76,7 @@ class Trubric(BaseModel):
         validations: list of validations (defined by Validation)
     """
 
-    trubric_name: str = "my_trubric"
+    name: str = "my_trubric"
     model_name: str = "my_model"
     model_version: float = 0.1
     data_context_name: str
@@ -85,6 +85,7 @@ class Trubric(BaseModel):
     validations: List[Validation]
 
     class Config:
+        extra = "forbid"
         schema_extra = {
             "example": {
                 "name": "my_first_trubric",
@@ -101,7 +102,7 @@ class Trubric(BaseModel):
         if path is None:
             raise TypeError("Specify the local path where you would like to save your Trubric json.")
         if file_name is None:
-            file_name = f"{self.trubric_name}.json"
+            file_name = f"{self.name}.json"
         with open(Path(path) / file_name, "w") as file:
             file.write(self.json(indent=4))
             logger.info(f"Trubric saved to {Path(path) / file_name}.")

@@ -1,46 +1,96 @@
 # Gather feedback from business users
 
-Trubrics feedback components help you build python applications with your favourite library (e.g. [Streamlit](https://streamlit.io/)).
-These are aimed at collecting feedback on your models from business users and translating these into validation points.
+Trubrics feedback components help you to collect feedback on your models with your favourite python library. Once feedback has been collected from business users, it should be translated into validation points to ensure repeatable checking throughout the lifetime of the model. Add the trubrics feedback component to your ML apps now to start collecting feedback:
 
-As with the ModelValidator, the `DataContext` is initialised and fed into the `FeedbackCollector`:
-```python
-import streamlit as st
-from trubrics.example import get_titanic_data_and_model
-from trubrics.context import DataContext
-from trubrics.feedback import FeedbackCollector
+<table>
+<tr>
+<th> Framework </th>
+<th style="text-align:center"> Getting Started Code Snippets </th>
+</tr>
+<tr>
+<td>
 
-train_df, test_df, model = get_titanic_data_and_model()
-data_context = DataContext(
-    testing_data=test_df,
-    training_data=train_df,
-    target="Survived",
-    categorical_columns=["Sex", "Embarked", "Title"],  # for the FeedbackCollector, categorical columns must be specified in the DataContext
+[Streamlit](https://streamlit.io/)
+
+</td>
+<td>
+
+```py
+from trubrics.feedback import collect_feedback_streamlit
+
+collect_feedback_streamlit(
+    path=".",  # path to feedback .json file
+    file_name=None,  # file name, if None defaults to feedback.json
+    metadata=None,  # a dict of any metadata to save from you app
+    tags=None  # a list of any tags for this feedback file
 )
-
-collector = FeedbackCollector(data=data_context, model=model)
 ```
 
-The FeedbackCollector includes various methods to facilitate building an application with streamlit:
+</td>
+</tr>
+<tr>
+<td>
 
-- **What-if experimentation**: generate a series of user inputs from the testing_data of the `DataContext`
-    ```python
-    with st.sidebar:
-        st.title("Modify features to test the model...")
-        collector.generate_what_if()
-    ```
+[Dash](https://dash.plotly.com/)
 
-- **Feedback collection**: save various feedback types to a local .json file
-    ```python
-    st.title("View model prediction")
-    st.text(collector.what_if_prediction)
+</td>
 
-    st.title("Send model feedback")
-    collector.save_feedback(path=".", file_name="feedback.json")
-    ```
+<td>
 
-*Run our demo user feedback app on the titanic dataset & model with the cli command:*
+```py
+from dash import Dash, html
+
+from trubrics.feedback import collect_feedback_dash
+
+app = Dash(__name__)
+
+app.layout = html.Div(
+    [
+        collect_feedback_dash(
+            path=".",  # path to feedback .json file
+            file_name=None,  # file name, if None defaults to feedback.json
+            metadata=None,  # a dict of any metadata to save from you app
+            tags=None  # a list of any tags for this feedback file
+        )
+    ]
+)
+
+if __name__ == "__main__":
+    app.run_server(debug=True)
+```
+
+</td>
+</tr>
+<tr>
+<td>
+
+[Gradio](https://gradio.app/)
+
+</td>
+<td>
+
+```py
+import gradio as gr
+
+from trubrics.feedback import collect_feedback_gradio
+
+with gr.Blocks() as demo:
+    collect_feedback_gradio(
+        path=".",  # path to feedback .json file
+        file_name=None,  # file name, if None defaults to feedback.json
+        metadata=None,  # a dict of any metadata to save from you app
+        tags=None  # a list of any tags for this feedback file
+    )
+
+demo.launch()
+```
+
+</td>
+</tr>
+</table>
+
+You can view our demo user feedback app, using the streamlit feedback collector and an example experimentation tool, on the titanic dataset & model on [Hugging Face Spaces](https://huggingface.co/spaces/trubrics/trubrics-titanic-demo), or run it locally with the CLI command:
 ```console
-(venv)$ trubrics example-titanic-app
+(venv)$ trubrics example-app
 ```
 ![img](assets/titanic-feedback-example.png)
