@@ -10,7 +10,7 @@ Once an ensemble of validations have been built, the list can be input into the 
     from trubrics.validations import Trubric
 
     trubric = Trubric(
-        trubric_name="my_first_trubric",
+        name="my_first_trubric",
         model_name="my_model",
         model_version=0.1,
         data_context_name=data_context.name,

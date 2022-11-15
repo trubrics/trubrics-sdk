@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2022-11-14
+### Changed
+- Allow for list types to be saved in result dict validation output
+- Restricted extra_fields of `Trubric` pydantic model
+- Changed `trubric_name` field to `name` in `Trubric` pydantic model
+
 ## [1.1.0] - 2022-11-02
 ### Added
 - Getting started video to readme
