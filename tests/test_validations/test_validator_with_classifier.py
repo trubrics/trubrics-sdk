@@ -100,7 +100,7 @@ def test__validate_test_performance_against_dummy(validator_classifier, kwargs, 
             ),
         ),
         (
-            {"metric": "my_custom_loss", "threshold": 0.5, "data_slice": None},
+            {"metric": "my_custom_loss", "threshold": 0.3, "data_slice": None},
             (
                 False,
                 {"train_performance": -0.0, "test_performance": -0.5, "train_sample_size": 6, "test_sample_size": 6},
