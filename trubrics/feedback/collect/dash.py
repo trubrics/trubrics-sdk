@@ -20,8 +20,8 @@ def collect_feedback_dash(
     Args:
         path : The path where the feedback file gets saved. If empty, defaults to current working directory.
         file_name: Name of the file. If Empty,defaults to "Feedback.json".
-        metadata: Any other form of metric which the user wants to log into the feedback file such as feature value,prediction,etc.
-        tags: list of any tags for this feedback file. 
+        metadata: Any other form of metric which the user wants to log into the feedback file such as feature value,prediction,etc. If empty, defaults to None.
+        tags: list of any tags for this feedback file. If empty, defaults to None.
     """
     title_input = html.Div(
         [
