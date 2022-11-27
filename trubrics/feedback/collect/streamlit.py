@@ -12,7 +12,17 @@ def collect_feedback_streamlit(
     metadata: Optional[Dict[str, Any]] = None,
     tags: Optional[List[str]] = None,
 ):
-    """Get user feedback and save."""
+    """
+    Gets feedback from the user and saves it in the path given through the input through streamlit web user interface.
+    Feedback can be in the form of text or any other format. If no path is given, it saves it in the default working directory.
+
+    Args:
+        path : The path where the feedback file gets saved. If empty, defaults to current working directory.
+        file_name: Name of the file. If Empty,defaults to "Feedback.json"
+        metadata: Any other form of metric which the user wants to log into the feedback file such as feature value,prediction,etc.
+        tags: list of any tags for this feedback file  
+
+    """
     with st.form("form", clear_on_submit=True):
         title = st.text_input(label=config.TITLE, help=config.TITLE_EXPLAIN, key="title")
         description = st.text_input(label=config.DESCRIPTION, help=config.DESCRIPTION_EXPLAIN, key="description")
