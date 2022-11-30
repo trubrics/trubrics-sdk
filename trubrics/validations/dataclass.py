@@ -107,14 +107,15 @@ class Trubric(BaseModel):
             file.write(self.json(indent=4))
             logger.info(f"Trubric saved to {Path(path) / file_name}.")
 
-    def save_ui(self, url: str, user_id: str):
+    def save_ui(self, url: str, user_id: str, project_id: str):
 
-        if user_id is None:
+        if user_id is None or project_id is None:
             raise TypeError("You must specify a 'user_id' to push to the trubrics manager.")
         else:
             make_request(
-                f"{url}/api/trubrics/{user_id}",
+                f"{url}/api/projects/{user_id}/{project_id}",
                 headers={"Content-Type": "application/json"},
                 data=self.json().encode("utf-8"),
+                method="PUT",
             )
             logger.info("Trubric saved to the trubrics manager.")
