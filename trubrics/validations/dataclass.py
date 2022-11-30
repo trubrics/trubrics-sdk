@@ -1,6 +1,9 @@
+import json
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from git import Repo
 from loguru import logger
 from pydantic import BaseModel, validator
 
@@ -107,13 +110,22 @@ class Trubric(BaseModel):
             file.write(self.json(indent=4))
             logger.info(f"Trubric saved to {Path(path) / file_name}.")
 
-    def save_ui(self, url: str, user_id: str, project_id: str):
+    def save_ui(self, trubrics_config_path: str):
 
-        if user_id is None or project_id is None:
-            raise TypeError("You must specify a 'user_id' to push to the trubrics manager.")
+        if trubrics_config_path is None:
+            raise TypeError("Please specify your trubrics config file path.")
         else:
+            config_file = Path(trubrics_config_path) / ".trubrics_config.json"
+            with open(config_file) as f:
+                config = json.loads(f.read())
+
+            if self.metadata:
+                self.metadata.update(config)
+                self.metadata["timestamp"] = str(datetime.now())
+                self.metadata["git_commit"] = Repo(search_parent_directories=True).head.object.hexsha
+
             make_request(
-                f"{url}/api/projects/{user_id}/{project_id}",
+                f"{config['api_url']}/api/projects/{config['user_id']}/{config['project_id']}",
                 headers={"Content-Type": "application/json"},
                 data=self.json().encode("utf-8"),
                 method="PUT",

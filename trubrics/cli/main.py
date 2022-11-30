@@ -125,6 +125,38 @@ def init(
             message = typer.style(res["msg"], fg=typer.colors.RED, bold=True)
             typer.echo(message)
             raise typer.Abort()
+
+        projects_res = make_request(
+            f"{trubrics_api_url}/api/projects/{uid}", headers={"Content-Type": "application/json"}
+        )
+
+        # TODO: abort if no projects are available
+
+        projects = {
+            index: {"id": project["_id"], "project_name": project["project_name"]}
+            for index, project in enumerate(json.loads(projects_res))
+        }
+        for val in projects:
+            rprint(f'[bold green][{val}][/bold green] [green]{projects[val]["project_name"]}[/green]')
+        project = typer.prompt("Select your project (e.g. 0)")
+
+        try:
+            project_int = int(project)
+            if project_int not in projects.keys():
+                raise ValueError
+            else:
+                res["project_name"] = projects[project_int]["project_name"]
+                res["project_id"] = projects[project_int]["id"]
+        except ValueError:
+            message = typer.style(
+                f"Project [{project}] not recognised. Please indicate an integer referring to one of the project names"
+                " above.",
+                fg=typer.colors.RED,
+                bold=True,
+            )
+            typer.echo(message)
+            raise typer.Abort()
+
         typer.echo(
             typer.style(
                 "Trubrics configuration has been set and user is authenticated with the trubrics manager UI:",
