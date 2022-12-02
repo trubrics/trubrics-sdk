@@ -130,7 +130,15 @@ def init(
             f"{trubrics_api_url}/api/projects/{uid}", headers={"Content-Type": "application/json"}
         )
 
-        # TODO: abort if no projects are available
+        if isinstance(json.loads(projects_res), dict):
+            message = typer.style(
+                "There are no projects created for your user. Please create a project directly from the Trubrics"
+                " Manager.",
+                fg=typer.colors.RED,
+                bold=True,
+            )
+            typer.echo(message)
+            raise typer.Abort()
 
         projects = {
             index: {"id": project["_id"], "project_name": project["project_name"]}
