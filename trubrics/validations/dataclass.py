@@ -3,7 +3,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from git import Repo
+from git.repo import Repo
 from loguru import logger
 from pydantic import BaseModel, validator
 
@@ -130,4 +130,4 @@ class Trubric(BaseModel):
                 data=self.json().encode("utf-8"),
                 method="PUT",
             )
-            logger.info("Trubric saved to the trubrics manager.")
+            logger.info("Trubric saved to the Trubrics Manager.")
