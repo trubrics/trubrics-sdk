@@ -15,17 +15,18 @@ class Feedback(BaseModel):
 
     title: str
     description: str
-    tags: Optional[List[str]]
+    tags: Optional[List[str]] = None
     model_name: str = "my_model"
     model_version: float = 0.1
-    data_context_name: str
-    data_context_version: float
+    data_context_name: str = "my_data_context"
+    data_context_version: float = 0.1
     open: bool = True
+    created_on: Optional[str] = None
+    created_by: Optional[str] = None
     closed_on: Optional[str] = None
     closed_by: Optional[str] = None
     discussion: List[Dict[str, str]] = []
     collaborators: List[str] = []
-
     metadata: Optional[Dict[str, Union[List[Any], float, int, str, dict]]]
 
     def save_local(self, path: str, file_name: Optional[str] = None):
@@ -50,12 +51,16 @@ class Feedback(BaseModel):
                 self.metadata.update(config)
                 self.metadata["timestamp"] = str(datetime.now())
                 self.metadata["git_commit"] = Repo(search_parent_directories=True).head.object.hexsha
-                self.collaborators.append(config["display_name"])
+                if self.tags:
+                    self.tags.append(str(self.metadata["tags"]))
+            self.created_by = config["display_name"]
+            self.created_on = str(datetime.now())
+            self.collaborators.append(config["display_name"])
 
             make_request(
-                f"{config['api_url']}/api/feedback/{config['user_id']}/{config['project_id']}",
+                f"{config['api_url']}/api/{config['user_id']}/projects/{config['project_id']}/feedback",
                 headers={"Content-Type": "application/json"},
                 data=self.json().encode("utf-8"),
-                method="POST",
+                method="PUT",
             )
             logger.info("Feedback issue saved to the Trubrics Manager.")

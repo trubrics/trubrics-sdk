@@ -125,7 +125,7 @@ class Trubric(BaseModel):
                 self.metadata["git_commit"] = Repo(search_parent_directories=True).head.object.hexsha
 
             make_request(
-                f"{config['api_url']}/api/projects/{config['user_id']}/{config['project_id']}",
+                f"{config['api_url']}/api/{config['user_id']}/projects/{config['project_id']}/validations",
                 headers={"Content-Type": "application/json"},
                 data=self.json().encode("utf-8"),
                 method="PUT",
