@@ -106,6 +106,7 @@ class Trubric(BaseModel):
             raise TypeError("Specify the local path where you would like to save your Trubric json.")
         if file_name is None:
             file_name = f"{self.name}.json"
+        self.metadata = set_metadata(self.validations, self.metadata, config={})
         with open(Path(path) / file_name, "w") as file:
             file.write(self.json(indent=4))
             logger.info(f"Trubric saved to {Path(path) / file_name}.")
@@ -119,10 +120,7 @@ class Trubric(BaseModel):
             with open(config_file) as f:
                 config = json.loads(f.read())
 
-            if self.metadata:
-                self.metadata.update(config)
-                self.metadata["timestamp"] = str(datetime.now())
-                self.metadata["git_commit"] = Repo(search_parent_directories=True).head.object.hexsha
+            self.metadata = set_metadata(self.validations, self.metadata, config)
 
             make_request(
                 f"{config['api_url']}/api/{config['user_id']}/projects/{config['project_id']}/validations",
@@ -131,3 +129,14 @@ class Trubric(BaseModel):
                 method="PUT",
             )
             logger.info("Trubric saved to the Trubrics Manager.")
+
+
+def set_metadata(validations, metadata, config):
+    total_passed = len([a for a in validations if a.outcome == "pass"])
+    if metadata:
+        metadata.update(config)
+        metadata["timestamp"] = str(datetime.now())
+        metadata["git_commit"] = Repo(search_parent_directories=True).head.object.hexsha
+        metadata["total_passed"] = str(total_passed)
+        metadata["total_passed_percent"] = str(round(100 * total_passed / len(validations), 1))
+    return metadata

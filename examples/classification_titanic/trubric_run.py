@@ -14,7 +14,7 @@ data_context = DataContext(
     training_data=train_df,
     target="Survived",
 )
-trubric = Trubric.parse_file("./my_first_trubric.json")
+trubric = Trubric.parse_file("examples/classification_titanic/my_first_trubric.json")
 
 RUN_CONTEXT = TrubricRun(
     data_context=data_context,
