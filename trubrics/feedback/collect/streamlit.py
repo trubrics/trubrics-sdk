@@ -25,7 +25,7 @@ def collect_feedback_streamlit(
                 )
             else:
                 feedback = Feedback(title=title, description=description, tags=tags, metadata=metadata)
-                feedback.save_local(path=path, file_name=file_name)
+                feedback.save_ui(".")
                 st.markdown(
                     config.FEEDBACK_SAVED_HTML,
                     unsafe_allow_html=True,
