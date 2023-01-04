@@ -1,6 +1,7 @@
 import importlib.util
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 from typing import Optional
@@ -206,12 +207,8 @@ def example_app(framework: str = typer.Option("streamlit", callback=_framework_c
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, f"../example/app_titanic_{framework}.py")
     if framework == "streamlit":
-        import streamlit.cli
-
-        streamlit.cli._main_run(filename)
+        subprocess.call(["streamlit", "run", filename])
     elif framework in ["gradio", "dash"]:
-        import subprocess
-
         subprocess.call(["python3", filename])
 
 
