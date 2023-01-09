@@ -12,7 +12,8 @@ def collect_feedback_gradio(path: str, file_name=None, tags=None, metadata=None)
     Args:
         path : The path where the feedback file gets saved.
         file_name: Name of the file. If empty,defaults to "feedback.json".
-        metadata: Any other form of metric which the user wants to log into the feedback file such as feature value,prediction,etc. If empty,defaults to None.
+        metadata: Any other form of metric which the user wants to log into the feedback file such as
+                  feature value, prediction,etc. If empty,defaults to None.
         tags: list of any tags for this feedback file. If empty, defaults to None.
 
     """
