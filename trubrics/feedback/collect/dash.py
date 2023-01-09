@@ -13,6 +13,17 @@ def collect_feedback_dash(
     metadata: Optional[Dict[str, Any]] = None,
     tags: Optional[List[str]] = None,
 ):
+    """
+    Gets feedback from the user and saves it in the path given through the input through dash web user interface.
+    Feedback can be in the form of text or any other format.
+
+    Args:
+        path : The path where the feedback file gets saved.
+        file_name: Name of the file. If Empty,defaults to "feedback.json".
+        metadata: Any other form of metric which the user wants to log into the feedback file such as
+                  feature value, prediction,etc. If empty, defaults to None.
+        tags: list of any tags for this feedback file. If empty, defaults to None.
+    """
     title_input = html.Div(
         [
             dbc.Label(config.TITLE, html_for="title"),

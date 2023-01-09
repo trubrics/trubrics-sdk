@@ -5,6 +5,19 @@ from trubrics.feedback.dataclass import Feedback
 
 
 def collect_feedback_gradio(path: str, file_name=None, tags=None, metadata=None):
+    """
+    Gets feedback from the user and saves it in the path given through the input through gradio web user interface.
+    Feedback can be in the form of text or any other format.
+
+    Args:
+        path : The path where the feedback file gets saved.
+        file_name: Name of the file. If empty,defaults to "feedback.json".
+        metadata: Any other form of metric which the user wants to log into the feedback file such as
+                  feature value, prediction,etc. If empty,defaults to None.
+        tags: list of any tags for this feedback file. If empty, defaults to None.
+
+    """
+
     def get_feedback(title: str, description: str):
         if not (len(title) == 0 or len(description) == 0):
             feedback = Feedback(title=title, description=description, tags=tags, metadata=metadata)
