@@ -13,14 +13,14 @@ class TrubricsConfig(BaseModel):
     organisation: str
 
 
-def save_trubrics_config(config):
+def save_trubrics_config(config: TrubricsConfig):
     # Save the config to a file in the user's home directory
     config_path = os.path.join(os.path.expanduser("~"), ".trubrics_config.json")
     with open(config_path, "w") as f:
         json.dump(config, f)
 
 
-def load_trubrics_config():
+def load_trubrics_config() -> TrubricsConfig:
     # Load the config from the file in the user's home directory
     config_path = os.path.join(os.path.expanduser("~"), ".trubrics_config.json")
     if os.path.exists(config_path):
