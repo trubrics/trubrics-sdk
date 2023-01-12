@@ -7,8 +7,6 @@ from git.repo import Repo
 from loguru import logger
 from pydantic import BaseModel
 
-from trubrics.utils.trubrics_manager_connector import make_request
-
 
 class Feedback(BaseModel):
     """Dataclass for feedback given by a user from a UI component."""
@@ -57,10 +55,10 @@ class Feedback(BaseModel):
             self.created_on = str(datetime.now())
             self.collaborators.append(config["display_name"])
 
-            make_request(
-                f"{config['api_url']}/api/{config['user_id']}/projects/{config['project_id']}/feedback",
-                headers={"Content-Type": "application/json"},
-                data=self.json().encode("utf-8"),
-                method="PUT",
-            )
+            # make_request(
+            #     f"{config['api_url']}/api/{config['user_id']}/projects/{config['project_id']}/feedback",
+            #     headers={"Content-Type": "application/json"},
+            #     data=self.json().encode("utf-8"),
+            #     method="PUT",
+            # )
             logger.info("Feedback issue saved to the Trubrics Manager.")

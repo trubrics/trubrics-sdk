@@ -7,11 +7,12 @@ from pathlib import Path
 from typing import Optional
 
 import typer
-from rich import print as rprint
 
-from trubrics.exceptions import MissingConfigPathError, MissingTrubricRunFileError
-from trubrics.utils.trubrics_manager_connector import make_request
+from trubrics.exceptions import MissingConfigPathError  # , MissingTrubricRunFileError
 from trubrics.validations.run import TrubricRun, run_trubric
+
+# from rich import print as rprint
+
 
 app = typer.Typer()
 
@@ -117,82 +118,83 @@ def init(
         trubric_config_path: a path to save the .trubrics_config.json to
     """
 
-    if trubrics_api_url:
-        uid = typer.prompt("Enter your User ID (generated in the trubrics manager)")
+    # if trubrics_api_url:
+    #     uid = typer.prompt("Enter your User ID (generated in the trubrics manager)")
 
-        res = make_request(f"{trubrics_api_url}/api/is_user/{uid}", headers={"Content-Type": "application/json"})
-        res = json.loads(res)
-        if "is_user" in res.keys():
-            message = typer.style(res["msg"], fg=typer.colors.RED, bold=True)
-            typer.echo(message)
-            raise typer.Abort()
+    #     res = make_request(f"{trubrics_api_url}/api/is_user/{uid}", headers={"Content-Type": "application/json"})
+    #     res = json.loads(res)
+    #     if "is_user" in res.keys():
+    #         message = typer.style(res["msg"], fg=typer.colors.RED, bold=True)
+    #         typer.echo(message)
+    #         raise typer.Abort()
 
-        projects_res = make_request(
-            f"{trubrics_api_url}/api/projects/{uid}", headers={"Content-Type": "application/json"}
-        )
+    #     projects_res = make_request(
+    #         f"{trubrics_api_url}/api/projects/{uid}", headers={"Content-Type": "application/json"}
+    #     )
 
-        if isinstance(json.loads(projects_res), dict):
-            message = typer.style(
-                "There are no projects created for your user. Please create a project directly from the Trubrics"
-                " Manager.",
-                fg=typer.colors.RED,
-                bold=True,
-            )
-            typer.echo(message)
-            raise typer.Abort()
+    #     if isinstance(json.loads(projects_res), dict):
+    #         message = typer.style(
+    #             "There are no projects created for your user. Please create a project directly from the Trubrics"
+    #             " Manager.",
+    #             fg=typer.colors.RED,
+    #             bold=True,
+    #         )
+    #         typer.echo(message)
+    #         raise typer.Abort()
 
-        projects = {
-            index: {"id": project["_id"], "project_name": project["project_name"]}
-            for index, project in enumerate(json.loads(projects_res))
-        }
-        for val in projects:
-            rprint(f'[bold green][{val}][/bold green] [green]{projects[val]["project_name"]}[/green]')
-        project = typer.prompt("Select your project (e.g. 0)")
+    #     projects = {
+    #         index: {"id": project["_id"], "project_name": project["project_name"]}
+    #         for index, project in enumerate(json.loads(projects_res))
+    #     }
+    #     for val in projects:
+    #         rprint(f'[bold green][{val}][/bold green] [green]{projects[val]["project_name"]}[/green]')
+    #     project = typer.prompt("Select your project (e.g. 0)")
 
-        try:
-            project_int = int(project)
-            if project_int not in projects.keys():
-                raise ValueError
-            else:
-                res["project_name"] = projects[project_int]["project_name"]
-                res["project_id"] = projects[project_int]["id"]
-        except ValueError:
-            message = typer.style(
-                f"Project [{project}] not recognised. Please indicate an integer referring to one of the project names"
-                " above.",
-                fg=typer.colors.RED,
-                bold=True,
-            )
-            typer.echo(message)
-            raise typer.Abort()
+    #     try:
+    #         project_int = int(project)
+    #         if project_int not in projects.keys():
+    #             raise ValueError
+    #         else:
+    #             res["project_name"] = projects[project_int]["project_name"]
+    #             res["project_id"] = projects[project_int]["id"]
+    #     except ValueError:
+    #         message = typer.style(
+    #              f"Project [{project}] not recognised."
+    #             "Please indicate an integer referring to one of the project names"
+    #             " above.",
+    #             fg=typer.colors.RED,
+    #             bold=True,
+    #         )
+    #         typer.echo(message)
+    #         raise typer.Abort()
 
-        typer.echo(
-            typer.style(
-                "Trubrics configuration has been set and user is authenticated with the trubrics manager UI:",
-                fg=typer.colors.GREEN,
-                bold=True,
-            )
-        )
-        res["api_url"] = trubrics_api_url
-    else:
-        typer.echo(
-            typer.style(
-                "Trubrics config set without trubrics manager authentication:", fg=typer.colors.GREEN, bold=True
-            )
-        )
-        res = {}
+    #     typer.echo(
+    #         typer.style(
+    #             "Trubrics configuration has been set and user is authenticated with the trubrics manager UI:",
+    #             fg=typer.colors.GREEN,
+    #             bold=True,
+    #         )
+    #     )
+    #     res["api_url"] = trubrics_api_url
+    # else:
+    #     typer.echo(
+    #         typer.style(
+    #             "Trubrics config set without trubrics manager authentication:", fg=typer.colors.GREEN, bold=True
+    #         )
+    #     )
+    #     res = {}
 
-    if not Path(trubric_run_path).exists() or not trubric_run_path.endswith(".py"):
-        raise MissingTrubricRunFileError("Trubric run file path does not exist or is not a .py file.")
+    # if not Path(trubric_run_path).exists() or not trubric_run_path.endswith(".py"):
+    #     raise MissingTrubricRunFileError("Trubric run file path does not exist or is not a .py file.")
 
-    res["trubric_run_path"] = trubric_run_path
+    # res["trubric_run_path"] = trubric_run_path
 
-    rprint(res)
-    with open(
-        Path(trubric_config_path) / ".trubrics_config.json",
-        "w",
-    ) as file:
-        file.write(json.dumps(res, indent=4))
+    # rprint(res)
+    # with open(
+    #     Path(trubric_config_path) / ".trubrics_config.json",
+    #     "w",
+    # ) as file:
+    #     file.write(json.dumps(res, indent=4))
 
 
 def _framework_callback(value: str):

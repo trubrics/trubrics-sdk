@@ -7,8 +7,6 @@ from git.repo import Repo
 from loguru import logger
 from pydantic import BaseModel, validator
 
-from trubrics.utils.trubrics_manager_connector import make_request
-
 
 def _validation_context_example():
     return {
@@ -122,12 +120,12 @@ class Trubric(BaseModel):
 
             self.metadata = set_metadata(self.validations, self.metadata, config)
 
-            make_request(
-                f"{config['api_url']}/api/{config['user_id']}/projects/{config['project_id']}/validations",
-                headers={"Content-Type": "application/json"},
-                data=self.json().encode("utf-8"),
-                method="PUT",
-            )
+            # make_request(
+            #     f"{config['api_url']}/api/{config['user_id']}/projects/{config['project_id']}/validations",
+            #     headers={"Content-Type": "application/json"},
+            #     data=self.json().encode("utf-8"),
+            #     method="PUT",
+            # )
             logger.info("Trubric saved to the Trubrics Manager.")
 
 
