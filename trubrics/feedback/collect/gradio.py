@@ -8,7 +8,7 @@ def collect_feedback_gradio(path: str, file_name=None, tags=None, metadata=None)
     def get_feedback(title: str, description: str):
         if not (len(title) == 0 or len(description) == 0):
             feedback = Feedback(title=title, description=description, tags=tags, metadata={"tags": ["some tag"]})
-            feedback.save_ui(".")
+            feedback.save_ui()
             return config.FEEDBACK_SAVED_HTML
         else:
             return config.FEEDBACK_NOT_SAVED_HTML

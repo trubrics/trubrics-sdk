@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -6,6 +5,10 @@ from typing import Any, Dict, List, Optional
 from git.repo import Repo
 from loguru import logger
 from pydantic import BaseModel, validator
+
+from trubrics.ui.auth import get_trubrics_auth_token
+from trubrics.ui.firestore import add_document_to_project_subcollection
+from trubrics.ui.trubrics_config import load_trubrics_config
 
 
 def _validation_context_example():
@@ -104,35 +107,34 @@ class Trubric(BaseModel):
             raise TypeError("Specify the local path where you would like to save your Trubric json.")
         if file_name is None:
             file_name = f"{self.name}.json"
-        self.metadata = set_metadata(self.validations, self.metadata, config={})
+        self.metadata = set_metadata(self.validations, self.metadata, None)
         with open(Path(path) / file_name, "w") as file:
             file.write(self.json(indent=4))
             logger.info(f"Trubric saved to {Path(path) / file_name}.")
 
-    def save_ui(self, trubrics_config_path: str):
+    def save_ui(self):
+        trubrics_config = load_trubrics_config()
+        auth = get_trubrics_auth_token(
+            trubrics_config.firebase_auth_api_url, trubrics_config.email, trubrics_config.password
+        )
 
-        if trubrics_config_path is None:
-            raise TypeError("Please specify your trubrics config file path.")
-        else:
-            config_file = Path(trubrics_config_path) / ".trubrics_config.json"
-            with open(config_file) as f:
-                config = json.loads(f.read())
+        self.metadata = set_metadata(self.validations, self.metadata, trubrics_config.email)
 
-            self.metadata = set_metadata(self.validations, self.metadata, config)
-
-            # make_request(
-            #     f"{config['api_url']}/api/{config['user_id']}/projects/{config['project_id']}/validations",
-            #     headers={"Content-Type": "application/json"},
-            #     data=self.json().encode("utf-8"),
-            #     method="PUT",
-            # )
-            logger.info("Trubric saved to the Trubrics Manager.")
+        add_document_to_project_subcollection(
+            auth,
+            firestore_api_url=trubrics_config.firestore_api_url,
+            project=trubrics_config.project,
+            subcollection="trubrics",
+            document_id=self.metadata["timestamp"],  # type: ignore
+            document_json=self.json(),
+        )
+        logger.info("Trubric saved to the Trubrics Manager.")
 
 
-def set_metadata(validations, metadata, config):
+def set_metadata(validations, metadata, email):
     total_passed = len([a for a in validations if a.outcome == "pass"])
     if metadata:
-        metadata.update(config)
+        metadata["email"] = email
         metadata["timestamp"] = str(datetime.now())
         metadata["git_commit"] = Repo(search_parent_directories=True).head.object.hexsha
         metadata["total_passed"] = str(total_passed)

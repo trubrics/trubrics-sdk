@@ -13,12 +13,12 @@ def json_to_firestore_document(json_object):
     for key, value in python_dict.items():
         if isinstance(value, str):
             firestore_compatible["fields"][key] = {"stringValue": value}
+        elif isinstance(value, bool):
+            firestore_compatible["fields"][key] = {"booleanValue": value}
         elif isinstance(value, int):
             firestore_compatible["fields"][key] = {"integerValue": value}
         elif isinstance(value, float):
             firestore_compatible["fields"][key] = {"doubleValue": value}
-        elif isinstance(value, bool):
-            firestore_compatible["fields"][key] = {"booleanValue": value}
         elif isinstance(value, datetime):
             firestore_compatible["fields"][key] = {"timestampValue": value.isoformat() + "Z"}
         elif isinstance(value, dict):
@@ -28,12 +28,12 @@ def json_to_firestore_document(json_object):
             for item in value:
                 if isinstance(item, str):
                     array_values.append({"stringValue": item})
+                elif isinstance(item, bool):
+                    array_values.append({"booleanValue": item})
                 elif isinstance(item, int):
                     array_values.append({"integerValue": item})
                 elif isinstance(item, float):
                     array_values.append({"doubleValue": item})
-                elif isinstance(item, bool):
-                    array_values.append({"booleanValue": item})
                 elif isinstance(item, datetime):
                     array_values.append({"timestampValue": item.isoformat() + "Z"})
                 elif isinstance(item, dict):
@@ -67,3 +67,16 @@ def list_projects_in_organisation(firestore_api_url, auth):
         ).text
     )
     return [project["name"].split("/")[-1] for project in projects_res["documents"]]
+
+
+def add_document_to_project_subcollection(auth, firestore_api_url, project, subcollection, document_id, document_json):
+    url = firestore_api_url + f"/projects/{project}/{subcollection}/?documentId={document_id}"
+    print(json_to_firestore_document(document_json))
+    res = json.loads(
+        requests.post(
+            url,
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
+            data=json.dumps(json_to_firestore_document(document_json)),
+        ).text
+    )
+    return res
