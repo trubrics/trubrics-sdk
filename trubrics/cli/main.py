@@ -35,6 +35,10 @@ def init(
         api_key: the key towards
         trubric_config_path: a path to save the .trubrics_config.json to
     """
+    run_ctx_path = Path(run_context_path).absolute()
+    if not run_ctx_path.exists():
+        rprint(f"[red]Path '{run_ctx_path}' not found.[red]")
+        raise typer.Abort()
 
     if user_connected:
         email = typer.prompt("Enter your user email")
@@ -83,7 +87,7 @@ def init(
                 raise typer.Abort()
 
         trubrics_config = TrubricsConfig(
-            run_context_path=run_context_path,
+            run_context_path=str(run_ctx_path),
             firebase_auth_api_url=firebase_auth_api_url,
             firestore_api_url=firestore_api_url,
             email=email,
@@ -98,9 +102,9 @@ def init(
     else:
         rprint(
             "[bold green]You're all set to save trubrics & feedback locally."
-            "Be sure to check out our docs to see how you can leverage the Trubrics Platform.[bold green]"
+            " Be sure to check out our docs to see how you can leverage the Trubrics platform.[bold green]"
         )
-        trubrics_config = TrubricsConfig(run_context_path=run_context_path).save()
+        trubrics_config = TrubricsConfig(run_context_path=str(run_ctx_path)).save()
 
 
 def _framework_callback(value: str):
