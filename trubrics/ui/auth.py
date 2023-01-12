@@ -13,6 +13,14 @@ def get_trubrics_auth_token(firebase_auth_api_url, email, password):
             firebase_auth_api_url,
             headers={"Content-Type": "application/json"},
             data=json.dumps({"email": email, "password": password, "returnSecureToken": True}),
+            timeout=5000,
         ).text
     )
-    return {"idToken": auth_response["idToken"], "uid": auth_response["localId"]}
+    if "error" in auth_response:
+        return auth_response["error"]
+    else:
+        return {
+            "idToken": auth_response["idToken"],
+            "uid": auth_response["localId"],
+            "displayName": auth_response["displayName"],
+        }

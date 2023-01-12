@@ -42,7 +42,7 @@ def json_to_firestore_document(json_object):
     return firestore_compatible
 
 
-def get_trubrics_firestore_api_url(auth, auth_token):
+def get_trubrics_firestore_api_url(auth):
     structured_query = {
         "structuredQuery": {
             "from": [{"collectionId": "organisations"}],
@@ -52,8 +52,18 @@ def get_trubrics_firestore_api_url(auth, auth_token):
     organisation_route = json.loads(
         requests.post(
             "https://firestore.googleapis.com/v1/projects/trubrics-ea-dev/databases/(default)/documents:runQuery",
-            headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}"},
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
             data=json.dumps(structured_query),
         ).text
     )[0]["document"]["name"]
     return f"https://firestore.googleapis.com/v1/{organisation_route}"
+
+
+def list_projects_in_organisation(firestore_api_url, auth):
+    projects_res = json.loads(
+        requests.get(
+            firestore_api_url + "/projects",
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
+        ).text
+    )
+    return [project["name"].split("/")[-1] for project in projects_res["documents"]]

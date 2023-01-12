@@ -4,17 +4,131 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import Optional
 
 import typer
+from rich import print as rprint
+from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from trubrics.exceptions import MissingConfigPathError  # , MissingTrubricRunFileError
+from trubrics.ui.auth import get_trubrics_auth_token, get_trubrics_firebase_auth_api_url
+from trubrics.ui.firestore import (
+    get_trubrics_firestore_api_url,
+    list_projects_in_organisation,
+)
+from trubrics.ui.trubrics_config import TrubricsConfig
 from trubrics.validations.run import TrubricRun, run_trubric
 
-# from rich import print as rprint
-
-
 app = typer.Typer()
+
+
+@app.command()
+def init(
+    api_key: str = "AIzaSyBeXhMQclnlc02v1DhE2o_jSY2B8g1SC38",
+    run_context_path: str = typer.Option(
+        ..., prompt="Enter the path to your trubric run .py file (e.g. examples/classification_titanic/trubric_run.py)"
+    ),
+    user_connected: bool = typer.Option(False, prompt="Do you already have an account with Trubrics?"),
+):
+    """The CLI `trubrics init` command for initialising trubrics config.
+
+    Args:
+        api_key: the key towards
+        trubric_config_path: a path to save the .trubrics_config.json to
+    """
+
+    if user_connected:
+        email = typer.prompt("Enter your user email")
+        password = typer.prompt("Enter your user password", hide_input=True)
+
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            transient=True,
+        ) as progress:
+            progress.add_task(description="Authenticating user...", total=None)
+
+            firebase_auth_api_url = get_trubrics_firebase_auth_api_url(api_key)
+            auth = get_trubrics_auth_token(firebase_auth_api_url, email, password)
+            if "uid" in auth.keys() and "idToken" in auth.keys():
+                firestore_api_url = get_trubrics_firestore_api_url(auth)
+            else:
+                rprint(auth)
+                raise typer.Abort()
+
+            projects = list_projects_in_organisation(firestore_api_url=firestore_api_url, auth=auth)
+            print()
+            rprint(f"[bold yellow]Welcome {auth['displayName']}[bold yellow] :sunglasses:")
+            print()
+
+        if len(projects) > 0:
+            for index, project in enumerate(projects):
+                rprint(f"[bold green][{index}][/bold green] [green]{project}[/green]")
+            project_num = typer.prompt("Select your project (e.g. 0)")
+
+            try:
+                project_int = int(project_num)
+                if project_int not in list(range(len(projects))):
+                    raise ValueError
+                else:
+                    project_name = projects[project_int]
+            except ValueError:
+                message = typer.style(
+                    f"Project [{project_num}] not recognised."
+                    "Please indicate an integer referring to one of the project names"
+                    " above.",
+                    fg=typer.colors.RED,
+                    bold=True,
+                )
+                typer.echo(message)
+                raise typer.Abort()
+
+        trubrics_config = TrubricsConfig(
+            run_context_path=run_context_path,
+            firebase_auth_api_url=firebase_auth_api_url,
+            firestore_api_url=firestore_api_url,
+            email=email,
+            password=password,
+            project=project_name,  # type: ignore
+        )
+        trubrics_config.save()
+
+        typer.echo(typer.style("Successful authentication with configuration:", fg=typer.colors.GREEN, bold=True))
+        trubrics_config.password = "<USER PASSWORD>"
+        rprint(trubrics_config.dict())
+    else:
+        rprint(
+            "[bold green]You're all set to save trubrics & feedback locally."
+            "Be sure to check out our docs to see how you can leverage the Trubrics Platform.[bold green]"
+        )
+        trubrics_config = TrubricsConfig(run_context_path=run_context_path).save()
+
+
+def _framework_callback(value: str):
+    if value not in ["gradio", "streamlit", "dash"]:
+        raise typer.BadParameter("Only 'gradio', 'dash' or 'streamlit' frameworks are supported.")
+    return value
+
+
+@app.command()
+def example_app(framework: str = typer.Option("streamlit", callback=_framework_callback)):
+    """Run the titanic user feedback collector app."""
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, f"../example/app_titanic_{framework}.py")
+    if framework == "streamlit":
+        subprocess.call(["streamlit", "run", filename])
+    elif framework in ["gradio", "dash"]:
+        subprocess.call(["python3", filename])
+
+
+def _import_module(module_path: str):
+    try:
+        spec = importlib.util.spec_from_file_location("module.name", module_path)
+        lib = importlib.util.module_from_spec(spec)  # type: ignore
+        sys.modules["module.name"] = lib
+        spec.loader.exec_module(lib)  # type: ignore
+    except FileNotFoundError as e:
+        raise e
+    return lib
 
 
 @app.command()
@@ -98,131 +212,6 @@ def run(
                     fg=typer.colors.RED,
                 )
             )
-
-
-@app.command()
-def init(
-    trubrics_api_url: Optional[str] = None,
-    trubric_run_path: str = typer.Option(
-        ..., prompt="Enter the path to your trubric run .py file (e.g. examples/classification_titanic/trubric_run.py)"
-    ),
-    trubric_config_path: str = typer.Option(
-        ".", prompt="Enter a path to save your .trubrics_config.json. The default path is"
-    ),
-):
-    """The CLI `trubrics init` command for initialising trubrics config.
-
-    Args:
-        trubric_run_path: a path towards the .py file that holds code to run a trubric in \
-            the `RUN_CONTEXT=TrubricRun(...)`.
-        trubric_config_path: a path to save the .trubrics_config.json to
-    """
-
-    # if trubrics_api_url:
-    #     uid = typer.prompt("Enter your User ID (generated in the trubrics manager)")
-
-    #     res = make_request(f"{trubrics_api_url}/api/is_user/{uid}", headers={"Content-Type": "application/json"})
-    #     res = json.loads(res)
-    #     if "is_user" in res.keys():
-    #         message = typer.style(res["msg"], fg=typer.colors.RED, bold=True)
-    #         typer.echo(message)
-    #         raise typer.Abort()
-
-    #     projects_res = make_request(
-    #         f"{trubrics_api_url}/api/projects/{uid}", headers={"Content-Type": "application/json"}
-    #     )
-
-    #     if isinstance(json.loads(projects_res), dict):
-    #         message = typer.style(
-    #             "There are no projects created for your user. Please create a project directly from the Trubrics"
-    #             " Manager.",
-    #             fg=typer.colors.RED,
-    #             bold=True,
-    #         )
-    #         typer.echo(message)
-    #         raise typer.Abort()
-
-    #     projects = {
-    #         index: {"id": project["_id"], "project_name": project["project_name"]}
-    #         for index, project in enumerate(json.loads(projects_res))
-    #     }
-    #     for val in projects:
-    #         rprint(f'[bold green][{val}][/bold green] [green]{projects[val]["project_name"]}[/green]')
-    #     project = typer.prompt("Select your project (e.g. 0)")
-
-    #     try:
-    #         project_int = int(project)
-    #         if project_int not in projects.keys():
-    #             raise ValueError
-    #         else:
-    #             res["project_name"] = projects[project_int]["project_name"]
-    #             res["project_id"] = projects[project_int]["id"]
-    #     except ValueError:
-    #         message = typer.style(
-    #              f"Project [{project}] not recognised."
-    #             "Please indicate an integer referring to one of the project names"
-    #             " above.",
-    #             fg=typer.colors.RED,
-    #             bold=True,
-    #         )
-    #         typer.echo(message)
-    #         raise typer.Abort()
-
-    #     typer.echo(
-    #         typer.style(
-    #             "Trubrics configuration has been set and user is authenticated with the trubrics manager UI:",
-    #             fg=typer.colors.GREEN,
-    #             bold=True,
-    #         )
-    #     )
-    #     res["api_url"] = trubrics_api_url
-    # else:
-    #     typer.echo(
-    #         typer.style(
-    #             "Trubrics config set without trubrics manager authentication:", fg=typer.colors.GREEN, bold=True
-    #         )
-    #     )
-    #     res = {}
-
-    # if not Path(trubric_run_path).exists() or not trubric_run_path.endswith(".py"):
-    #     raise MissingTrubricRunFileError("Trubric run file path does not exist or is not a .py file.")
-
-    # res["trubric_run_path"] = trubric_run_path
-
-    # rprint(res)
-    # with open(
-    #     Path(trubric_config_path) / ".trubrics_config.json",
-    #     "w",
-    # ) as file:
-    #     file.write(json.dumps(res, indent=4))
-
-
-def _framework_callback(value: str):
-    if value not in ["gradio", "streamlit", "dash"]:
-        raise typer.BadParameter("Only 'gradio', 'dash' or 'streamlit' frameworks are supported.")
-    return value
-
-
-@app.command()
-def example_app(framework: str = typer.Option("streamlit", callback=_framework_callback)):
-    """Run the titanic user feedback collector app."""
-    dirname = os.path.dirname(__file__)
-    filename = os.path.join(dirname, f"../example/app_titanic_{framework}.py")
-    if framework == "streamlit":
-        subprocess.call(["streamlit", "run", filename])
-    elif framework in ["gradio", "dash"]:
-        subprocess.call(["python3", filename])
-
-
-def _import_module(module_path: str):
-    try:
-        spec = importlib.util.spec_from_file_location("module.name", module_path)
-        lib = importlib.util.module_from_spec(spec)  # type: ignore
-        sys.modules["module.name"] = lib
-        spec.loader.exec_module(lib)  # type: ignore
-    except FileNotFoundError as e:
-        raise e
-    return lib
 
 
 if __name__ == "__main__":
