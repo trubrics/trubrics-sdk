@@ -21,13 +21,14 @@ class Feedback(BaseModel):
     model_version: str = "0.1"
     data_context_name: str = "my_data_context"
     data_context_version: str = "0.1"
+    git_commit: str = Repo(search_parent_directories=True).head.object.hexsha
+    collaborators: List[Optional[str]] = []
     open: bool = True
-    created_on: Optional[str] = None
+    timestamp: int = int(datetime.now().timestamp())
     created_by: Optional[str] = None
     closed_on: Optional[str] = None
     closed_by: Optional[str] = None
     discussion: List[Dict[str, str]] = []
-    collaborators: List[str] = []
     metadata: Optional[Dict[str, Union[List[Any], float, int, str, dict]]]
 
     def save_local(self, path: str, file_name: Optional[str] = None):
@@ -41,23 +42,18 @@ class Feedback(BaseModel):
 
     def save_ui(self):
         trubrics_config = load_trubrics_config()
+        self.created_by = trubrics_config.email
+        self.collaborators.append(trubrics_config.email)
         auth = get_trubrics_auth_token(
             trubrics_config.firebase_auth_api_url, trubrics_config.email, trubrics_config.password
         )
-
-        if self.metadata:
-            self.metadata["timestamp"] = str(datetime.now())
-            self.metadata["git_commit"] = Repo(search_parent_directories=True).head.object.hexsha
-            if self.tags:
-                self.tags.append(str(self.metadata["tags"]))
-            self.created_by = trubrics_config.email
 
         response = add_document_to_project_subcollection(
             auth,
             firestore_api_url=trubrics_config.firestore_api_url,
             project=trubrics_config.project,
             subcollection="feedback",
-            document_id=self.title,  # type: ignore
+            document_id=self.timestamp,
             document_json=self.json(),
         )
         print(response)
