@@ -18,9 +18,9 @@ class Feedback(BaseModel):
     description: str
     tags: Optional[List[str]] = None
     model_name: str = "my_model"
-    model_version: str = "0.1"
+    model_version: str = "0.0.1"
     data_context_name: str = "my_data_context"
-    data_context_version: str = "0.1"
+    data_context_version: str = "0.0.1"
     git_commit: str = Repo(search_parent_directories=True).head.object.hexsha
     collaborators: List[Optional[str]] = []
     open: bool = True

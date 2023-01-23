@@ -35,7 +35,7 @@ class DataContext(BaseModel):
     """
 
     name: str = "my_dataset"
-    version: float = 0.1
+    version: str = "v0.0.1"
     testing_data: pd.DataFrame
     target: str
     training_data: Optional[pd.DataFrame] = None
