@@ -71,7 +71,6 @@ def list_projects_in_organisation(firestore_api_url, auth):
 
 def add_document_to_project_subcollection(auth, firestore_api_url, project, subcollection, document_id, document_json):
     url = firestore_api_url + f"/projects/{project}/{subcollection}/?documentId={document_id}"
-    print(json_to_firestore_document(document_json))
     res = json.loads(
         requests.post(
             url,

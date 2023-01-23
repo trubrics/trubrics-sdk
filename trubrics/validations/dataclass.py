@@ -82,32 +82,26 @@ class Trubric(BaseModel):
 
     name: str = "my_trubric"
     model_name: str = "my_model"
-    model_version: float = 0.1
+    model_version: str = "0.1"
     data_context_name: str
-    data_context_version: float
+    data_context_version: str
+    tags: List[Optional[str]] = []
+    run_by: Optional[str] = None
+    timestamp: int = int(datetime.now().timestamp())
+    git_commit: str = Repo(search_parent_directories=True).head.object.hexsha
     metadata: Optional[Dict[str, str]] = None
     validations: List[Validation]
+    total_passed: Optional[int] = None
+    total_passed_percent: Optional[float] = None
 
     class Config:
         extra = "forbid"
-        schema_extra = {
-            "example": {
-                "name": "my_first_trubric",
-                "model_name": "my_model",
-                "model_version": 0.1,
-                "data_context_name": "my_dataset",
-                "data_context_version": 0.1,
-                "metadata": {},
-                "validations": [_validation_context_example()],
-            }
-        }
 
     def save_local(self, path: str, file_name: Optional[str] = None):
         if path is None:
             raise TypeError("Specify the local path where you would like to save your Trubric json.")
         if file_name is None:
             file_name = f"{self.name}.json"
-        self.metadata = set_metadata(self.validations, self.metadata, None)
         with open(Path(path) / file_name, "w") as file:
             file.write(self.json(indent=4))
             logger.info(f"Trubric saved to {Path(path) / file_name}.")
@@ -117,26 +111,16 @@ class Trubric(BaseModel):
         auth = get_trubrics_auth_token(
             trubrics_config.firebase_auth_api_url, trubrics_config.email, trubrics_config.password
         )
-
-        self.metadata = set_metadata(self.validations, self.metadata, trubrics_config.email)
+        self.run_by = trubrics_config.email
+        self.total_passed = len([a for a in self.validations if a.outcome == "pass"])
+        self.total_passed_percent = round(100 * self.total_passed / len(self.validations), 1)
 
         add_document_to_project_subcollection(
             auth,
             firestore_api_url=trubrics_config.firestore_api_url,
             project=trubrics_config.project,
             subcollection="trubrics",
-            document_id=self.metadata["timestamp"],  # type: ignore
+            document_id=self.timestamp,
             document_json=self.json(),
         )
         logger.info("Trubric saved to the Trubrics Manager.")
-
-
-def set_metadata(validations, metadata, email):
-    total_passed = len([a for a in validations if a.outcome == "pass"])
-    if metadata:
-        metadata["email"] = email
-        metadata["timestamp"] = str(datetime.now())
-        metadata["git_commit"] = Repo(search_parent_directories=True).head.object.hexsha
-        metadata["total_passed"] = str(total_passed)
-        metadata["total_passed_percent"] = str(round(100 * total_passed / len(validations), 1))
-    return metadata
