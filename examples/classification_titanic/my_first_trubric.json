@@ -1,13 +1,85 @@
 {
-    "name": "my_first_trubric",
+    "name": "my_second_trubric",
     "model_name": "my_model",
-    "model_version": 0.1,
+    "model_version": "0.0.1",
     "data_context_name": "my_first_dataset",
-    "data_context_version": 0.1,
-    "metadata": {
-        "tag": "master"
-    },
+    "data_context_version": "0.1",
+    "tags": [
+        "master"
+    ],
     "validations": [
+        {
+            "validation_type": "validate_minimum_functionality",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {}
+            },
+            "explanation": "**Minimum functionality validation.**\n\nValidates that a model correctly predicts all points in a given set of data. This dataset must be set\nin the `minimum_functionality_data` parameter of the DataContext.\n\nExample:\n```py\nfrom trubrics.validations import ModelValidator\nmodel_validator = ModelValidator(data=data_context, model=model)\nmodel_validator.validate_minimum_functionality()\n```\n\nArgs:\nseverity: severity of the validation. Can be either ['error', 'warning', 'experiment']. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving all data points that were not correctly predicted by the model.\n",
+            "outcome": "fail",
+            "severity": "warning",
+            "result": {
+                "number_of_failures": 2,
+                "errors_df": {
+                    "Sex": {
+                        "852": "female",
+                        "36": "male"
+                    },
+                    "Embarked": {
+                        "852": "C",
+                        "36": "C"
+                    },
+                    "Title": {
+                        "852": "Miss",
+                        "36": "Mr"
+                    },
+                    "Pclass": {
+                        "852": 3,
+                        "36": 3
+                    },
+                    "Age": {
+                        "852": 9.0,
+                        "36": null
+                    },
+                    "SibSp": {
+                        "852": 1,
+                        "36": 0
+                    },
+                    "Parch": {
+                        "852": 1,
+                        "36": 0
+                    },
+                    "Fare": {
+                        "852": 15.25,
+                        "36": 7.23
+                    },
+                    "Survived": {
+                        "852": 0,
+                        "36": 1
+                    },
+                    "predictions": {
+                        "852": 1,
+                        "36": 0
+                    }
+                }
+            }
+        },
+        {
+            "validation_type": "validate_performance_against_threshold",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "recall",
+                    "threshold": 0.7
+                }
+            },
+            "explanation": "**Performance validation versus a fixed threshold value.**\n\nCompares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.\n\nExample:\n```py\nfrom trubrics.validations import ModelValidator\nmodel_validator = ModelValidator(data=data_context, model=model)\nmodel_validator.validate_performance_against_threshold(\nmetric=\"recall\",\nthreshold=0.8\n)\n```\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nthreshold: the performance threshold that the model must attain.\ndataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual model performance calculated.\n",
+            "outcome": "pass",
+            "severity": "warning",
+            "result": {
+                "performance": 0.7184466019417476,
+                "sample_size": 295
+            }
+        },
         {
             "validation_type": "validate_performance_against_threshold",
             "validation_kwargs": {
@@ -36,36 +108,55 @@
             },
             "explanation": "**Performance validation versus a fixed threshold value.**\n\nCompares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.\n\nExample:\n```py\nfrom trubrics.validations import ModelValidator\nmodel_validator = ModelValidator(data=data_context, model=model)\nmodel_validator.validate_performance_against_threshold(\nmetric=\"recall\",\nthreshold=0.8\n)\n```\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nthreshold: the performance threshold that the model must attain.\ndataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual model performance calculated.\n",
             "outcome": "pass",
-            "severity": "error",
+            "severity": "experiment",
             "result": {
                 "performance": 0.7115384615384616,
                 "sample_size": 295
             }
         },
         {
-            "validation_type": "validate_master_age",
+            "validation_type": "validate_test_performance_against_dummy",
             "validation_kwargs": {
                 "args": [],
                 "kwargs": {
-                    "age_limit_master": 13
+                    "metric": "accuracy"
                 }
             },
-            "explanation": "Validate that passengers with the title \"master\" are younger than a certain age\n\nArgs:\nage_limit_master: cut off value for master\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving dict of errors.\n",
+            "explanation": "**Performance validation of testing data versus a dummy baseline model.**\n\nTrains a DummyClassifier / DummyRegressor from [sklearn](https://scikit-learn.org/stable/modules/classes.html?highlight=dummy#module-sklearn.dummy) and compares performance against the model on the test set.\n\nExample:\n```py\nfrom trubrics.validations import ModelValidator\nmodel_validator = ModelValidator(data=data_context, model=model)\nmodel_validator.validate_test_performance_against_dummy(\nmetric=\"accuracy\",\nstrategy=\"stratified\"\n)\n```\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nstrategy: strategy of scikit-learns dummy model.\ndummy_kwargs: kwargs to be passed to dummy model.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either ['error', 'warning', 'experiment']. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the model's actual performance on the test set and the dummy model's performance.\n",
             "outcome": "pass",
-            "severity": "warning",
+            "severity": "error",
             "result": {
-                "errors_df": {
-                    "Sex": {},
-                    "Embarked": {},
-                    "Title": {},
-                    "Pclass": {},
-                    "Age": {},
-                    "SibSp": {},
-                    "Parch": {},
-                    "Fare": {},
-                    "Survived": {}
+                "dummy_performance": 0.6508474576271186,
+                "test_performance": 0.7966101694915254,
+                "sample_size": 295
+            }
+        },
+        {
+            "validation_type": "validate_test_performance_against_dummy",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "accuracy",
+                    "strategy": "constant",
+                    "dummy_kwargs": {
+                        "constant": 0
+                    }
                 }
+            },
+            "explanation": "**Performance validation of testing data versus a dummy baseline model.**\n\nTrains a DummyClassifier / DummyRegressor from [sklearn](https://scikit-learn.org/stable/modules/classes.html?highlight=dummy#module-sklearn.dummy) and compares performance against the model on the test set.\n\nExample:\n```py\nfrom trubrics.validations import ModelValidator\nmodel_validator = ModelValidator(data=data_context, model=model)\nmodel_validator.validate_test_performance_against_dummy(\nmetric=\"accuracy\",\nstrategy=\"stratified\"\n)\n```\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nstrategy: strategy of scikit-learns dummy model.\ndummy_kwargs: kwargs to be passed to dummy model.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either ['error', 'warning', 'experiment']. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the model's actual performance on the test set and the dummy model's performance.\n",
+            "outcome": "pass",
+            "severity": "error",
+            "result": {
+                "dummy_performance": 0.6508474576271186,
+                "test_performance": 0.7966101694915254,
+                "sample_size": 295
             }
         }
-    ]
+    ],
+    "run_by": null,
+    "git_commit": "9bb3232c4618d58dcd8bcb5aa01b10d52b56c007",
+    "metadata": null,
+    "timestamp": 1675106743,
+    "total_passed": 5,
+    "total_passed_percent": 83.3
 }
