@@ -1,7 +1,9 @@
 # Save validations as a trubric
+
 A `Trubric` is a list of validations that represents the gold standard a model must conform to. It also holds metadata about the [model](models.md) and [DataContext](data_context.md) that it has been run against. Once a `Trubric` has been saved (as .json), it can then be rerun against any other [model](models.md) and [DataContext](data_context.md) combination.
 
 ## 1. Save a Trubric
+
 Once an ensemble of validations have been built, the list can be input into the `Trubric` object and saved as a local .json file with the `.save_local()` method.
 
 !!!example
@@ -12,10 +14,10 @@ Once an ensemble of validations have been built, the list can be input into the 
     trubric = Trubric(
         name="my_first_trubric",
         model_name="my_model",
-        model_version=0.1,
+        model_version="0.0.1",
         data_context_name=data_context.name,
         data_context_version=data_context.version,
-        metadata={"tag": "master"},
+        tags=["master"],
         validations=validations,  # a list of validations generated from the ModelValidator
     )
     trubric.save_local(path=".")
@@ -24,9 +26,10 @@ Once an ensemble of validations have been built, the list can be input into the 
 You are in charge of versioning your [model](models.md) and [DataContext](data_context.md), and feeding in these values into the `Trubric` to keep track.
 
 !!!tip "Trubric object"
-    :::trubrics.validations.dataclass.Trubric
+:::trubrics.validations.dataclass.Trubric
 
 ## 2. Run a saved Trubric
+
 Saved `Trubric`s can be run from the [CLI](trubrics_cli.md) or directly from a python environment (notebook, script, ipython kernel, etc):
 
 !!!example
@@ -57,4 +60,4 @@ Saved `Trubric`s can be run from the [CLI](trubrics_cli.md) or directly from a p
 
 The example above makes use of the `TrubricRun` object, and a `run_trubric` generator function.
 !!!tip "TrubricRun object"
-    :::trubrics.validations.run.TrubricRun
+:::trubrics.validations.run.TrubricRun

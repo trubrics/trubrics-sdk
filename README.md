@@ -1,5 +1,6 @@
 # Welcome to the trubrics-sdk
--------
+
+---
 
 <center>
 
@@ -7,14 +8,16 @@
 
 [trubrics.com](https://www.trubrics.com/home)
 
-*Investigate models, collaborate across teams, validate machine learning.*
+_Investigate models, collaborate across teams, validate machine learning._
+
 </center>
 
--------
+---
 
 The trubrics-sdk is a python library for validating machine learning with data science and domain expertise. This is achieved by collecting business user feedback, creating actionable validation points by combining the feedback with data science knowledge, and building repeatable validation checklists - a trubric.
 
 ## Key Features
+
 - Collect feedback from business users on models with python web development components with [Streamlit](https://streamlit.io/), [Dash](https://dash.plotly.com/) or [Gradio](https://gradio.app/).
 - Out of the box & custom validations (python functions) to build around models & datasets with the **trubrics ModelValidator** (currently supporting tabular data).
 - **Trubrics CLI** tool to run a list of saved validations (a **trubric**) against new models or datasets in a CI/CD/CT pipeline.
@@ -22,14 +25,17 @@ The trubrics-sdk is a python library for validating machine learning with data s
 
 ![](./assets/trubrics-explain-dark.png#gh-dark-mode-only)
 ![](./assets/trubrics-explain-light.png#gh-light-mode-only)
+
 </center>
 
 ## Install (Python 3.7+)
+
 ```console
 (venv)$ pip install trubrics
 ```
 
 ## Validate a model with the ModelValidator
+
 There are three basic steps to creating model validations with the trubrics-sdk:
 
 1. Initialise a `DataContext`, that wraps ML datasets and metadata into a trubrics friendly object.
@@ -37,6 +43,7 @@ There are three basic steps to creating model validations with the trubrics-sdk:
 3. Group the list of validations created into a `Trubric`, that can then be saved to a local .json file.
 
 Try out these steps by creating your own Trubric with this example:
+
 ```py
 from trubrics.context import DataContext
 from trubrics.example import get_titanic_data_and_model
@@ -63,11 +70,12 @@ trubric = Trubric(
 trubric.save_local(path=".")
 ```
 
-The trubric defines the gold standard of validations required for the project, and may be used to validate any combination of model and `DataContext`. Once saved as a .json, the trubric may be run directly with a [CLI](https://trubrics.github.io/trubrics-sdk/run_trubrics/).
+The trubric defines the gold standard of validations required for the project, and may be used to validate any combination of model and `DataContext`. Once saved as a .json, the trubric may be run directly from the [CLI](https://trubrics.github.io/trubrics-sdk/run_trubrics/).
 
-*See a full tutorial on the titanic dataset [here](https://trubrics.github.io/trubrics-sdk/notebooks/titanic-demo.html)*.
+_See a full tutorial on the titanic dataset [here](https://trubrics.github.io/trubrics-sdk/notebooks/titanic-demo.html)_.
 
 ## Collect user feedback with the FeedbackCollector
+
 Trubrics feedback components help you to collect feedback on your models with your favourite python library. Once feedback has been collected from business users, it should be translated into validation points to ensure repeatable checking throughout the lifetime of the model. Add the trubrics feedback component to your ML apps now to start collecting feedback:
 
 <table>
@@ -158,10 +166,13 @@ demo.launch()
 </table>
 
 You can view our demo user feedback app, using the streamlit feedback collector and an example experimentation tool, on the titanic dataset & model on [Hugging Face Spaces](https://huggingface.co/spaces/trubrics/trubrics-titanic-demo), or run it locally with the CLI command:
+
 ```console
 (venv)$ trubrics example-app
 ```
+
 ![img](assets/titanic-feedback-example.png)
 
 ## Watch our getting started demo
+
 [![img](assets/yt-gs.png)](https://www.youtube.com/watch?v=gMK2ut_I4a0)
