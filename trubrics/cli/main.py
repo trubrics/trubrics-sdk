@@ -185,7 +185,7 @@ def run(
 
     # save new trubric to ui
     if save_ui is True:
-        if "email" in trubrics_config.keys():
+        if trubrics_config["email"] is not None:
             new_trubric.save_ui()
         else:
             typer.echo(
