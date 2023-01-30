@@ -86,11 +86,11 @@ class Trubric(BaseModel):
     data_context_name: str
     data_context_version: str
     tags: List[Optional[str]] = []
-    run_by: Optional[str] = None
-    timestamp: int = int(datetime.now().timestamp())
-    git_commit: str = Repo(search_parent_directories=True).head.object.hexsha
-    metadata: Optional[Dict[str, str]] = None
     validations: List[Validation]
+    run_by: Optional[str] = None
+    git_commit: Optional[str] = None
+    metadata: Optional[Dict[str, str]] = None
+    timestamp: Optional[int] = None
     total_passed: Optional[int] = None
     total_passed_percent: Optional[float] = None
 
@@ -98,6 +98,7 @@ class Trubric(BaseModel):
         extra = "forbid"
 
     def save_local(self, path: Optional[str] = None):
+        self._set_fields_on_save()
         if path is None:
             path = f"./{self.name}.json"
         with open(Path(path).absolute(), "w") as file:
@@ -110,8 +111,7 @@ class Trubric(BaseModel):
             trubrics_config.firebase_auth_api_url, trubrics_config.email, trubrics_config.password
         )
         self.run_by = trubrics_config.email
-        self.total_passed = len([a for a in self.validations if a.outcome == "pass"])
-        self.total_passed_percent = round(100 * self.total_passed / len(self.validations), 1)
+        self._set_fields_on_save()
 
         add_document_to_project_subcollection(
             auth,
@@ -122,3 +122,9 @@ class Trubric(BaseModel):
             document_json=self.json(),
         )
         logger.info("Trubric saved to the Trubrics Manager.")
+
+    def _set_fields_on_save(self):
+        self.total_passed = len([a for a in self.validations if a.outcome == "pass"])
+        self.total_passed_percent = round(100 * self.total_passed / len(self.validations), 1)
+        self.timestamp = int(datetime.now().timestamp())
+        self.git_commit = Repo(search_parent_directories=True).head.object.hexsha
