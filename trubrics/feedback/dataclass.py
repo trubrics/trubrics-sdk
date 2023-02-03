@@ -16,22 +16,22 @@ class Feedback(BaseModel):
 
     title: str
     description: str
-    tags: Optional[List[str]] = None
     model_name: str = "my_model"
     model_version: str = "0.0.1"
     data_context_name: str = "my_data_context"
     data_context_version: str = "0.0.1"
-    git_commit: str = Repo(search_parent_directories=True).head.object.hexsha
     collaborators: List[Optional[str]] = []
     open: bool = True
-    timestamp: int = int(datetime.now().timestamp())
+    tags: Optional[List[str]] = None
+    git_commit: Optional[str] = None
+    timestamp: Optional[int] = None
     created_by: Optional[str] = None
     closed_on: Optional[str] = None
     closed_by: Optional[str] = None
-    discussion: List[Dict[str, str]] = []
-    metadata: Optional[Dict[str, Union[List[Any], float, int, str, dict]]]
+    metadata: Optional[Dict[str, Union[List[Any], float, int, str, dict]]] = None
 
     def save_local(self, path: str, file_name: Optional[str] = None):
+        self._set_fields_on_save()
         if path is None:
             raise TypeError("Specify the local path where you would like to save your Trubric json.")
         if file_name is None:
@@ -42,13 +42,14 @@ class Feedback(BaseModel):
 
     def save_ui(self):
         trubrics_config = load_trubrics_config()
+        self._set_fields_on_save()
         self.created_by = trubrics_config.email
         self.collaborators.append(trubrics_config.email)
         auth = get_trubrics_auth_token(
             trubrics_config.firebase_auth_api_url, trubrics_config.email, trubrics_config.password
         )
 
-        response = add_document_to_project_subcollection(
+        add_document_to_project_subcollection(
             auth,
             firestore_api_url=trubrics_config.firestore_api_url,
             project=trubrics_config.project,
@@ -56,6 +57,9 @@ class Feedback(BaseModel):
             document_id=self.timestamp,
             document_json=self.json(),
         )
-        print(response)
 
         logger.info("Feedback issue saved to the Trubrics Manager.")
+
+    def _set_fields_on_save(self):
+        self.timestamp = int(datetime.now().timestamp())
+        self.git_commit = Repo(search_parent_directories=True).head.object.hexsha

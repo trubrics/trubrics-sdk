@@ -80,13 +80,13 @@ class Trubric(BaseModel):
         validations: list of validations (defined by Validation)
     """
 
-    name: str = "my_trubric"
+    name: str
     model_name: str = "my_model"
-    model_version: str = "0.1"
-    data_context_name: str
-    data_context_version: str
-    tags: List[Optional[str]] = []
+    model_version: str = "0.0.1"
+    data_context_name: str = "my_data_context"
+    data_context_version: str = "0.0.1"
     validations: List[Validation]
+    tags: List[Optional[str]] = []
     run_by: Optional[str] = None
     git_commit: Optional[str] = None
     metadata: Optional[Dict[str, str]] = None
