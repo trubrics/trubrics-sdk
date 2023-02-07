@@ -39,8 +39,8 @@ The trubrics-sdk is a python library for validating machine learning with data s
 There are three basic steps to creating model validations with the trubrics-sdk:
 
 1. Initialise a `DataContext`, that wraps ML datasets and metadata into a trubrics friendly object.
-2. Feed the `DataContext` and an ML model (scikit-learn or [any other model](https://trubrics.github.io/trubrics-sdk/models/)) into the `ModelValidator`, that holds a number of [out-of-the-box validations](https://trubrics.github.io/trubrics-sdk/validations/) and can also be used to build [custom validations](https://trubrics.github.io/trubrics-sdk/custom_validations/).
-3. Group the list of validations created into a `Trubric`, that can then be saved to a local .json file.
+2. Build validations with the `ModelValidator`, feeding in the `DataContext` and an ML model (scikit-learn or [any other model](https://trubrics.github.io/trubrics-sdk/models/)). It holds a number of [out-of-the-box validations](https://trubrics.github.io/trubrics-sdk/validations/) and can also be used to build [custom validations](https://trubrics.github.io/trubrics-sdk/custom_validations/) from a python function.
+3. Group validations into a `Trubric`, that can then be saved to a .json file and rerun against any model / dataset.
 
 Try out these steps by creating your own Trubric with this example:
 
@@ -51,16 +51,20 @@ from trubrics.validations import ModelValidator, Trubric
 
 _, test_df, model = get_titanic_data_and_model()
 
+# 1. Init DataContext
 data_context = DataContext(
     testing_data=test_df,  # pandas dataframe of data to validate model on
     target="Survived",
 )
 
+# 2. Build validations with ModelValidator
 model_validator = ModelValidator(data=data_context, model=model)
 validations = [
     model_validator.validate_performance_against_threshold(metric="accuracy", threshold=0.7),
     model_validator.validate_feature_in_top_n_important_features(feature="Age", top_n_features=3),
 ]
+
+# 3. Group validations into a Trubric
 trubric = Trubric(
     name="my_first_trubric",
     data_context_name=data_context.name,
