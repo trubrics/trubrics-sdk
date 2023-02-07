@@ -10,7 +10,7 @@ def test_data_context_attributes(dummy_testing_data):
     dc = DataContext(testing_data=dummy_testing_data, target="target", business_columns=business_columns)
 
     assert dc.name == "my_dataset"
-    assert dc.version == 0.1
+    assert dc.version == "v0.0.1"
     assert dc.features == ["feature_1", "feature 2"]
     assert all(
         [
