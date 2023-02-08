@@ -18,10 +18,13 @@ from trubrics.validations.run import TrubricRun, run_trubric
 
 app = typer.Typer()
 
+# no stress, this is not a secret api key
+FIREBASE_API_KEY = "AIzaSyBeXhMQclnlc02v1DhE2o_jSY2B8g1SC38"
+
 
 @app.command()
 def init(
-    api_key: str = "AIzaSyBeXhMQclnlc02v1DhE2o_jSY2B8g1SC38",
+    api_key: str = FIREBASE_API_KEY,
     run_context_path: str = typer.Option(
         ..., prompt="Enter the path to your trubric run .py file (e.g. examples/classification_titanic/trubric_run.py)"
     ),
@@ -30,8 +33,7 @@ def init(
     """The CLI `trubrics init` command for initialising trubrics config.
 
     Args:
-        api_key: the key towards
-        trubric_config_path: a path to save the .trubrics_config.json to
+        api_key: the firebase api key
     """
     run_ctx_path = Path(run_context_path).absolute()
     if not run_ctx_path.exists():
@@ -83,6 +85,15 @@ def init(
                 )
                 typer.echo(message)
                 raise typer.Abort()
+        else:
+            message = typer.style(
+                f"Organisation '{firestore_api_url.split('/')[-1]}' has no projects created."
+                " Navigate to the Trubrics UI to add a project.",
+                fg=typer.colors.RED,
+                bold=True,
+            )
+            typer.echo(message)
+            raise typer.Abort()
 
         trubrics_config = TrubricsConfig(
             run_context_path=str(run_ctx_path),

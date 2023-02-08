@@ -121,7 +121,7 @@ class Trubric(BaseModel):
             document_id=self.timestamp,
             document_json=self.json(),
         )
-        logger.info("Trubric saved to the Trubrics Manager.")
+        logger.info("Trubric saved to the Trubrics UI.")
 
     def _set_fields_on_save(self):
         self.total_passed = len([a for a in self.validations if a.outcome == "pass"])

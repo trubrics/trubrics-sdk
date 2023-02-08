@@ -21,6 +21,7 @@ def get_trubrics_auth_token(firebase_auth_api_url, email, password):
     else:
         return {
             "idToken": auth_response["idToken"],
+            "email": auth_response["email"],
             "uid": auth_response["localId"],
             "displayName": auth_response["displayName"],
         }

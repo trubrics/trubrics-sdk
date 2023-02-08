@@ -8,10 +8,10 @@ from trubrics.feedback.dataclass import Feedback
 
 
 def collect_feedback_dash(
-    path: str,
-    file_name: Optional[str] = None,
+    path: Optional[str] = None,
     metadata: Optional[Dict[str, Any]] = None,
     tags: Optional[List[str]] = None,
+    save_ui: bool = False,
 ):
     title_input = html.Div(
         [
@@ -54,7 +54,9 @@ def collect_feedback_dash(
                 return config.FEEDBACK_NOT_SAVED, {"color": "Red"}, title, description
             else:
                 feedback = Feedback(title=title, description=description, tags=tags, metadata=metadata)
-                feedback.save_local(path=path, file_name=file_name)
+                feedback.save_local(path=path)
+                if save_ui:
+                    feedback.save_ui()
                 return config.FEEDBACK_SAVED, {"color": "Green"}, None, None
         else:
             return None, None, title, description

@@ -46,7 +46,15 @@ def get_trubrics_firestore_api_url(auth):
     structured_query = {
         "structuredQuery": {
             "from": [{"collectionId": "organisations"}],
-            "select": {"fields": [{"fieldPath": auth["uid"]}]},
+            "where": {
+                "fieldFilter": {
+                    "field": {"fieldPath": "users"},
+                    "op": "ARRAY_CONTAINS",
+                    "value": {
+                        "stringValue": auth["email"],
+                    },
+                }
+            },
         }
     }
     organisation_route = json.loads(
@@ -66,7 +74,7 @@ def list_projects_in_organisation(firestore_api_url, auth):
             headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
         ).text
     )
-    return [project["name"].split("/")[-1] for project in projects_res["documents"]]
+    return [project["name"].split("/")[-1] for project in projects_res["documents"]] if len(projects_res) != 0 else []
 
 
 def add_document_to_project_subcollection(auth, firestore_api_url, project, subcollection, document_id, document_json):

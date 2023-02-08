@@ -5,7 +5,7 @@ from trubrics.feedback import collect_feedback_dash
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-app.layout = html.Div([collect_feedback_dash(path=".")])
+app.layout = html.Div([collect_feedback_dash(save_ui=True)])
 
 if __name__ == "__main__":
     app.run_server(debug=True)

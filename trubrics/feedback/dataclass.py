@@ -30,19 +30,20 @@ class Feedback(BaseModel):
     closed_by: Optional[str] = None
     metadata: Optional[Dict[str, Union[List[Any], float, int, str, dict]]] = None
 
-    def save_local(self, path: str, file_name: Optional[str] = None):
+    def save_local(self, path: Optional[str] = None):
         self._set_fields_on_save()
         if path is None:
-            raise TypeError("Specify the local path where you would like to save your Trubric json.")
-        if file_name is None:
-            file_name = "feedback.json"
-        with open(Path(path) / file_name, "w") as file:
+            path = f"./{self.timestamp}_feedback.json"
+        with open(Path(path).absolute(), "w") as file:
             file.write(self.json(indent=4))
-            logger.info(f"Feedback saved to {Path(path) / file_name}.")
+            logger.info(f"Feedback saved to {path}.")
 
     def save_ui(self):
         trubrics_config = load_trubrics_config()
         self._set_fields_on_save()
+        if trubrics_config.email is None:
+            raise TypeError("Trubrics config not set. Run `trubrics init` to configure.")
+
         self.created_by = trubrics_config.email
         self.collaborators.append(trubrics_config.email)
         auth = get_trubrics_auth_token(
@@ -58,7 +59,7 @@ class Feedback(BaseModel):
             document_json=self.json(),
         )
 
-        logger.info("Feedback issue saved to the Trubrics Manager.")
+        logger.info("Feedback issue saved to the Trubrics UI.")
 
     def _set_fields_on_save(self):
         self.timestamp = int(datetime.now().timestamp())
