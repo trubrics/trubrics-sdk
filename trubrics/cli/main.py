@@ -99,6 +99,7 @@ def init(
             run_context_path=str(run_ctx_path),
             firebase_auth_api_url=firebase_auth_api_url,
             firestore_api_url=firestore_api_url,
+            username=auth["displayName"],
             email=email,
             password=password,
             project=project_name,  # type: ignore

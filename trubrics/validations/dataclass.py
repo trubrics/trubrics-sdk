@@ -87,7 +87,7 @@ class Trubric(BaseModel):
     data_context_version: str = "0.0.1"
     validations: List[Validation]
     tags: List[Optional[str]] = []
-    run_by: Optional[str] = None
+    run_by: Optional[Dict[str, str]] = None
     git_commit: Optional[str] = None
     metadata: Optional[Dict[str, str]] = None
     timestamp: Optional[int] = None
@@ -110,7 +110,10 @@ class Trubric(BaseModel):
         auth = get_trubrics_auth_token(
             trubrics_config.firebase_auth_api_url, trubrics_config.email, trubrics_config.password
         )
-        self.run_by = trubrics_config.email
+        if trubrics_config.email is None or trubrics_config.username is None:
+            raise TypeError("Trubrics config not set. Run `trubrics init` to configure.")
+
+        self.run_by = {"email": trubrics_config.email, "displayName": trubrics_config.username}
         self._set_fields_on_save()
 
         add_document_to_project_subcollection(

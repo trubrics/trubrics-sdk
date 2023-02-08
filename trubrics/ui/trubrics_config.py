@@ -8,6 +8,7 @@ class TrubricsConfig(BaseModel):
     run_context_path: str
     firebase_auth_api_url: Optional[str] = None
     firestore_api_url: Optional[str] = None
+    username: Optional[str] = None
     email: Optional[str] = None
     password: Optional[str] = None
     project: Optional[str] = None

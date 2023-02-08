@@ -25,7 +25,7 @@ class Feedback(BaseModel):
     tags: Optional[List[str]] = None
     git_commit: Optional[str] = None
     timestamp: Optional[int] = None
-    created_by: Optional[str] = None
+    created_by: Optional[Dict[str, str]] = None
     closed_on: Optional[str] = None
     closed_by: Optional[str] = None
     metadata: Optional[Dict[str, Union[List[Any], float, int, str, dict]]] = None
@@ -41,10 +41,10 @@ class Feedback(BaseModel):
     def save_ui(self):
         trubrics_config = load_trubrics_config()
         self._set_fields_on_save()
-        if trubrics_config.email is None:
+        if trubrics_config.email is None or trubrics_config.username is None:
             raise TypeError("Trubrics config not set. Run `trubrics init` to configure.")
 
-        self.created_by = trubrics_config.email
+        self.created_by = {"email": trubrics_config.email, "displayName": trubrics_config.username}
         self.collaborators.append(trubrics_config.email)
         auth = get_trubrics_auth_token(
             trubrics_config.firebase_auth_api_url, trubrics_config.email, trubrics_config.password
