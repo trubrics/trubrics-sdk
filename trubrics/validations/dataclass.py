@@ -116,7 +116,7 @@ class Trubric(BaseModel):
         self.run_by = {"email": trubrics_config.email, "displayName": trubrics_config.username}
         self._set_fields_on_save()
 
-        add_document_to_project_subcollection(
+        res = add_document_to_project_subcollection(
             auth,
             firestore_api_url=trubrics_config.firestore_api_url,
             project=trubrics_config.project,
@@ -124,7 +124,12 @@ class Trubric(BaseModel):
             document_id=self.timestamp,
             document_json=self.json(),
         )
-        logger.info("Trubric saved to the Trubrics UI.")
+        if "error" in res:
+            error_msg = f"Error in pushing trubric to the Trubrics UI: {res}"
+            logger.error(error_msg)
+            raise Exception(error_msg)
+        else:
+            logger.info("Trubric saved to the Trubrics UI.")
 
     def _set_fields_on_save(self):
         self.total_passed = len([a for a in self.validations if a.outcome == "pass"])

@@ -50,7 +50,7 @@ class Feedback(BaseModel):
             trubrics_config.firebase_auth_api_url, trubrics_config.email, trubrics_config.password
         )
 
-        add_document_to_project_subcollection(
+        res = add_document_to_project_subcollection(
             auth,
             firestore_api_url=trubrics_config.firestore_api_url,
             project=trubrics_config.project,
@@ -58,8 +58,12 @@ class Feedback(BaseModel):
             document_id=self.timestamp,
             document_json=self.json(),
         )
-
-        logger.info("Feedback issue saved to the Trubrics UI.")
+        if "error" in res:
+            error_msg = f"Error in pushing feedback issue to the Trubrics UI: {res}"
+            logger.error(error_msg)
+            raise Exception(error_msg)
+        else:
+            logger.info("Feedback issue saved to the Trubrics UI.")
 
     def _set_fields_on_save(self):
         self.timestamp = int(datetime.now().timestamp())
