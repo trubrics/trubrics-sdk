@@ -53,11 +53,11 @@ def init(
 
             firebase_auth_api_url = get_trubrics_firebase_auth_api_url(api_key)
             auth = get_trubrics_auth_token(firebase_auth_api_url, email, password)
-            if "uid" in auth.keys() and "idToken" in auth.keys():
-                firestore_api_url = get_trubrics_firestore_api_url(auth)
-            else:
-                rprint(auth)
+            if "error" in auth:
+                rprint(f"Error in login email '{email}' to the Trubrics UI: {auth['error']}")
                 raise typer.Abort()
+            else:
+                firestore_api_url = get_trubrics_firestore_api_url(auth)
 
             projects = list_projects_in_organisation(firestore_api_url=firestore_api_url, auth=auth)
             print()

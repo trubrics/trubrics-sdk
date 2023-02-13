@@ -25,7 +25,7 @@ class Feedback(BaseModel):
     tags: Optional[List[str]] = None
     git_commit: Optional[str] = None
     timestamp: Optional[int] = None
-    created_by: Optional[Dict[str, str]] = None
+    created_by: Optional[Dict[str, Optional[str]]] = None
     closed_on: Optional[str] = None
     closed_by: Optional[str] = None
     metadata: Optional[Dict[str, Union[List[Any], float, int, str, dict]]] = None
@@ -38,32 +38,35 @@ class Feedback(BaseModel):
             file.write(self.json(indent=4))
             logger.info(f"Feedback saved to {path}.")
 
-    def save_ui(self):
+    def save_ui(self, email: str, password: str):
         trubrics_config = load_trubrics_config()
         self._set_fields_on_save()
-        if trubrics_config.email is None or trubrics_config.username is None:
+        if trubrics_config.firestore_api_url is None or trubrics_config.project is None:
             raise TypeError("Trubrics config not set. Run `trubrics init` to configure.")
 
-        self.created_by = {"email": trubrics_config.email, "displayName": trubrics_config.username}
-        self.collaborators.append(trubrics_config.email)
-        auth = get_trubrics_auth_token(
-            trubrics_config.firebase_auth_api_url, trubrics_config.email, trubrics_config.password
-        )
-
-        res = add_document_to_project_subcollection(
-            auth,
-            firestore_api_url=trubrics_config.firestore_api_url,
-            project=trubrics_config.project,
-            subcollection="feedback",
-            document_id=self.timestamp,
-            document_json=self.json(),
-        )
-        if "error" in res:
-            error_msg = f"Error in pushing feedback issue to the Trubrics UI: {res}"
+        auth = get_trubrics_auth_token(trubrics_config.firebase_auth_api_url, email, password)
+        if "error" in auth:
+            error_msg = f"Error in pushing feedback issue with email {email} to the Trubrics UI: {auth['error']}"
             logger.error(error_msg)
             raise Exception(error_msg)
         else:
-            logger.info("Feedback issue saved to the Trubrics UI.")
+            self.created_by = {"email": auth["email"], "displayName": auth["displayName"]}
+            self.collaborators.append(auth["email"])
+
+            res = add_document_to_project_subcollection(
+                auth,
+                firestore_api_url=trubrics_config.firestore_api_url,
+                project=trubrics_config.project,
+                subcollection="feedback",
+                document_id=self.timestamp,
+                document_json=self.json(),
+            )
+            if "error" in res:
+                error_msg = f"Error in pushing feedback issue to the Trubrics UI: {res}"
+                logger.error(error_msg)
+                raise Exception(error_msg)
+            else:
+                logger.info("Feedback issue saved to the Trubrics UI.")
 
     def _set_fields_on_save(self):
         self.timestamp = int(datetime.now().timestamp())

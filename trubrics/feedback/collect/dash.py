@@ -56,7 +56,8 @@ def collect_feedback_dash(
                 feedback = Feedback(title=title, description=description, tags=tags, metadata=metadata)
                 feedback.save_local(path=path)
                 if save_ui:
-                    feedback.save_ui()
+                    raise NotImplementedError()
+                    # feedback.save_ui()
                 return config.FEEDBACK_SAVED, {"color": "Green"}, None, None
         else:
             return None, None, title, description

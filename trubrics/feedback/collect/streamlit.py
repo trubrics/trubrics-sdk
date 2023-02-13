@@ -7,8 +7,7 @@ from trubrics.feedback.dataclass import Feedback
 
 
 def collect_feedback_streamlit(
-    path: str,
-    file_name: Optional[str] = None,
+    save_ui: bool = False,
     metadata: Optional[Dict[str, Any]] = None,
     tags: Optional[List[str]] = None,
 ):
@@ -16,6 +15,12 @@ def collect_feedback_streamlit(
     with st.form("form", clear_on_submit=True):
         title = st.text_input(label=config.TITLE, help=config.TITLE_EXPLAIN, key="title")
         description = st.text_input(label=config.DESCRIPTION, help=config.DESCRIPTION_EXPLAIN, key="description")
+        if save_ui:
+            col1, col2 = st.columns(2)
+            with col1:
+                email = st.text_input(label="User email", key="email")
+            with col2:
+                password = st.text_input(label="User password", key="password", type="password")
         submitted = st.form_submit_button(config.FEEDBACK_SAVE_BUTTON)
         if submitted:
             if len(title) == 0 or len(description) == 0:
@@ -25,7 +30,10 @@ def collect_feedback_streamlit(
                 )
             else:
                 feedback = Feedback(title=title, description=description, tags=tags, metadata=metadata)
-                feedback.save_ui()
+                if save_ui:
+                    feedback.save_ui(email, password)  # type: ignore
+                else:
+                    feedback.save_local()
                 st.markdown(
                     config.FEEDBACK_SAVED_HTML,
                     unsafe_allow_html=True,
