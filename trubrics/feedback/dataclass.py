@@ -46,7 +46,7 @@ class Feedback(BaseModel):
 
         auth = get_trubrics_auth_token(trubrics_config.firebase_auth_api_url, email, password)
         if "error" in auth:
-            error_msg = f"Error in pushing feedback issue with email {email} to the Trubrics UI: {auth['error']}"
+            error_msg = f"Error in pushing feedback issue with email '{email}' to the Trubrics UI: {auth['error']}"
             logger.error(error_msg)
             raise Exception(error_msg)
         else:

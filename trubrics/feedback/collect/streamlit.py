@@ -18,9 +18,9 @@ def collect_feedback_streamlit(
         if save_ui:
             col1, col2 = st.columns(2)
             with col1:
-                email = st.text_input(label="User email", key="email")
+                email = st.text_input(label=config.USER_EMAIL, key="email")
             with col2:
-                password = st.text_input(label="User password", key="password", type="password")
+                password = st.text_input(label=config.USER_PASSWORD, key="password", type="password")
         submitted = st.form_submit_button(config.FEEDBACK_SAVE_BUTTON)
         if submitted:
             if len(title) == 0 or len(description) == 0:

@@ -1,23 +1,32 @@
+from typing import Any, Dict, List, Optional
+
 import gradio as gr
 
 from trubrics.feedback import config
 from trubrics.feedback.dataclass import Feedback
 
 
-def collect_feedback_gradio(path: str, file_name=None, tags=None, metadata=None, save_ui: bool = False):
-    def get_feedback(title: str, description: str):
+def collect_feedback_gradio(
+    save_ui: bool = False,
+    metadata: Optional[Dict[str, Any]] = None,
+    tags: Optional[List[str]] = None,
+):
+    def get_feedback(title: str, description: str, email: str, password: str):
         if not (len(title) == 0 or len(description) == 0):
-            feedback = Feedback(title=title, description=description, tags=tags, metadata={"tags": ["some tag"]})
-            feedback.save_local()
+            feedback = Feedback(title=title, description=description, tags=tags, metadata=metadata)
             if save_ui:
-                raise NotImplementedError()
-                # feedback.save_ui()
+                feedback.save_ui(email, password)
+            else:
+                feedback.save_local()
             return config.FEEDBACK_SAVED_HTML
         else:
             return config.FEEDBACK_NOT_SAVED_HTML
 
     title = gr.Textbox(label=config.TITLE, placeholder=config.TITLE_EXPLAIN)
     description = gr.Textbox(label=config.DESCRIPTION, placeholder=config.DESCRIPTION_EXPLAIN, lines=5)
+    with gr.Row():
+        email = gr.Textbox(placeholder=config.USER_EMAIL, show_label=False, type="email")
+        password = gr.Textbox(placeholder=config.USER_PASSWORD, show_label=False, type="password")
     feedback_button = gr.Button(config.FEEDBACK_SAVE_BUTTON)
-    kwargs = {"fn": get_feedback, "inputs": [title, description], "outputs": gr.HTML()}
+    kwargs = {"fn": get_feedback, "inputs": [title, description, email, password], "outputs": gr.HTML()}
     return feedback_button.click(**kwargs)
