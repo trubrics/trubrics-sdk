@@ -4,65 +4,7 @@
     "model_version": "0.0.1",
     "data_context_name": "my_first_dataset",
     "data_context_version": "0.1",
-    "tags": [
-        "master"
-    ],
     "validations": [
-        {
-            "validation_type": "validate_minimum_functionality",
-            "validation_kwargs": {
-                "args": [],
-                "kwargs": {}
-            },
-            "explanation": "**Minimum functionality validation.**\n\nValidates that a model correctly predicts all points in a given set of data. This dataset must be set\nin the `minimum_functionality_data` parameter of the DataContext.\n\nExample:\n```py\nfrom trubrics.validations import ModelValidator\nmodel_validator = ModelValidator(data=data_context, model=model)\nmodel_validator.validate_minimum_functionality()\n```\n\nArgs:\nseverity: severity of the validation. Can be either ['error', 'warning', 'experiment']. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving all data points that were not correctly predicted by the model.\n",
-            "outcome": "fail",
-            "severity": "warning",
-            "result": {
-                "number_of_failures": 2,
-                "errors_df": {
-                    "Sex": {
-                        "852": "female",
-                        "36": "male"
-                    },
-                    "Embarked": {
-                        "852": "C",
-                        "36": "C"
-                    },
-                    "Title": {
-                        "852": "Miss",
-                        "36": "Mr"
-                    },
-                    "Pclass": {
-                        "852": 3,
-                        "36": 3
-                    },
-                    "Age": {
-                        "852": 9.0,
-                        "36": null
-                    },
-                    "SibSp": {
-                        "852": 1,
-                        "36": 0
-                    },
-                    "Parch": {
-                        "852": 1,
-                        "36": 0
-                    },
-                    "Fare": {
-                        "852": 15.25,
-                        "36": 7.23
-                    },
-                    "Survived": {
-                        "852": 0,
-                        "36": 1
-                    },
-                    "predictions": {
-                        "852": 1,
-                        "36": 0
-                    }
-                }
-            }
-        },
         {
             "validation_type": "validate_performance_against_threshold",
             "validation_kwargs": {
@@ -153,10 +95,13 @@
             }
         }
     ],
+    "tags": [
+        "master"
+    ],
     "run_by": null,
-    "git_commit": "9bb3232c4618d58dcd8bcb5aa01b10d52b56c007",
+    "git_commit": "dda7602b62129ac3e4edc828d0f15444da9a4335",
     "metadata": null,
-    "timestamp": 1675106743,
+    "timestamp": 1676318801,
     "total_passed": 5,
-    "total_passed_percent": 83.3
+    "total_passed_percent": 100.0
 }

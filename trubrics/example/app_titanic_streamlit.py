@@ -32,7 +32,8 @@ st.markdown(prediction, unsafe_allow_html=True)
 
 st.title("Send model feedback")
 metadata = {"what_if_data": df.to_dict(), "what_if_prediction": wi_prediction}
-collect_feedback_streamlit(save_ui=True, tags=["Streamlit"], metadata=metadata)
+collect_feedback_streamlit(tags=["Streamlit"], metadata=metadata)
+# collect_feedback_streamlit(save_ui=True, tags=["Streamlit"], metadata=metadata)
 
 st.title("View data")
 explore_testing_data(data_context=data_context, model=model)
