@@ -14,13 +14,13 @@ _Investigate models, collaborate across teams, validate machine learning._
 
 ---
 
-The trubrics-sdk is a python library for validating machine learning with data science and domain expertise. This is achieved by collecting business user feedback, creating actionable validation points by combining the feedback with data science knowledge, and building repeatable validation checklists - a trubric.
+The trubrics-sdk is a python library for validating machine learning with data science and domain expertise. This is achieved by collecting business user feedback, creating ML validations with this feedback, and building repeatable validation checklists - a trubric.
 
 ## Key Features
 
-- Collect feedback from business users on models with python web development components with [Streamlit](https://streamlit.io/), [Dash](https://dash.plotly.com/) or [Gradio](https://gradio.app/).
-- Out of the box & custom validations (python functions) to build around models & datasets with the **trubrics ModelValidator** (currently supporting tabular data).
-- **Trubrics CLI** tool to run a list of saved validations (a **trubric**) against new models or datasets in a CI/CD/CT pipeline.
+- ML model validation with the [ModelValidator](#validate-a-model-with-the-modelvalidator)
+- Feedback collection on ML models / data from users with the [FeedbackCollector](#collect-user-feedback-with-the-feedbackcollector)
+- Track all validation runs and feedback [locally or in Trubrics](#track-all-validation-runs-and-feedback-locally-or-in-the-trubrics-platform)
 <center>
 
 ![](./assets/trubrics-explain-dark.png#gh-dark-mode-only)
@@ -176,6 +176,10 @@ You can view our demo user feedback app, using the streamlit feedback collector 
 ```
 
 ![img](assets/titanic-feedback-example.png)
+
+## Track all validation runs and feedback locally or in the Trubrics platform
+
+<p align="center"><img src="./assets/trubrics-run.gif"/></p>
 
 ## Watch our getting started demo
 
