@@ -12,6 +12,17 @@ def collect_feedback_gradio(
     tags: Optional[List[str]] = None,
     save_ui: bool = False,
 ):
+    """
+    A component to collect user feedback within a Gradio web application.
+
+    Args:
+        path: path to save feedback local .json. Defaults to "./<timestamp>_feedback.json"
+        metadata: any metric which the user wants to save into the feedback issue such as
+                  feature values, prediction, etc. Defaults to None.
+        tags: list of any tags for the feedback issue. Defaults to None.
+        save_ui: save to the Trubrics platform
+    """
+
     def get_feedback(title: str, description: str, email: str, password: str):
         if not (len(title) == 0 or len(description) == 0):
             feedback = Feedback(title=title, description=description, tags=tags, metadata=metadata)

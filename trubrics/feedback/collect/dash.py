@@ -13,6 +13,16 @@ def collect_feedback_dash(
     tags: Optional[List[str]] = None,
     save_ui: bool = False,
 ):
+    """
+    A component to collect user feedback within a Dash web application.
+
+    Args:
+        path: path to save feedback local .json. Defaults to "./<timestamp>_feedback.json"
+        metadata: any metric which the user wants to save into the feedback issue such as
+                  feature values, prediction, etc. Defaults to None.
+        tags: list of any tags for the feedback issue. Defaults to None.
+        save_ui: save to the Trubrics platform
+    """
     title_input = html.Div(
         [
             dbc.Label(config.TITLE, html_for="title"),

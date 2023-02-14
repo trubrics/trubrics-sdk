@@ -12,7 +12,16 @@ def collect_feedback_streamlit(
     tags: Optional[List[str]] = None,
     save_ui: bool = False,
 ):
-    """Get user feedback and save."""
+    """
+    A component to collect user feedback within a Streamlit web application.
+
+    Args:
+        path: path to save feedback local .json. Defaults to "./<timestamp>_feedback.json"
+        metadata: any metric which the user wants to save into the feedback issue such as
+                  feature values, prediction, etc. Defaults to None.
+        tags: list of any tags for the feedback issue. Defaults to None.
+        save_ui: save to the Trubrics platform
+    """
     with st.form("form", clear_on_submit=True):
         title = st.text_input(label=config.TITLE, help=config.TITLE_EXPLAIN, key="title")
         description = st.text_input(label=config.DESCRIPTION, help=config.DESCRIPTION_EXPLAIN, key="description")
