@@ -99,10 +99,10 @@ Trubrics feedback components help you to collect feedback on your models with yo
 from trubrics.feedback import collect_feedback_streamlit
 
 collect_feedback_streamlit(
-    path=".",  # path to feedback .json file
-    file_name=None,  # file name, if None defaults to feedback.json
-    metadata=None,  # a dict of any metadata to save from you app
-    tags=None  # a list of any tags for this feedback file
+    path="./feedback_issue.json",  # path to save feedback .json
+    tags=["streamlit"],
+    metadata={"some": "metadata"},
+    save_ui=False,  # set to True to save feedback to Trubrics
 )
 ```
 
@@ -136,12 +136,7 @@ app = Dash(__name__)
 
 app.layout = html.Div(
     [
-        collect_feedback_dash(
-            path=".",  # path to feedback .json file
-            file_name=None,  # file name, if None defaults to feedback.json
-            metadata=None,  # a dict of any metadata to save from you app
-            tags=None  # a list of any tags for this feedback file
-        )
+        collect_feedback_dash()
     ]
 )
 
@@ -165,12 +160,7 @@ import gradio as gr
 from trubrics.feedback import collect_feedback_gradio
 
 with gr.Blocks() as demo:
-    collect_feedback_gradio(
-        path=".",  # path to feedback .json file
-        file_name=None,  # file name, if None defaults to feedback.json
-        metadata=None,  # a dict of any metadata to save from you app
-        tags=None  # a list of any tags for this feedback file
-    )
+    collect_feedback_gradio()
 
 demo.launch()
 ```
