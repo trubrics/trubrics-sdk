@@ -192,8 +192,8 @@ The trubrics CLI can be used to run validations and track all runs locally, or d
 
 ### View your validations and discuss feedback issues directly in Trubrics
 
-[<p align="center"><img src="./assets/trubrics-login.png"/></p>](https://trubrics.com/demo/)
+[![img](assets/trubrics-login.png)](https://trubrics.com/demo/)
 
 ## Watch our getting started demo
 
-[<p align="center"><img src="./assets/yt-gs.png"/></p>](https://www.youtube.com/watch?v=gMK2ut_I4a0)
+[![img](assets/yt-gs.png)](https://www.youtube.com/watch?v=gMK2ut_I4a0)
