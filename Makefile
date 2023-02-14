@@ -35,7 +35,7 @@ example-run-trubric:
 save-titanic-tutorial-notebook:
 	@python -m ipykernel install --user --name=trubrics-venv
 	@jupyter nbconvert \
-	--execute examples/classification_titanic/titanic-demo.ipynb \
+	--execute examples/classification_titanic/titanic-full-demo.ipynb \
 	--to html --output-dir docs/notebooks/
 
 streamlit-titanic:
