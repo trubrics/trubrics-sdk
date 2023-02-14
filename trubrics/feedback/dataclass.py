@@ -2,6 +2,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
+from git import InvalidGitRepositoryError
 from git.repo import Repo
 from loguru import logger
 from pydantic import BaseModel
@@ -70,4 +71,10 @@ class Feedback(BaseModel):
 
     def _set_fields_on_save(self):
         self.timestamp = int(datetime.now().timestamp())
-        self.git_commit = Repo(search_parent_directories=True).head.object.hexsha
+        try:
+            self.git_commit = Repo(search_parent_directories=True).head.object.hexsha
+        except InvalidGitRepositoryError:
+            logger.warning(
+                "Current directory is not a git repository. Run `trubrics run` inside a git repository to save the"
+                " commit hash."
+            )

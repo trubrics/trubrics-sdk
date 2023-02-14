@@ -2,6 +2,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from git import InvalidGitRepositoryError
 from git.repo import Repo
 from loguru import logger
 from pydantic import BaseModel, validator
@@ -135,4 +136,10 @@ class Trubric(BaseModel):
         self.total_passed = len([a for a in self.validations if a.outcome == "pass"])
         self.total_passed_percent = round(100 * self.total_passed / len(self.validations), 1)
         self.timestamp = int(datetime.now().timestamp())
-        self.git_commit = Repo(search_parent_directories=True).head.object.hexsha
+        try:
+            self.git_commit = Repo(search_parent_directories=True).head.object.hexsha
+        except InvalidGitRepositoryError:
+            logger.warning(
+                "Current directory is not a git repository. Run `trubrics run` inside a git repository to save the"
+                " commit hash."
+            )
