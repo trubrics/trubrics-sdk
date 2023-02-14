@@ -1,10 +1,15 @@
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from git import InvalidGitRepositoryError
+from git.repo import Repo
 from loguru import logger
 from pydantic import BaseModel, validator
 
-from trubrics.utils.trubrics_manager_connector import make_request
+from trubrics.ui.auth import get_trubrics_auth_token
+from trubrics.ui.firestore import add_document_to_project_subcollection
+from trubrics.ui.trubrics_config import load_trubrics_config
 
 
 def _validation_context_example():
@@ -76,45 +81,65 @@ class Trubric(BaseModel):
         validations: list of validations (defined by Validation)
     """
 
-    name: str = "my_trubric"
+    name: str
     model_name: str = "my_model"
-    model_version: float = 0.1
-    data_context_name: str
-    data_context_version: float
-    metadata: Optional[Dict[str, str]] = None
+    model_version: str = "0.0.1"
+    data_context_name: str = "my_data_context"
+    data_context_version: str = "0.0.1"
     validations: List[Validation]
+    tags: List[Optional[str]] = []
+    run_by: Optional[Dict[str, str]] = None
+    git_commit: Optional[str] = None
+    metadata: Optional[Dict[str, str]] = None
+    timestamp: Optional[int] = None
+    total_passed: Optional[int] = None
+    total_passed_percent: Optional[float] = None
 
     class Config:
         extra = "forbid"
-        schema_extra = {
-            "example": {
-                "name": "my_first_trubric",
-                "model_name": "my_model",
-                "model_version": 0.1,
-                "data_context_name": "my_dataset",
-                "data_context_version": 0.1,
-                "metadata": {},
-                "validations": [_validation_context_example()],
-            }
-        }
 
-    def save_local(self, path: str, file_name: Optional[str] = None):
+    def save_local(self, path: Optional[str] = None):
+        self._set_fields_on_save()
         if path is None:
-            raise TypeError("Specify the local path where you would like to save your Trubric json.")
-        if file_name is None:
-            file_name = f"{self.name}.json"
-        with open(Path(path) / file_name, "w") as file:
+            path = f"./{self.name}.json"
+        with open(Path(path).absolute(), "w") as file:
             file.write(self.json(indent=4))
-            logger.info(f"Trubric saved to {Path(path) / file_name}.")
+            logger.info(f"Trubric saved to {path}.")
 
-    def save_ui(self, url: str, user_id: str):
+    def save_ui(self):
+        trubrics_config = load_trubrics_config()
+        auth = get_trubrics_auth_token(
+            trubrics_config.firebase_auth_api_url, trubrics_config.email, trubrics_config.password
+        )
+        if trubrics_config.email is None or trubrics_config.username is None:
+            raise TypeError("Trubrics config not set. Run `trubrics init` to configure.")
 
-        if user_id is None:
-            raise TypeError("You must specify a 'user_id' to push to the trubrics manager.")
+        self.run_by = {"email": trubrics_config.email, "displayName": trubrics_config.username}
+        self._set_fields_on_save()
+
+        res = add_document_to_project_subcollection(
+            auth,
+            firestore_api_url=trubrics_config.firestore_api_url,
+            project=trubrics_config.project,
+            subcollection="trubrics",
+            document_id=self.timestamp,
+            document_json=self.json(),
+        )
+        if "error" in res:
+            error_msg = f"Error in pushing trubric to the Trubrics UI: {res}"
+            logger.error(error_msg)
+            raise Exception(error_msg)
         else:
-            make_request(
-                f"{url}/api/trubrics/{user_id}",
-                headers={"Content-Type": "application/json"},
-                data=self.json().encode("utf-8"),
+            logger.info("Trubric saved to the Trubrics UI.")
+
+    def _set_fields_on_save(self):
+        self.total_passed = len([a for a in self.validations if a.outcome == "pass"])
+        self.total_passed_percent = round(100 * self.total_passed / len(self.validations), 1)
+        self.timestamp = int(datetime.now().timestamp())
+        try:
+            self.git_commit = Repo(search_parent_directories=True).head.object.hexsha
+        except InvalidGitRepositoryError:
+            logger.warning(
+                "Current directory is not a git repository. Run `trubrics run` inside a git repository to save the"
+                " commit hash."
             )
-            logger.info("Trubric saved to the trubrics manager.")

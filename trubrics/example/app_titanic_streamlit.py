@@ -32,7 +32,12 @@ st.markdown(prediction, unsafe_allow_html=True)
 
 st.title("Send model feedback")
 metadata = {"what_if_data": df.to_dict(), "what_if_prediction": wi_prediction}
-collect_feedback_streamlit(path=".", metadata=metadata)
+collect_feedback_streamlit(
+    path="./feedback_issue.json",  # path to save feedback .json to
+    tags=["Streamlit"],
+    metadata=metadata,
+    save_ui=False,  # set to True to save feedback to Trubrics
+)
 
 st.title("View data")
 explore_testing_data(data_context=data_context, model=model)

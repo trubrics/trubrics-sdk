@@ -34,7 +34,7 @@ Versioning the different datasets in a `DataContext` is currently left to the de
     from trubrics.context import DataContext
     data_context = DataContext(
         name="titanic",
-        version=0.3,
+        version="0.3",
         testing_data=test_df,
         target="target_variable",
     )

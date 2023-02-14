@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from examples.classification_titanic.custom_scorer import custom_scorers
 from examples.classification_titanic.custom_validator import CustomValidator
 from examples.classification_titanic.slicing_functions import slicing_functions
@@ -14,7 +16,7 @@ data_context = DataContext(
     training_data=train_df,
     target="Survived",
 )
-trubric = Trubric.parse_file("./my_first_trubric.json")
+trubric = Trubric.parse_file(Path(__file__).parent / "my_first_trubric.json")
 
 RUN_CONTEXT = TrubricRun(
     data_context=data_context,

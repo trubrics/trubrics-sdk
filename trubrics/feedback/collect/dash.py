@@ -8,21 +8,20 @@ from trubrics.feedback.dataclass import Feedback
 
 
 def collect_feedback_dash(
-    path: str,
-    file_name: Optional[str] = None,
+    path: Optional[str] = None,
     metadata: Optional[Dict[str, Any]] = None,
     tags: Optional[List[str]] = None,
+    save_ui: bool = False,
 ):
     """
-    Gets feedback from the user and saves it in the path given through the input through dash web user interface.
-    Feedback can be in the form of text or any other format.
+    A component to collect user feedback within a Dash web application.
 
     Args:
-        path : The path where the feedback file gets saved.
-        file_name: Name of the file. If Empty,defaults to "feedback.json".
-        metadata: Any other form of metric which the user wants to log into the feedback file such as
-                  feature value, prediction,etc. If empty, defaults to None.
-        tags: list of any tags for this feedback file. If empty, defaults to None.
+        path: path to save feedback local .json. Defaults to "./<timestamp>_feedback.json"
+        metadata: any metric which the user wants to save into the feedback issue such as
+                  feature values, prediction, etc. Defaults to None.
+        tags: list of any tags for the feedback issue. Defaults to None.
+        save_ui: save to the Trubrics platform
     """
     title_input = html.Div(
         [
@@ -65,7 +64,10 @@ def collect_feedback_dash(
                 return config.FEEDBACK_NOT_SAVED, {"color": "Red"}, title, description
             else:
                 feedback = Feedback(title=title, description=description, tags=tags, metadata=metadata)
-                feedback.save_local(path=path, file_name=file_name)
+                feedback.save_local(path=path)
+                if save_ui:
+                    raise NotImplementedError()
+                    # feedback.save_ui()
                 return config.FEEDBACK_SAVED, {"color": "Green"}, None, None
         else:
             return None, None, title, description

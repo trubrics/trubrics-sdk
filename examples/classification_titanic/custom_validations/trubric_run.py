@@ -91,7 +91,7 @@ class CustomValidator(ModelValidator):
 train_df, test_df, model = get_titanic_data_and_model()
 
 data_context = DataContext(
-    name="my_first_dataset", version=0.1, training_data=train_df, testing_data=test_df, target="Survived"
+    name="my_first_dataset", version="0.1", training_data=train_df, testing_data=test_df, target="Survived"
 )
 trubric = Trubric.parse_file("./my_first_trubric.json")
 

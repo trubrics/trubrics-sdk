@@ -3,7 +3,7 @@
 #docs
 -r requirements-docs.txt
 
-setuptools==62.2.0
+setuptools>=65.5.1
 pre-commit==2.19.0
 build==0.8.0
 jupyterlab==3.4.2
