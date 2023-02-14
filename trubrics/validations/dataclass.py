@@ -109,7 +109,7 @@ class Trubric(BaseModel):
     def save_ui(self):
         trubrics_config = load_trubrics_config()
         auth = get_trubrics_auth_token(
-            trubrics_config.firebase_auth_api_url, trubrics_config.email, trubrics_config.password
+            trubrics_config.firebase_auth_api_url, trubrics_config.email, trubrics_config.password.get_secret_value()
         )
         if trubrics_config.email is None or trubrics_config.username is None:
             raise TypeError("Trubrics config not set. Run `trubrics init` to configure.")

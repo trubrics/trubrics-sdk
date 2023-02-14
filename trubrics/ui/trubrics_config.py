@@ -1,7 +1,7 @@
 import os
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, SecretStr
 
 
 class TrubricsConfig(BaseModel):
@@ -10,8 +10,11 @@ class TrubricsConfig(BaseModel):
     firestore_api_url: Optional[str] = None
     username: Optional[str] = None
     email: Optional[str] = None
-    password: Optional[str] = None
+    password: Optional[SecretStr] = None
     project: Optional[str] = None
+
+    class Config:
+        json_encoders = {SecretStr: lambda v: v.get_secret_value() if v else None}
 
     def save(self):
         config_path = os.path.join(os.path.expanduser("~"), ".trubrics_config.json")

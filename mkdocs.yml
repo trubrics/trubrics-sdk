@@ -45,7 +45,7 @@ markdown_extensions:
 nav:
   - Getting Started: index.md
   - Tutorials:
-    - Titanic classifier notebook: notebooks/titanic-demo.html
+    - Titanic classifier notebook: notebooks/titanic-full-demo.html
   - The DataContext: data_context.md
   - The ModelValidator:
     - Compatible models: models.md

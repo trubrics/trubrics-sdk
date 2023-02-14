@@ -107,7 +107,6 @@ def init(
         trubrics_config.save()
 
         typer.echo(typer.style("Successful authentication with configuration:", fg=typer.colors.GREEN, bold=True))
-        trubrics_config.password = "<USER PASSWORD>"
         rprint(trubrics_config.dict())
     else:
         rprint(
