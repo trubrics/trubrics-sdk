@@ -11,11 +11,11 @@
                 "args": [],
                 "kwargs": {
                     "metric": "recall",
-                    "threshold": 0.7
+                    "threshold": 0.8
                 }
             },
             "explanation": "**Performance validation versus a fixed threshold value.**\n\nCompares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.\n\nExample:\n```py\nfrom trubrics.validations import ModelValidator\nmodel_validator = ModelValidator(data=data_context, model=model)\nmodel_validator.validate_performance_against_threshold(\nmetric=\"recall\",\nthreshold=0.8\n)\n```\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nthreshold: the performance threshold that the model must attain.\ndataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual model performance calculated.\n",
-            "outcome": "pass",
+            "outcome": "fail",
             "severity": "warning",
             "result": {
                 "performance": 0.7184466019417476,
@@ -99,9 +99,9 @@
         "master"
     ],
     "run_by": null,
-    "git_commit": "dda7602b62129ac3e4edc828d0f15444da9a4335",
+    "git_commit": "2d02d904d75b675e65dcfdf64c340b2d16d4406c",
     "metadata": null,
-    "timestamp": 1676318801,
-    "total_passed": 5,
-    "total_passed_percent": 100.0
+    "timestamp": 1676366706,
+    "total_passed": 4,
+    "total_passed_percent": 80.0
 }
