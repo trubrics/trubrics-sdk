@@ -7,9 +7,10 @@ from trubrics.feedback.dataclass import Feedback
 
 
 def collect_feedback_gradio(
-    save_ui: bool = False,
+    path: Optional[str] = None,
     metadata: Optional[Dict[str, Any]] = None,
     tags: Optional[List[str]] = None,
+    save_ui: bool = False,
 ):
     def get_feedback(title: str, description: str, email: str, password: str):
         if not (len(title) == 0 or len(description) == 0):
@@ -17,7 +18,7 @@ def collect_feedback_gradio(
             if save_ui:
                 feedback.save_ui(email, password)
             else:
-                feedback.save_local()
+                feedback.save_local(path=path)
             return config.FEEDBACK_SAVED_HTML
         else:
             return config.FEEDBACK_NOT_SAVED_HTML

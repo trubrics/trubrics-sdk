@@ -7,9 +7,10 @@ from trubrics.feedback.dataclass import Feedback
 
 
 def collect_feedback_streamlit(
-    save_ui: bool = False,
+    path: Optional[str] = None,
     metadata: Optional[Dict[str, Any]] = None,
     tags: Optional[List[str]] = None,
+    save_ui: bool = False,
 ):
     """Get user feedback and save."""
     with st.form("form", clear_on_submit=True):
@@ -33,7 +34,7 @@ def collect_feedback_streamlit(
                 if save_ui:
                     feedback.save_ui(email, password)  # type: ignore
                 else:
-                    feedback.save_local()
+                    feedback.save_local(path=path)
                 st.markdown(
                     config.FEEDBACK_SAVED_HTML,
                     unsafe_allow_html=True,
