@@ -1,6 +1,11 @@
 # Gather feedback from business users
 
-Trubrics feedback components help you to collect feedback on your models with your favourite python library. Once feedback has been collected from business users, it should be translated into validation points to ensure repeatable checking throughout the lifetime of the model. Add the trubrics feedback component to your ML apps now to start collecting feedback:
+Trubrics feedback components help you to collect feedback on your models with your favourite python library. Once feedback has been collected from business users, it should be translated into validation points to ensure repeatable checking throughout the lifetime of the model.
+
+!!!tip "Trubrics platform access"
+    The Trubrics platform will allow you to track all issues, and discuss errors with users and other collaborators. There are also capabilities to close feedback issues by linking to specific validation runs. Creating accounts for users will also allow authentication directly in the FeedbackCollector. Don't hesitate to get in touch with us [here](https://trubrics.com/demo/) to gain access for you and your team.
+
+Add a FeedbackCollector to your ML apps now to start collecting feedback:
 
 <table>
 <tr>
@@ -29,8 +34,6 @@ collect_feedback_streamlit(
 </td>
 </tr>
 </table>
-
-Don't hesitate to get in touch with us [here](https://trubrics.com/demo/) to gain access to Trubrics. This will allow you to track all issues, and discuss errors with users. There are also capabilities to close feedback issues by linking to specific validation runs.
 
 <details>
   <summary>Dash and Gradio integrations</summary>

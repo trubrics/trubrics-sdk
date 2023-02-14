@@ -20,7 +20,8 @@ The trubrics-sdk is a python library for validating machine learning with data s
 
 - ML model validation with the [ModelValidator](#validate-a-model-with-the-modelvalidator)
 - Feedback collection on ML models / data from users with the [FeedbackCollector](#collect-user-feedback-with-the-feedbackcollector)
-- Tracking of all validation runs and feedback [locally or in Trubrics](#track-all-validation-runs-and-feedback-locally-or-in-the-trubrics-platform)
+- Tracking and management of validation runs and feedback in the [Trubrics platform](#track-all-validation-runs-and-feedback-in-trubrics)
+
 <center>
 
 ![](./assets/trubrics-explain-dark.png#gh-dark-mode-only)
@@ -178,21 +179,19 @@ You can view our demo user feedback app, using the streamlit feedback collector 
 
 <p align="center"><img src="./assets/titanic-feedback-example.png"/></p>
 
-## Track all validation runs and feedback locally or in the Trubrics platform
+## Track all validation runs and feedback in Trubrics
 
-The trubrics CLI can be used to run validations and track all runs locally, or directly in the Trubrics platform. Please get in touch with us [here](https://trubrics.com/demo/) to gain access to Trubrics!
+The Trubrics platform allows teams to collaborate on model issues and track validation changes. Please get in touch with us [here](https://trubrics.com/demo/) to gain access to Trubrics for you and your team.
 
-### `trubrics init` will initialise your terminal and authenticate with Trubrics
+[![img](assets/trubrics-login.png)](https://trubrics.com/demo/)
+
+### `trubrics init` will initialise your terminal and authenticate with your Trubrics account
 
 <p align="center"><img src="./assets/trubrics-init.gif"/></p>
 
-### `trubrics run` will run your validations from the terminal and save them locally or in Trubrics
+### `trubrics run` will run your validations from the terminal and track them in Trubrics
 
 <p align="center"><img src="./assets/trubrics-run.gif"/></p>
-
-### View your validations and discuss feedback issues directly in Trubrics
-
-[![img](assets/trubrics-login.png)](https://trubrics.com/demo/)
 
 ## Watch our getting started demo
 

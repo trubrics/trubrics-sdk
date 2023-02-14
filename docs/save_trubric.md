@@ -4,7 +4,10 @@ A `Trubric` is a list of validations that represents the gold standard a model m
 
 ## 1. Save a Trubric
 
-Once an ensemble of validations have been built, the list can be input into the `Trubric` object and saved as a local .json file with the `.save_local()` method.
+Once an ensemble of validations have been built, the list can be input into the `Trubric` object and saved as a local .json file with the `.save_local()` method, and can be saved to the Trubrics platform with the `.save_ui()` method.
+
+!!!tip "Trubrics platform access"
+    Saving trubric runs to the Trubrics platform will allow full tracking of the evolution of validations, and sorting runs into projects. Teams within an organisation can push trubric runs to projects. Don't hesitate to get in touch with us [here](https://trubrics.com/demo/) to gain access to the Trubrics platform for you and your team.
 
 !!!example
 
@@ -20,13 +23,14 @@ Once an ensemble of validations have been built, the list can be input into the 
         tags=["master"],
         validations=validations,  # a list of validations generated from the ModelValidator
     )
-    trubric.save_local()
+    trubric.save_local()  # optional path= parameter to specify a location to save the trubric
+    trubric.save_ui()
     ```
 
 You are in charge of versioning your [model](models.md) and [DataContext](data_context.md), and feeding in these values into the `Trubric` to keep track.
 
 !!!tip "Trubric object"
-:::trubrics.validations.dataclass.Trubric
+    :::trubrics.validations.dataclass.Trubric
 
 ## 2. Run a saved Trubric
 
@@ -55,9 +59,10 @@ Saved `Trubric`s can be run from the [CLI](trubrics_cli.md) or directly from a p
     # save new trubric .json
     new_trubric = trubric_run_context.trubric
     new_trubric.validations = new_validations
-    new_trubric.save_local(path=".", file_name="my_new_trubric.json")
+    new_trubric.save_local()
+    new_trubric.save_ui()
     ```
 
 The example above makes use of the `TrubricRun` object, and a `run_trubric` generator function.
 !!!tip "TrubricRun object"
-:::trubrics.validations.run.TrubricRun
+    :::trubrics.validations.run.TrubricRun

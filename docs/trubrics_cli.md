@@ -3,7 +3,8 @@
 Once you have built a trubric of validations, you will want to test different data / models against that trubric.
 This will help you to ensure safe deployment of newly trained models directly from CI/CD/CT pipelines.
 
-Don't hesitate to get in touch with us [here](https://trubrics.com/demo/) to gain access to the Trubrics platform. This will allow you to track all trubric runs, and to close feedback issues by linking to specific runs.
+!!!tip "Trubrics platform access"
+    This will allow you and your team to track all trubric runs in projects, and to close feedback issues by linking to specific runs. Don't hesitate to get in touch with us [here](https://trubrics.com/demo/) to gain access to the Trubrics platform for you and your team.
 
 Complete these three steps to run trubrics from the CLI tool:
 
