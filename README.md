@@ -108,6 +108,16 @@ collect_feedback_streamlit(
 
 </td>
 </tr>
+</table>
+
+<details>
+  <summary>Dash and Gradio integrations</summary>
+
+<table>
+<tr>
+<th> Framework </th>
+<th style="text-align:center"> Getting Started Code Snippets </th>
+</tr>
 <tr>
 <td>
 
@@ -168,6 +178,7 @@ demo.launch()
 </td>
 </tr>
 </table>
+</details>
 
 You can view our demo user feedback app, using the streamlit feedback collector and an example experimentation tool, on the titanic dataset & model on [Hugging Face Spaces](https://huggingface.co/spaces/trubrics/trubrics-titanic-demo), or run it locally with the CLI command:
 
@@ -175,11 +186,11 @@ You can view our demo user feedback app, using the streamlit feedback collector 
 (venv)$ trubrics example-app
 ```
 
-![img](assets/titanic-feedback-example.png)
+<p align="center"><img src="./assets/titanic-feedback-example.png"/></p>
 
 ## Track all validation runs and feedback locally or in the Trubrics platform
 
-The trubrics CLI can be used to run validations and track all runs locally, or directly in the Trubrics platform.
+The trubrics CLI can be used to run validations and track all runs locally, or directly in the Trubrics platform. Please get in touch with us [here](https://trubrics.com/demo/) to gain access to Trubrics!
 
 ### `trubrics init` will initialise your terminal and authenticate with Trubrics
 
@@ -189,6 +200,10 @@ The trubrics CLI can be used to run validations and track all runs locally, or d
 
 <p align="center"><img src="./assets/trubrics-run.gif"/></p>
 
+### View your validations and discuss feedback issues directly in Trubrics
+
+[<p align="center"><img src="./assets/trubrics-login.png"/></p>](https://trubrics.com/demo/)
+
 ## Watch our getting started demo
 
-[![img](assets/yt-gs.png)](https://www.youtube.com/watch?v=gMK2ut_I4a0)
+[<p align="center"><img src="./assets/yt-gs.png"/></p>](https://www.youtube.com/watch?v=gMK2ut_I4a0)

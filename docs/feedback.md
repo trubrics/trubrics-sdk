@@ -90,7 +90,9 @@ demo.launch()
 </table>
 
 You can view our demo user feedback app, using the streamlit feedback collector and an example experimentation tool, on the titanic dataset & model on [Hugging Face Spaces](https://huggingface.co/spaces/trubrics/trubrics-titanic-demo), or run it locally with the CLI command:
+
 ```console
 (venv)$ trubrics example-app
 ```
+
 ![img](assets/titanic-feedback-example.png)
