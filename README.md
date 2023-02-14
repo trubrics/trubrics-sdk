@@ -71,7 +71,7 @@ trubric = Trubric(
     data_context_version=data_context.version,
     validations=validations,
 )
-trubric.save_local(path=".")
+trubric.save_local()
 ```
 
 The trubric defines the gold standard of validations required for the project, and may be used to validate any combination of model and `DataContext`. Once saved as a .json, the trubric may be run directly from the [CLI](https://trubrics.github.io/trubrics-sdk/run_trubrics/).

@@ -20,7 +20,7 @@ Once an ensemble of validations have been built, the list can be input into the 
         tags=["master"],
         validations=validations,  # a list of validations generated from the ModelValidator
     )
-    trubric.save_local(path=".")
+    trubric.save_local()
     ```
 
 You are in charge of versioning your [model](models.md) and [DataContext](data_context.md), and feeding in these values into the `Trubric` to keep track.
