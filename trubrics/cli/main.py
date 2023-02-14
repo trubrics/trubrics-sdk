@@ -155,6 +155,7 @@ def run(
     """The CLI `trubrics run` command for running trubrics.
 
     Args:
+        save_ui: save trubric to ui.
         trubric_output_file_path: path to save your output trubric file
     """
     trubrics_config = load_trubrics_config().dict()
