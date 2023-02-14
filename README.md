@@ -179,6 +179,14 @@ You can view our demo user feedback app, using the streamlit feedback collector 
 
 ## Track all validation runs and feedback locally or in the Trubrics platform
 
+The trubrics CLI can be used to run validations and track all runs locally, or directly in the Trubrics platform.
+
+### `trubrics init` will initialise your terminal and authenticate with Trubrics
+
+<p align="center"><img src="./assets/trubrics-init.gif"/></p>
+
+### `trubrics run` will run your validations from the terminal and save them locally or in Trubrics
+
 <p align="center"><img src="./assets/trubrics-run.gif"/></p>
 
 ## Watch our getting started demo
