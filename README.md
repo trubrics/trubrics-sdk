@@ -20,7 +20,7 @@ The trubrics-sdk is a python library for validating machine learning with data s
 
 - ML model validation with the [ModelValidator](#validate-a-model-with-the-modelvalidator)
 - Feedback collection on ML models / data from users with the [FeedbackCollector](#collect-user-feedback-with-the-feedbackcollector)
-- Track all validation runs and feedback [locally or in Trubrics](#track-all-validation-runs-and-feedback-locally-or-in-the-trubrics-platform)
+- Tracking of all validation runs and feedback [locally or in Trubrics](#track-all-validation-runs-and-feedback-locally-or-in-the-trubrics-platform)
 <center>
 
 ![](./assets/trubrics-explain-dark.png#gh-dark-mode-only)
