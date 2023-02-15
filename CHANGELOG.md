@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2023-02-15
+### Changed
+- `trubrics init` refactoring with authentication with Trubrics
+- `trubrics run` refactoring to store validations to firestore (Trubrics DB)
+- `Feedback` and `Trubric` have adapted data model
+- Cleaned notebooks examples/ folder
+- Updated docs and README with Trubrics platform references
+
+### Added
+- FeedbackCollector now has authentication for Trubrics users
+- `Feedback` and `Trubric` have `save_ui()` methods for new DB
+
+### Fixed
+- Bumped streamlit version
+
 ## [1.1.1] - 2022-11-14
 ### Changed
 - Allow for list types to be saved in result dict validation output
