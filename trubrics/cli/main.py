@@ -20,11 +20,13 @@ app = typer.Typer()
 
 # no stress, this is not a secret api key
 FIREBASE_API_KEY = "AIzaSyBeXhMQclnlc02v1DhE2o_jSY2B8g1SC38"
+FIREBASE_PROJECT_ID = "trubrics-ea-dev"
 
 
 @app.command()
 def init(
     api_key: str = FIREBASE_API_KEY,
+    project_id: str = FIREBASE_PROJECT_ID,
     run_context_path: str = typer.Option(
         ..., prompt="Enter the path to your trubric run .py file (e.g. examples/classification_titanic/trubric_run.py)"
     ),
@@ -34,6 +36,7 @@ def init(
 
     Args:
         api_key: the firebase api key
+        project_id: the firebase project ID
     """
     run_ctx_path = Path(run_context_path).absolute()
     if not run_ctx_path.exists():
@@ -57,7 +60,7 @@ def init(
                 rprint(f"Error in login email '{email}' to the Trubrics UI: {auth['error']}")
                 raise typer.Abort()
             else:
-                firestore_api_url = get_trubrics_firestore_api_url(auth)
+                firestore_api_url = get_trubrics_firestore_api_url(auth, project_id)
 
             projects = list_projects_in_organisation(firestore_api_url=firestore_api_url, auth=auth)
             print()
