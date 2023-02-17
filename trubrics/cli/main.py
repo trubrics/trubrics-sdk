@@ -23,6 +23,21 @@ FIREBASE_API_KEY = "AIzaSyBeXhMQclnlc02v1DhE2o_jSY2B8g1SC38"
 FIREBASE_PROJECT_ID = "trubrics-ea-dev"
 
 
+def version_callback(value: bool):
+    if value:
+        import trubrics
+
+        typer.echo(trubrics.__version__)
+        raise typer.Exit()
+
+
+@app.callback()
+def main(
+    version: bool = typer.Option(None, "--version", callback=version_callback, is_eager=True),
+):
+    return None
+
+
 @app.command()
 def init(
     api_key: str = FIREBASE_API_KEY,
