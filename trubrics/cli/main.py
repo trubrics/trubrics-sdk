@@ -141,12 +141,15 @@ def _framework_callback(value: str):
 
 
 @app.command()
-def example_app(framework: str = typer.Option("streamlit", callback=_framework_callback)):
+def example_app(framework: str = typer.Option("streamlit", callback=_framework_callback), save_ui: bool = False):
     """Run the titanic user feedback collector app."""
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, f"../example/app_titanic_{framework}.py")
     if framework == "streamlit":
-        subprocess.call(["streamlit", "run", filename])
+        if save_ui:
+            subprocess.call(["streamlit", "run", filename, "--", "--save-ui"])
+        else:
+            subprocess.call(["streamlit", "run", filename])
     elif framework in ["gradio", "dash"]:
         subprocess.call(["python3", filename])
 
