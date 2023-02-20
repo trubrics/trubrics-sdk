@@ -3,6 +3,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from typing import Optional
 
 import typer
 from rich import print as rprint
@@ -13,20 +14,35 @@ from trubrics.ui.firestore import (
     get_trubrics_firestore_api_url,
     list_projects_in_organisation,
 )
-from trubrics.ui.trubrics_config import TrubricsConfig, load_trubrics_config
+from trubrics.ui.trubrics_config import (
+    TrubricsConfig,
+    TrubricsDefaults,
+    load_trubrics_config,
+)
 from trubrics.validations.run import TrubricRun, run_trubric
 
 app = typer.Typer()
 
-# no stress, this is not a secret api key
-FIREBASE_API_KEY = "AIzaSyBeXhMQclnlc02v1DhE2o_jSY2B8g1SC38"
-FIREBASE_PROJECT_ID = "trubrics-ea-dev"
+
+def version_callback(value: bool):
+    if value:
+        import trubrics
+
+        typer.echo(trubrics.__version__)
+        raise typer.Exit()
+
+
+@app.callback()
+def main(
+    version: bool = typer.Option(None, "--version", callback=version_callback, is_eager=True),
+):
+    return None
 
 
 @app.command()
 def init(
-    api_key: str = FIREBASE_API_KEY,
-    project_id: str = FIREBASE_PROJECT_ID,
+    api_key: Optional[str] = None,
+    project_id: Optional[str] = None,
     run_context_path: str = typer.Option(
         ..., prompt="Enter the path to your trubric run .py file (e.g. examples/classification_titanic/trubric_run.py)"
     ),
@@ -38,6 +54,13 @@ def init(
         api_key: the firebase api key
         project_id: the firebase project ID
     """
+    if api_key or project_id:
+        if not api_key or not project_id:
+            raise Exception("API key and project_id must be input to change project.")
+        defaults = TrubricsDefaults(firebase_api_key=api_key, firebase_project_id=project_id)
+    else:
+        defaults = TrubricsDefaults()
+
     run_ctx_path = Path(run_context_path).absolute()
     if not run_ctx_path.exists():
         rprint(f"[red]Path '{run_ctx_path}' not found.[red]")
@@ -54,13 +77,13 @@ def init(
         ) as progress:
             progress.add_task(description="Authenticating user...", total=None)
 
-            firebase_auth_api_url = get_trubrics_firebase_auth_api_url(api_key)
+            firebase_auth_api_url = get_trubrics_firebase_auth_api_url(defaults.firebase_api_key)
             auth = get_trubrics_auth_token(firebase_auth_api_url, email, password)
             if "error" in auth:
                 rprint(f"Error in login email '{email}' to the Trubrics UI: {auth['error']}")
                 raise typer.Abort()
             else:
-                firestore_api_url = get_trubrics_firestore_api_url(auth, project_id)
+                firestore_api_url = get_trubrics_firestore_api_url(auth, defaults.firebase_project_id)
 
             projects = list_projects_in_organisation(firestore_api_url=firestore_api_url, auth=auth)
             print()
@@ -111,10 +134,16 @@ def init(
 
         typer.echo(typer.style("Successful authentication with configuration:", fg=typer.colors.GREEN, bold=True))
         rprint(trubrics_config.dict())
+        rprint()
+        rprint(
+            "[bold green]You can now push trubrics and feedback to the Trubrics platform:"
+            f"\n{defaults.trubrics_url}[bold green]\n"
+        )
     else:
         rprint(
             "[bold green]You're all set to save trubrics & feedback locally."
-            " Be sure to check out our docs to see how you can leverage the Trubrics platform.[bold green]"
+            "\nBe sure to check out our docs to see how you can leverage the Trubrics platform:"
+            f"\n\n{defaults.demo_sign_up_url}[bold green]\n"
         )
         trubrics_config = TrubricsConfig(run_context_path=str(run_ctx_path)).save()
 
@@ -126,12 +155,15 @@ def _framework_callback(value: str):
 
 
 @app.command()
-def example_app(framework: str = typer.Option("streamlit", callback=_framework_callback)):
+def example_app(framework: str = typer.Option("streamlit", callback=_framework_callback), save_ui: bool = False):
     """Run the titanic user feedback collector app."""
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, f"../example/app_titanic_{framework}.py")
     if framework == "streamlit":
-        subprocess.call(["streamlit", "run", filename])
+        if save_ui:
+            subprocess.call(["streamlit", "run", filename, "--", "--save-ui"])
+        else:
+            subprocess.call(["streamlit", "run", filename])
     elif framework in ["gradio", "dash"]:
         subprocess.call(["python3", filename])
 

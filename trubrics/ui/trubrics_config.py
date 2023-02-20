@@ -4,6 +4,14 @@ from typing import Optional
 from pydantic import BaseModel, SecretStr
 
 
+class TrubricsDefaults(BaseModel):
+    # no stress, this is not a secret api key
+    firebase_api_key: str = "AIzaSyAB-ldUv6X2rgyN_Jda9EC_AzLkENjoDk8"
+    firebase_project_id: str = "trubrics-ea-staging"
+    trubrics_url: str = "https://trubrics-ui-anw3qnj64q-ew.a.run.app"
+    demo_sign_up_url: str = "https://trubrics.com/trubrics/"
+
+
 class TrubricsConfig(BaseModel):
     run_context_path: str
     firebase_auth_api_url: Optional[str] = None
