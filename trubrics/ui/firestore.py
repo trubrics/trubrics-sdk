@@ -74,7 +74,12 @@ def list_projects_in_organisation(firestore_api_url, auth):
             headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
         ).text
     )
-    return [project["name"].split("/")[-1] for project in projects_res["documents"]] if len(projects_res) != 0 else []
+    all_projects = []
+    if len(projects_res) != 0:
+        for project in projects_res["documents"]:
+            if project.get("fields", {}).get("archived", {}).get("booleanValue", {}) is False:
+                all_projects.append(project["name"].split("/")[-1])
+    return all_projects
 
 
 def add_document_to_project_subcollection(auth, firestore_api_url, project, subcollection, document_id, document_json):
