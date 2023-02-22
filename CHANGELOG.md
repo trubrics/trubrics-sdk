@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.5] - 2023-02-20
+
+### Changed
+
+- Change collaborators in feedback from email to display name
+- Add archived projects filter in trubrics init
+
 ## [1.2.4] - 2023-02-20
 
 ### Added

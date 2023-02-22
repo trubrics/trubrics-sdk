@@ -52,7 +52,7 @@ class Feedback(BaseModel):
             raise Exception(error_msg)
         else:
             self.created_by = {"email": auth["email"], "displayName": auth["displayName"]}
-            self.collaborators.append(auth["email"])
+            self.collaborators.append(auth["displayName"])
 
             res = add_document_to_project_subcollection(
                 auth,
