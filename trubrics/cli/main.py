@@ -43,9 +43,6 @@ def main(
 def init(
     api_key: Optional[str] = None,
     project_id: Optional[str] = None,
-    run_context_path: str = typer.Option(
-        ..., prompt="Enter the path to your trubric run .py file (e.g. examples/classification_titanic/trubric_run.py)"
-    ),
     user_connected: bool = typer.Option(False, prompt="Do you already have an account with Trubrics?"),
 ):
     """The CLI `trubrics init` command for initialising trubrics config.
@@ -60,11 +57,6 @@ def init(
         defaults = TrubricsDefaults(firebase_api_key=api_key, firebase_project_id=project_id)
     else:
         defaults = TrubricsDefaults()
-
-    run_ctx_path = Path(run_context_path).absolute()
-    if not run_ctx_path.exists():
-        rprint(f"[red]Path '{run_ctx_path}' not found.[red]")
-        raise typer.Abort()
 
     if user_connected:
         email = typer.prompt("Enter your user email")
@@ -122,7 +114,6 @@ def init(
             raise typer.Abort()
 
         trubrics_config = TrubricsConfig(
-            run_context_path=str(run_ctx_path),
             firebase_auth_api_url=firebase_auth_api_url,
             firestore_api_url=firestore_api_url,
             username=auth["displayName"],
@@ -141,11 +132,9 @@ def init(
         )
     else:
         rprint(
-            "[bold green]You're all set to save trubrics & feedback locally."
-            "\nBe sure to check out our docs to see how you can leverage the Trubrics platform:"
-            f"\n\n{defaults.demo_sign_up_url}[bold green]\n"
+            "[bold orange_red1]Sign up here to get access to the Trubrics platform:"
+            f"\n\n{defaults.demo_sign_up_url}[bold orange_red1]\n"
         )
-        trubrics_config = TrubricsConfig(run_context_path=str(run_ctx_path)).save()
 
 
 def _framework_callback(value: str):
@@ -181,9 +170,12 @@ def _import_module(module_path: str):
 
 @app.command()
 def run(
-    save_ui: bool = False,
+    save_ui: bool = typer.Option(False, prompt="Would you like to save you trubric to the UI?"),
+    run_context_path: str = typer.Option(
+        "examples/classification_titanic/trubric_run.py", prompt="Enter the path to your trubric run .py file"
+    ),
     trubric_output_file_path: str = typer.Option(
-        "./my_new_trubric.json", prompt="Enter a path to save your output trubric file. Press enter for default"
+        "./my_new_trubric.json", prompt="Enter a local path to save your output trubric file. Press enter for default"
     ),
 ):
     """The CLI `trubrics run` command for running trubrics.
@@ -193,9 +185,16 @@ def run(
         trubric_output_file_path: path to save your output trubric file
     """
     trubrics_config = load_trubrics_config().dict()
-    trubric_run_path = trubrics_config["run_context_path"]
+    trubric_run_path = Path(run_context_path).absolute()
+    if not trubric_run_path.exists():
+        rprint(f"[red]Path '{trubric_run_path}' not found.[red]")
+        raise typer.Abort()
 
-    tc = _import_module(module_path=trubric_run_path)
+    try:
+        tc = _import_module(module_path=str(trubric_run_path))
+    except AttributeError:
+        raise AttributeError("Trubrics config must be a python module.")
+
     if hasattr(tc, "RUN_CONTEXT"):
         if isinstance(tc.RUN_CONTEXT, TrubricRun):
             run_context = tc.RUN_CONTEXT
@@ -231,7 +230,7 @@ def run(
     new_trubric.save_local(trubric_output_file_path)
 
     # save new trubric to ui
-    if save_ui is True:
+    if save_ui:
         if trubrics_config["email"] is not None:
             new_trubric.save_ui()
         else:
@@ -242,6 +241,12 @@ def run(
                     fg=typer.colors.RED,
                 )
             )
+    else:
+        defaults = TrubricsDefaults()
+        rprint(
+            "\n[bold orange_red1]Be sure to check out our docs to see how you can leverage the Trubrics platform."
+            f"\n\n{defaults.demo_sign_up_url}[bold orange_red1]\n"
+        )
 
 
 if __name__ == "__main__":
