@@ -185,7 +185,7 @@ def run(
     else:
         from trubrics.example import trubric_run as tc  # type: ignore
     rprint(
-        f"\nRunning trubric from file '{trubric_run_path or 'example'}' with model"
+        f"\nRunning trubric from file '{trubric_run_path or 'trubrics.example.trubric_run'}' with model"
         f" '{tc.RUN_CONTEXT.trubric.model_name}' and dataset '{tc.data_context.name}'.\n"
     )
     new_trubric = generate_new_trubric(tc)

@@ -34,9 +34,7 @@ def generate_new_trubric(tc):
     for validation_result in all_validation_results:
         validations.append(validation_result)
 
-        message_start = (
-            f"[orange_red1] {validation_result.validation_type} - {validation_result.severity.upper()}[orange_red1]"
-        )
+        message_start = f"{validation_result.validation_type} [{validation_result.severity.upper()}]"
         completed_dots = f"[grey82]{(100 - len(message_start)) * '.'}[grey82]"
         message_end = (
             f"[bold {'green' if validation_result.outcome == 'pass' else 'red'}]{validation_result.outcome.upper()}"
