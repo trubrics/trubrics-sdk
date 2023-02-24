@@ -139,6 +139,7 @@ class Trubric(BaseModel):
         try:
             self.git_commit = Repo(search_parent_directories=True).head.object.hexsha
         except InvalidGitRepositoryError:
+            self.git_commit = None
             logger.warning(
                 "Current directory is not a git repository. Run `trubrics run` inside a git repository to save the"
                 " commit hash."
