@@ -8,12 +8,11 @@ class TrubricsDefaults(BaseModel):
     # no stress, this is not a secret api key
     firebase_api_key: str = "AIzaSyAB-ldUv6X2rgyN_Jda9EC_AzLkENjoDk8"
     firebase_project_id: str = "trubrics-ea-staging"
-    trubrics_url: str = "https://trubrics-ui-anw3qnj64q-ew.a.run.app"
-    demo_sign_up_url: str = "https://trubrics.com/trubrics/"
+    trubrics_url: str = "https://st.ea.trubrics.com/"
+    demo_sign_up_url: str = "https://trubrics.com/demo/"
 
 
 class TrubricsConfig(BaseModel):
-    run_context_path: str
     firebase_auth_api_url: Optional[str] = None
     firestore_api_url: Optional[str] = None
     username: Optional[str] = None
@@ -35,4 +34,4 @@ def load_trubrics_config() -> TrubricsConfig:
     if os.path.exists(config_path):
         return TrubricsConfig.parse_file(config_path)
     else:
-        raise Exception("Config file not found.")
+        raise FileNotFoundError("Trubrics config file not found. Run `trubrics init` to generate this file.")
