@@ -1,7 +1,5 @@
-import importlib.util
 import os
 import subprocess
-import sys
 from pathlib import Path
 from typing import Optional
 
@@ -9,6 +7,7 @@ import typer
 from rich import print as rprint
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
+from trubrics.cli.run import generate_new_trubric, validate_trubric_run_context
 from trubrics.ui.auth import get_trubrics_auth_token, get_trubrics_firebase_auth_api_url
 from trubrics.ui.firestore import (
     get_trubrics_firestore_api_url,
@@ -19,7 +18,6 @@ from trubrics.ui.trubrics_config import (
     TrubricsDefaults,
     load_trubrics_config,
 )
-from trubrics.validations.run import TrubricRun, run_trubric
 
 app = typer.Typer()
 
@@ -157,17 +155,6 @@ def example_app(framework: str = typer.Option("streamlit", callback=_framework_c
         subprocess.call(["python3", filename])
 
 
-def _import_module(module_path: str):
-    try:
-        spec = importlib.util.spec_from_file_location("module.name", module_path)
-        lib = importlib.util.module_from_spec(spec)  # type: ignore
-        sys.modules["module.name"] = lib
-        spec.loader.exec_module(lib)  # type: ignore
-    except FileNotFoundError as e:
-        raise e
-    return lib
-
-
 @app.command()
 def run(
     save_ui: bool = typer.Option(False, prompt="Would you like to save you trubric to the UI?"),
@@ -184,53 +171,19 @@ def run(
         save_ui: save trubric to ui.
         trubric_output_file_path: path to save your output trubric file
     """
-    trubrics_config = load_trubrics_config().dict()
     trubric_run_path = Path(run_context_path).absolute()
     if not trubric_run_path.exists():
         rprint(f"[red]Path '{trubric_run_path}' not found.[red]")
         raise typer.Abort()
 
-    try:
-        tc = _import_module(module_path=str(trubric_run_path))
-    except AttributeError:
-        raise AttributeError("Trubrics config must be a python module.")
-
-    if hasattr(tc, "RUN_CONTEXT"):
-        if isinstance(tc.RUN_CONTEXT, TrubricRun):
-            run_context = tc.RUN_CONTEXT
-        else:
-            raise TypeError("'RUN_CONTEXT' attribute must be of type TrubricRun.")
-    else:
-        raise AttributeError("Trubrics config python module must contain an attribute 'RUN_CONTEXT'.")
-
-    typer.echo(
-        typer.style(
-            f"Running trubric from file '{trubric_run_path}' with model '{run_context.trubric.model_name}' and"
-            f" dataset '{tc.data_context.name}'.",
-            fg=typer.colors.BLUE,
-        )
+    tc = validate_trubric_run_context(str(trubric_run_path))
+    rprint(
+        f"\nRunning trubric from file '{trubric_run_path}' with model '{tc.RUN_CONTEXT.trubric.model_name}' and dataset"
+        f" '{tc.data_context.name}'.\n"
     )
-    all_validation_results = run_trubric(tr=run_context)
-    validations = []
-    for validation_result in all_validation_results:
-        validations.append(validation_result)
-
-        message_start = f"{validation_result.validation_type} - {validation_result.severity.upper()}"
-        completed_dots = (100 - len(message_start)) * "."
-        if validation_result.outcome == "pass":
-            ending = typer.style("PASSED", fg=typer.colors.GREEN, bold=True)
-        else:
-            ending = typer.style("FAILED", fg=typer.colors.WHITE, bg=typer.colors.RED)
-        message = typer.style(message_start, bold=True) + completed_dots + ending
-        typer.echo(message)
-
-    # save new trubric .json
-    new_trubric = tc.trubric
-    new_trubric.validations = validations
-    new_trubric.save_local(trubric_output_file_path)
-
-    # save new trubric to ui
+    new_trubric = generate_new_trubric(tc)
     if save_ui:
+        trubrics_config = load_trubrics_config().dict()
         if trubrics_config["email"] is not None:
             new_trubric.save_ui()
         else:
@@ -243,6 +196,7 @@ def run(
             )
     else:
         defaults = TrubricsDefaults()
+        new_trubric.save_local(trubric_output_file_path)
         rprint(
             "\n[bold orange_red1]Be sure to check out our docs to see how you can leverage the Trubrics platform."
             f"\n\n{defaults.demo_sign_up_url}[bold orange_red1]\n"
