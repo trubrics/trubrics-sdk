@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.6] - 2023-02-24
+
+### Changed
+
+- Refactored CLI with rich prints
+- Moved trubric_run_context path argument to `trubrics run` from `trubrics init`
+
 ## [1.2.5] - 2023-02-20
 
 ### Changed

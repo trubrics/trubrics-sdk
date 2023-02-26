@@ -10,6 +10,7 @@ from trubrics.validations.run import TrubricRun
 train_df, test_df, model = get_titanic_data_and_model()
 
 data_context = DataContext(
+    name="titanic_dataset",
     testing_data=test_df,
     minimum_functionality_data=test_df.iloc[:5],
     training_data=train_df,
@@ -19,4 +20,6 @@ data_context = DataContext(
 stream = pkg_resources.resource_stream(__name__, "my_first_trubric.json")
 trubric = Trubric.parse_obj(json.load(stream))
 
-RUN_CONTEXT = TrubricRun(data_context=data_context, model=model, trubric=trubric)
+RUN_CONTEXT = TrubricRun(
+    data_context=data_context, model_name="titanic_model", model=model, tags=["titanic-dev"], trubric=trubric
+)
