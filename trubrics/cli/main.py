@@ -7,7 +7,7 @@ import typer
 from rich import print as rprint
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from trubrics.cli.run import generate_new_trubric, validate_trubric_run_context
+from trubrics.cli.run import validate_trubric_run_context
 from trubrics.ui.auth import get_trubrics_auth_token, get_trubrics_firebase_auth_api_url
 from trubrics.ui.firestore import (
     get_trubrics_firestore_api_url,
@@ -18,6 +18,7 @@ from trubrics.ui.trubrics_config import (
     TrubricsDefaults,
     load_trubrics_config,
 )
+from trubrics.validations.run import generate_new_trubric
 
 app = typer.Typer()
 
@@ -162,10 +163,11 @@ def example_app(framework: str = typer.Option("streamlit", callback=_framework_c
 def run(
     save_ui: bool = typer.Option(False, prompt="Would you like to save you trubric to the UI?"),
     run_context_path: str = typer.Option(
-        default="trubrics/example/trubric_run.py", prompt="Enter the path to your trubric run .py file"
+        default="titanic-example-trubric", prompt="Enter the path to your trubric run .py file. Press enter for example"
     ),
     trubric_output_file_path: str = typer.Option(
-        "./my_new_trubric.json", prompt="Enter a local path to save your output trubric file. Press enter for default"
+        "./my_new_trubric.json",
+        prompt="Enter a local path to save your output trubric file. Press enter for default path",
     ),
 ):
     """Runs an example trubric (list of model validations) on the titanic dataset.
@@ -176,19 +178,19 @@ def run(
         trubric_output_file_path: path to save your output trubric file
     """
     trubric_run_path = None
-    if run_context_path != "trubrics/example/trubric_run.py":
+    if run_context_path != "titanic-example-trubric":
         trubric_run_path = Path(run_context_path).absolute()
         if not trubric_run_path.exists():
             rprint(f"[red]Path '{trubric_run_path}' not found.[red]")
             raise typer.Abort()
-        tc = validate_trubric_run_context(str(trubric_run_path))
+        rc = validate_trubric_run_context(str(trubric_run_path)).RUN_CONTEXT
     else:
-        from trubrics.example import trubric_run as tc  # type: ignore
+        from trubrics.example.trubric_run import RUN_CONTEXT as rc  # type: ignore
     rprint(
         f"\nRunning trubric from file '{trubric_run_path or 'trubrics.example.trubric_run'}' with model"
-        f" '{tc.RUN_CONTEXT.trubric.model_name}' and dataset '{tc.data_context.name}'.\n"
+        f" '{rc.model_name}' and dataset '{rc.data_context.name}'.\n"
     )
-    new_trubric = generate_new_trubric(tc)
+    new_trubric = generate_new_trubric(rc)
     if save_ui:
         trubrics_config = load_trubrics_config().dict()
         if trubrics_config["email"] is not None:

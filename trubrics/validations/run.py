@@ -1,6 +1,7 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, validator
+from rich import print as rprint
 from sklearn.metrics._scorer import _BaseScorer
 
 from trubrics.context import DataContext
@@ -24,7 +25,11 @@ class TrubricRun(BaseModel):
     data_context: DataContext
     model: Any
     trubric: Trubric
-    custom_validator: Optional[Any] = None
+    model_name: str = "new_model"
+    model_version: str = "0.0.1"
+    metadata: Optional[Dict[str, str]] = None
+    tags: List[Optional[str]] = []
+    custom_validator: Any = None
     custom_scorers: Optional[Dict[str, Any]] = None
     slicing_functions: Optional[Dict[str, Any]] = None
 
@@ -71,3 +76,28 @@ def run_trubric(tr: TrubricRun):
                 f"The validation '{validation.validation_type}' does not appear to belong to a validator."
                 " Try adding the object that generated the validation to the 'custom_validator' parameter."
             )
+
+
+def generate_new_trubric(run_context: TrubricRun) -> Trubric:
+    all_validation_results = run_trubric(tr=run_context)
+    validations = []
+    for validation_result in all_validation_results:
+        validations.append(validation_result)
+
+        message_start = f"{validation_result.validation_type} [{validation_result.severity.upper()}]"
+        completed_dots = f"[grey82]{(100 - len(message_start)) * '.'}[grey82]"
+        message_end = (
+            f"[bold {'green' if validation_result.outcome == 'pass' else 'red'}]{validation_result.outcome.upper()}"
+        )
+        rprint(message_start + completed_dots + message_end)
+
+    return Trubric(
+        name=run_context.trubric.name,
+        model_name=run_context.model_name,
+        model_version=run_context.model_version,
+        data_context_name=run_context.data_context.name,
+        data_context_version=run_context.data_context.version,
+        metadata=run_context.metadata,
+        tags=run_context.tags,
+        validations=validations,
+    )
