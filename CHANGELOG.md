@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.8] - 2023-02-27
+
+### Changed
+
+- Refactored TrubricRun to include methods to generate a Trubric
+- Update CLI docs and gifs
+
 ## [1.2.7] - 2023-02-26
 
 ### Fixed
