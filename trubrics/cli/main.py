@@ -18,7 +18,6 @@ from trubrics.ui.trubrics_config import (
     TrubricsDefaults,
     load_trubrics_config,
 )
-from trubrics.validations.run import generate_new_trubric
 
 app = typer.Typer()
 
@@ -190,7 +189,7 @@ def run(
         f"\nRunning trubric from file '{trubric_run_path or 'trubrics.example.trubric_run'}' with model"
         f" '{rc.model_name}' and dataset '{rc.data_context.name}'.\n"
     )
-    new_trubric = generate_new_trubric(rc)
+    new_trubric = rc.set_new_trubric()
     if save_ui:
         trubrics_config = load_trubrics_config().dict()
         if trubrics_config["email"] is not None:

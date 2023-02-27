@@ -17,6 +17,8 @@ data_context = DataContext(
     target="Survived",
 )
 
+# Note: This method of reading json is only necessary from within python package.
+# Call `Trubric.parse_file("your_trubric.json")` to read in a trubric directly.
 stream = pkg_resources.resource_stream(__name__, "my_first_trubric.json")
 trubric = Trubric.parse_obj(json.load(stream))
 

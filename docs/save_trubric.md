@@ -39,7 +39,7 @@ Saved `Trubric`s can be run from the [CLI](trubrics_cli.md) or directly from a p
 !!!example
 
     ```py
-    from trubrics.validations.run import TrubricRun, run_trubric
+    from trubrics.validations.run import TrubricRun
 
     trubric_run_context = TrubricRun(
         data_context=data_context,
@@ -49,20 +49,12 @@ Saved `Trubric`s can be run from the [CLI](trubrics_cli.md) or directly from a p
         custom_scorers=custom_scorers,
         slicing_functions=slicing_functions
     )
-    all_validation_results = run_trubric(trubric_run_context)
+    new_trubric = trubric_run_context.set_new_trubric()
 
-    new_validations = []
-    for validation_result in all_validation_results:
-        print(validation_result.validation_type, validation_result.severity, validation_result.outcome)
-        new_validations.append(validation_result)
-
-    # save new trubric .json
-    new_trubric = trubric_run_context.trubric
-    new_trubric.validations = new_validations
+    # save new trubric .json locally or to UI
     new_trubric.save_local()
     new_trubric.save_ui()
     ```
 
-The example above makes use of the `TrubricRun` object, and a `run_trubric` generator function.
 !!!tip "TrubricRun object"
     :::trubrics.validations.run.TrubricRun

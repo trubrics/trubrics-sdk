@@ -4,7 +4,7 @@ from examples.classification_titanic.custom_scorer import custom_scorers
 from examples.classification_titanic.custom_validator import CustomValidator
 from trubrics.exceptions import UnknownValidationError
 from trubrics.validations import Trubric
-from trubrics.validations.run import TrubricRun, run_trubric
+from trubrics.validations.run import TrubricRun
 
 
 def test_run_trubric(data_context, classifier_model, trubric):
@@ -15,7 +15,7 @@ def test_run_trubric(data_context, classifier_model, trubric):
         trubric=trubric,
         custom_scorers=custom_scorers,
     )
-    all_validation_results = run_trubric(run_context)
+    all_validation_results = run_context.generate_validations_from_trubric()
 
     actuals = (
         ("validate_minimum_functionality", "error", "pass"),
@@ -55,7 +55,7 @@ def test_run_trubric_raises(data_context, classifier_model):
         trubric=trubric,
         custom_scorers=custom_scorers,
     )
-    all_validation_results = run_trubric(run_context)
+    all_validation_results = run_context.generate_validations_from_trubric()
 
     with pytest.raises(UnknownValidationError):
         for validation in all_validation_results:

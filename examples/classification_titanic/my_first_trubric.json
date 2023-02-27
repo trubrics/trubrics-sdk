@@ -436,10 +436,10 @@
                 }
             },
             "explanation": "**Model inference time validation.**\n\nValidate the model's inference time on a single data point from the test set.\n\nExample:\n```py\nfrom trubrics.validations import ModelValidator\nmodel_validator = ModelValidator(data=data_context, model=model)\nmodel_validator.validate_inference_time(threshold=0.04, n_executions=100)\n```\n\nArgs:\nthreshold: number of seconds that the model inference time should be inferior to.\nn_executions: number of executions of the `.predict()` method for a single data point. The inference time will be the mean of each of the n_executions.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the model's average inference time (in seconds).\n",
-            "outcome": "pass",
+            "outcome": "fail",
             "severity": "error",
             "result": {
-                "inference_time": 0.02797723039000001
+                "inference_time": 0.042122444830000064
             }
         },
         {
@@ -472,11 +472,11 @@
         "dev"
     ],
     "run_by": null,
-    "git_commit": "7e9923fd0d68513df2d032ecc31a1ee286aaa94a",
+    "git_commit": "1cc9e377d16abc45370c706071fb4dd12cc81098",
     "metadata": {
         "some parameter": "xyz"
     },
-    "timestamp": 1677260222,
-    "total_passed": 13,
-    "total_passed_percent": 68.4
+    "timestamp": 1677488565,
+    "total_passed": 12,
+    "total_passed_percent": 63.2
 }
