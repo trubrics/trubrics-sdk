@@ -38,9 +38,11 @@ Initialise a run config in the terminal to save a `~/.trubrics_config.json` file
 
 ## 3. Run validations and save locally or to Trubrics
 
-Run all validations from the terminal. This command also saves a new trubric .json with each validation's new outcome and results to a given path.
+Run all validations from the terminal. This command also saves a new trubric .json with each validation's new outcome and results to a given path. Either save this trubric locally with `--no-save-ui` or to the Trubrics platform with `--save-ui`.
 
 !!!example "Run trubric with titanic example"
+    You can test the `trubrics run` command with our titanic example model on 5 saved validations.
+    Use `--save-ui` to save this example trubric to the Trubrics platform.
     ```console
     (venv)$ trubrics run --no-save-ui \
     --run-context-path titanic-example-trubric \
