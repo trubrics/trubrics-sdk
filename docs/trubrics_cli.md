@@ -28,14 +28,13 @@ Create a python file `<trubric_run_file>.py` that loads datasets / models to val
     ## TrubricRun Object
     :::trubrics.validations.run.TrubricRun
 
-## 2. Initialise an environment with `trubrics init`
+## 2. Connect to the Trubrics platform with `trubrics init`
 
-Initialise a run config in the terminal to save a `~/.trubrics_config.json` file to your user's root directory. Be guided by the CLI prompts by running:
+Initialise a run config in the terminal to save a `~/.trubrics_config.json` file to your user's root directory. This config file holds credentials and connectivity for logging any data to the Trubrics platform. Be guided by the CLI prompts by running:
 
 <p align="center"><img src="../assets/trubrics-init.gif"/></p>
 
-???tip "What is the `.trubrics_config.json`?"
-    The trubrics config holds credentials and connectivity for logging any data to the Trubrics platform.
+:::trubrics.cli.main.init
 
 ## 3. Run validations and save locally or to Trubrics
 
