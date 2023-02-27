@@ -6,9 +6,9 @@ from pydantic import BaseModel, SecretStr
 
 class TrubricsDefaults(BaseModel):
     # no stress, this is not a secret api key
-    firebase_api_key: str = "AIzaSyAB-ldUv6X2rgyN_Jda9EC_AzLkENjoDk8"
-    firebase_project_id: str = "trubrics-ea-staging"
-    trubrics_url: str = "https://st.ea.trubrics.com/"
+    firebase_api_key: str = "AIzaSyAWGOaN7_sL98irVM2g5O2RULK4yj9Tdvs"
+    firebase_project_id: str = "trubrics-ea-prod"
+    trubrics_url: str = "https://ea.trubrics.com/"
     demo_sign_up_url: str = "https://trubrics.com/demo/"
 
 
