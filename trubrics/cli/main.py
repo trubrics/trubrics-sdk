@@ -160,7 +160,7 @@ def example_app(framework: str = typer.Option("streamlit", callback=_framework_c
 
 @app.command()
 def run(
-    save_ui: bool = typer.Option(False, prompt="Would you like to save you trubric to the UI?"),
+    save_ui: bool = typer.Option(False, prompt="Would you like to save your trubric to the UI?"),
     run_context_path: str = typer.Option(
         default="titanic-example-trubric", prompt="Enter the path to your trubric run .py file. Press enter for example"
     ),
