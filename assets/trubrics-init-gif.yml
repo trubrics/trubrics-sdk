@@ -118,7 +118,7 @@ records:
   - delay: 6
     content: "\e]7;file://jk.home/Users/jeffreykayne/Documents/trubrics/trubrics-sdk\a"
   - delay: 95
-    content: "\r\e[0m\e[27m\e[24m\e[J\e[01;32m➜  \e[36mtrubrics-sdk\e[00m \e[01;34mgit:(\e[31mfix_cli_docs\e[34m) \e[33m✗\e[00m \e[K\e[?1h\e=\e[?2004h"
+    content: "\r\e[0m\e[27m\e[24m\e[J\e[01;32m➜  \e[36mtrubrics-sdk\e[00m \e[01;34mgit:(\e[31mmain\e[34m) \e[33m✗\e[00m \e[K\e[?1h\e=\e[?2004h"
   - delay: 1060
     content: t
   - delay: 198
@@ -229,9 +229,5 @@ records:
     content: "\e[32m\e[1mSuccessful authentication with configuration:\e[0m\r\n"
   - delay: 5
     content: "\e[1m{\e[0m\r\n    \e[32m'firebase_auth_api_url'\e[0m: \r\n\e[32m'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?\e[0m\e[32mkey\e[0m\e[32m=\e[0m\e[32mAIzaSyAWGOaN7_sL98irVM2g5O2RULK4yj9Tdvs\e[0m\e[32m'\e[0m,\r\n    \e[32m'firestore_api_url'\e[0m: \r\n\e[32m'https://firestore.googleapis.com/v1/projects/trubrics-ea-prod/databases/\e[0m\e[32m(\e[0m\e[32mdefault\e[0m\e[32m)\e[0m\e[32m/documents/organisations/Trubrics'\e[0m,\r\n    \e[32m'username'\e[0m: \e[32m'Jeff Kayne'\e[0m,\r\n    \e[32m'email'\e[0m: \e[32m'jeff.kayne@trubrics.com'\e[0m,\r\n    \e[32m'password'\e[0m: \e[1;35mSecretStr\e[0m\e[1m(\e[0m\e[32m'**********'\e[0m\e[1m)\e[0m,\r\n    \e[32m'project'\e[0m: \e[32m'titanic'\e[0m\r\n\e[1m}\e[0m\r\n\r\n\e[1;32mYou can now push trubrics and feedback to the Trubrics platform:\e[0m\r\n\e[1;4;32mhttps://ea.trubrics.com/\e[0m\r\n\r\n"
-  - delay: 207
-    content: "\e[1m\e[7m%\e[27m\e[1m\e[0m                                                                                                                                         \r \r\e]7;file://jk.home/Users/jeffreykayne/Documents/trubrics/trubrics-sdk\a\e]2;jeffreykayne@jk\a\e]1;../trubrics-sdk\a"
-  - delay: 6
-    content: "\e]7;file://jk.home/Users/jeffreykayne/Documents/trubrics/trubrics-sdk\a"
   - delay: 10000
-    content: "\r\e[0m\e[27m\e[24m\e[J\e[01;32m➜  \e[36mtrubrics-sdk\e[00m \e[01;34mgit:(\e[31mfix_cli_docs\e[34m) \e[33m✗\e[00m \e[K\e[?1h\e=\e[?2004h"
+    content: "\e[1m\e[7m%\e[27m\e[1m\e[0m                                                                                                                                         \r \r\e]7;file://jk.home/Users/jeffreykayne/Documents/trubrics/trubrics-sdk\a\e]2;jeffreykayne@jk\a\e]1;../trubrics-sdk\a"
