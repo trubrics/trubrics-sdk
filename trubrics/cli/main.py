@@ -19,7 +19,7 @@ from trubrics.ui.trubrics_config import (
     load_trubrics_config,
 )
 
-app = typer.Typer()
+app = typer.Typer(pretty_exceptions_show_locals=False)
 
 
 def version_callback(value: bool):
@@ -76,6 +76,7 @@ def init(
                 firestore_api_url = get_trubrics_firestore_api_url(auth, defaults.firebase_project_id)
 
             projects = list_projects_in_organisation(firestore_api_url=firestore_api_url, auth=auth)
+
             rprint(f"\n[bold yellow]Welcome {auth['displayName']}[bold yellow] :sunglasses:\n")
 
         if len(projects) > 0:
@@ -83,13 +84,8 @@ def init(
                 rprint(f"[bold green][{index}][/bold green] [green]{project}[/green]")
             project_num = typer.prompt("Select your project (e.g. 0)")
 
-            try:
-                project_int = int(project_num)
-                if project_int not in list(range(len(projects))):
-                    raise ValueError
-                else:
-                    project_name = projects[project_int]
-            except ValueError:
+            project_int = int(project_num)
+            if project_int not in list(range(len(projects))):
                 message = typer.style(
                     f"Project [{project_num}] not recognised."
                     "Please indicate an integer referring to one of the project names"
@@ -99,6 +95,8 @@ def init(
                 )
                 typer.echo(message)
                 raise typer.Abort()
+            else:
+                project_name = projects[project_int]
         else:
             message = typer.style(
                 f"Organisation '{firestore_api_url.split('/')[-1]}' has no projects created."

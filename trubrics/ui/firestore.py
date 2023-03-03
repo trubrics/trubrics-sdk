@@ -68,12 +68,13 @@ def get_trubrics_firestore_api_url(auth, project_id):
 
 
 def list_projects_in_organisation(firestore_api_url, auth):
-    projects_res = json.loads(
-        requests.get(
-            firestore_api_url + "/projects",
-            headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
-        ).text
+    r = requests.get(
+        firestore_api_url + "/projects" + "?pageSize=50",
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
     )
+    r.raise_for_status()
+    projects_res = json.loads(r.text)
+
     all_projects = []
     if len(projects_res) != 0:
         for project in projects_res["documents"]:
