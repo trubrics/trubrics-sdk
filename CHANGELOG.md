@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.9] - 2023-03-03
+
+### Fixed
+
+- Display up to 50 projects from Trubrics in `trubrics init`
+- Add @lru_cache to get Idtoken upon each write
+- Hide locals in typer print (for sensitive password on error)
+
 ## [1.2.8] - 2023-02-27
 
 ### Changed
