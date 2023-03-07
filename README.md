@@ -8,7 +8,7 @@
 
 [trubrics.com](https://www.trubrics.com/home)
 
-_Investigate models, collaborate across teams, validate machine learning._
+_Minimise AI Risk, Maximise Adoption_
 
 </center>
 
