@@ -17,10 +17,10 @@ class Feedback(BaseModel):
 
     title: str
     description: str
-    model_name: str = "my_model"
-    model_version: str = "0.0.1"
-    data_context_name: str = "my_data_context"
-    data_context_version: str = "0.0.1"
+    data_context_name: Optional[str]
+    data_context_version: Optional[str]
+    model_name: Optional[str] = None
+    model_version: Optional[str] = None
     collaborators: List[Optional[str]] = []
     open: bool = True
     tags: Optional[List[str]] = None

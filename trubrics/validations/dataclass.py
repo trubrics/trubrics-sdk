@@ -70,23 +70,25 @@ class Validation(BaseModel):
 class Trubric(BaseModel):
     """
     Dataclass for a trubric, or set of validation points. Must be serialisable to .json.
+    A Trubric must contain at least metadata about the DataContext used to create the validations,
+    and should contain metadata also about any model that is used.
 
     Attributes:
         name: trubric name
-        model_name: model name
-        model_version: model version
         data_context_name: data context name (from DataContext)
         data_context_version: data context version (from DataContext)
+        model_name: model name
+        model_version: model version
         metadata: free textual metadata field
         validations: list of validations (defined by Validation)
     """
 
     name: str
-    model_name: str = "my_model"
-    model_version: str = "0.0.1"
-    data_context_name: str = "my_data_context"
-    data_context_version: str = "0.0.1"
+    data_context_name: str
+    data_context_version: str
     validations: List[Validation]
+    model_name: Optional[str] = None
+    model_version: Optional[str] = None
     tags: List[Optional[str]] = []
     run_by: Optional[Dict[str, str]] = None
     git_commit: Optional[str] = None

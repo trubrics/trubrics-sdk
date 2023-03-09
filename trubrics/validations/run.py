@@ -27,9 +27,9 @@ class TrubricRun(BaseModel):
     """
 
     data_context: DataContext
-    model: Any
-    model_name: str = "new_model"
-    model_version: str = "0.0.1"
+    model: Optional[Any]
+    model_name: Optional[str]
+    model_version: Optional[str]
     trubric: Trubric
     metadata: Optional[Dict[str, str]] = None
     tags: List[Optional[str]] = []

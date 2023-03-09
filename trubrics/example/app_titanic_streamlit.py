@@ -39,6 +39,10 @@ def main(save_ui: bool = False):
     st.title("Send model feedback")
     metadata = {"what_if_data": df.to_dict(), "what_if_prediction": wi_prediction}
     collect_feedback_streamlit(
+        data_context_name=data_context.name,
+        data_context_version=data_context.version,
+        model_name="my_model",
+        model_version="v0.0.1",
         path="./feedback_issue.json",  # path to save feedback .json to
         tags=["Streamlit"],
         metadata=metadata,

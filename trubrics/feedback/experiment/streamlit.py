@@ -21,7 +21,7 @@ def generate_what_if_streamlit(data_context: DataContext):
                 "A list of categorical_columns must be specified in the DataContext for the what-if functionality."
             )
         if col in data_context.categorical_columns:
-            out_df[col] = [st.selectbox(renamed_col, tuple(series.dropna().unique()))]
+            out_df[col] = [st.selectbox(label=renamed_col, options=tuple(series.dropna().unique()))]
         else:
             out_df[col] = [
                 st.slider(

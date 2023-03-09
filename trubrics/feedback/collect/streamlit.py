@@ -7,6 +7,10 @@ from trubrics.feedback.dataclass import Feedback
 
 
 def collect_feedback_streamlit(
+    data_context_name: Optional[str],
+    data_context_version: Optional[str],
+    model_name: Optional[str] = None,
+    model_version: Optional[str] = None,
     path: Optional[str] = None,
     metadata: Optional[Dict[str, Any]] = None,
     tags: Optional[List[str]] = None,
@@ -39,7 +43,16 @@ def collect_feedback_streamlit(
                     unsafe_allow_html=True,
                 )
             else:
-                feedback = Feedback(title=title, description=description, tags=tags, metadata=metadata)
+                feedback = Feedback(
+                    data_context_name=data_context_name,
+                    data_context_version=data_context_version,
+                    model_name=model_name,
+                    model_version=model_version,
+                    title=title,
+                    description=description,
+                    tags=tags,
+                    metadata=metadata,
+                )
                 if save_ui:
                     feedback.save_ui(email, password)  # type: ignore
                 else:

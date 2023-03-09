@@ -17,7 +17,7 @@ Once an ensemble of validations have been built, the list can be input into the 
     trubric = Trubric(
         name="my_first_trubric",
         model_name="my_model",
-        model_version="0.0.1",
+        model_version="v0.0.1",
         data_context_name=data_context.name,
         data_context_version=data_context.version,
         tags=["master"],
