@@ -42,8 +42,6 @@ class Feedback(BaseModel):
     def save_ui(self, email: str, password: str):
         trubrics_config = load_trubrics_config()
         self._set_fields_on_save()
-        if trubrics_config.firestore_api_url is None or trubrics_config.project is None:
-            raise TypeError("Trubrics config not set. Run `trubrics init` to configure.")
 
         auth = get_trubrics_auth_token(trubrics_config.firebase_auth_api_url, email, password)
         if "error" in auth:

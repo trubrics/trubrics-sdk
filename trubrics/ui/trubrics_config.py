@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 
 from pydantic import BaseModel, SecretStr
 
@@ -13,12 +12,12 @@ class TrubricsDefaults(BaseModel):
 
 
 class TrubricsConfig(BaseModel):
-    firebase_auth_api_url: Optional[str] = None
-    firestore_api_url: Optional[str] = None
-    username: Optional[str] = None
-    email: Optional[str] = None
-    password: Optional[SecretStr] = None
-    project: Optional[str] = None
+    firebase_auth_api_url: str
+    firestore_api_url: str
+    username: str
+    email: str
+    password: SecretStr
+    project: str
 
     class Config:
         json_encoders = {SecretStr: lambda v: v.get_secret_value() if v else None}
