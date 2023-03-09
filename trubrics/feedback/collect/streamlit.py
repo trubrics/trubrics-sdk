@@ -20,6 +20,10 @@ def collect_feedback_streamlit(
     A component to collect user feedback within a Streamlit web application.
 
     Args:
+        data_context_name: name of DataContext. Set to `None` if no DataContext is specified.
+        data_context_version: version of DataContext. Set to `None` if no DataContext is specified.
+        model_name: Optional model name
+        model_version:  Optional model version
         path: path to save feedback local .json. Defaults to "./<timestamp>_feedback.json"
         metadata: any metric which the user wants to save into the feedback issue such as
                   feature values, prediction, etc. Defaults to None.
