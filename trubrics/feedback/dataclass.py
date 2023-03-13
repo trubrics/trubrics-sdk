@@ -39,9 +39,13 @@ class Feedback(BaseModel):
             file.write(self.json(indent=4))
             logger.info(f"Feedback saved to {path}.")
 
-    def save_ui(self, email: str, password: str):
+    def save_ui(self, email: Optional[str], password: Optional[str]):
         trubrics_config = load_trubrics_config()
         self._set_fields_on_save()
+
+        if email is None and password is None:
+            email = trubrics_config.email
+            password = trubrics_config.password.get_secret_value()
 
         auth = get_trubrics_auth_token(trubrics_config.firebase_auth_api_url, email, password)
         if "error" in auth:
