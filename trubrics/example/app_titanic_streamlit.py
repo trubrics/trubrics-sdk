@@ -28,7 +28,6 @@ def init_trubrics(save_ui):
         data_context=data_context,
         model_name="my_model",
         model_version="v0.0.1",
-        tags=["Streamlit"],
         save_ui=save_ui,  # set to True to save feedback to Trubrics
         allow_public_feedback=False,
     )
@@ -40,8 +39,9 @@ def main(save_ui: bool = False):
     model, data_context, collector = init_trubrics(save_ui)
 
     with st.sidebar:
-        st.title("Authentication")
-        collector.st_trubrics_auth()
+        if save_ui:
+            st.title("Authentication")
+            collector.st_trubrics_auth()
         st.title("Test the model with different inputs")
         df = generate_what_if_streamlit(data_context=data_context)
     wi_prediction = model.predict(df)[0]
@@ -54,14 +54,14 @@ def main(save_ui: bool = False):
     else:
         prediction = '<p style="color:Red;">This passenger would have died.</p>'
     st.markdown(prediction, unsafe_allow_html=True)
-    collector.st_feedback(type="thumbs", metadata=metadata)
+    collector.st_feedback(type="thumbs", metadata=metadata, path="./thumbs_feedback.json")
 
     st.title("Report an issue")
     collector.st_feedback(type="issue", metadata=metadata)
 
     st.title("View data")
     explore_testing_data(data_context=data_context, model=model)
-    collector.st_feedback(type="faces")
+    collector.st_feedback(type="faces", tags=["example tag"])
 
 
 if __name__ == "__main__":

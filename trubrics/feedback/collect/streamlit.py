@@ -15,14 +15,12 @@ class FeedbackCollector:
         data_context: DataContext,
         model_name: Optional[str] = None,
         model_version: Optional[str] = None,
-        tags: Optional[List[str]] = None,
         save_ui: bool = False,
         allow_public_feedback: bool = False,
     ):
         self.dc = data_context
         self.model_name = model_name
         self.model_version = model_version
-        self.tags = tags
         self.save_ui = save_ui
         self.allow_public_feedback = allow_public_feedback
         self.email = ""
@@ -77,7 +75,13 @@ class FeedbackCollector:
                     "Please set save_ui=True in FeedbackCollector to use Trubrics authentication to save feedback."
                 )
 
-    def st_feedback(self, path: Optional[str] = None, type: str = "issue", metadata: Optional[Dict[str, Any]] = None):
+    def st_feedback(
+        self,
+        path: Optional[str] = None,
+        type: str = "issue",
+        metadata: Optional[Dict[str, Any]] = None,
+        tags: Optional[List[str]] = None,
+    ):
         """
         Collect user feedback within a Streamlit web application.
 
@@ -87,6 +91,8 @@ class FeedbackCollector:
                 - issue: issue with a open text title and description fields
                 - thumbs: positive or negative feedback with thumbs emojis
                 - faces: a scale of 1 to 5 with face emojis
+            metadata: data to save with your feedback
+            tags: a list of tags for your feedback
         """
         title, description = None, None
         if type == "issue":
@@ -113,7 +119,10 @@ class FeedbackCollector:
                 description=description,
                 data_context_name=self.dc.name,
                 data_context_version=self.dc.version,
+                model_name=self.model_name,
+                model_version=self.model_version,
                 metadata=metadata,
+                tags=tags,
             )
             if self.save_ui:
                 if self.allow_public_feedback:
