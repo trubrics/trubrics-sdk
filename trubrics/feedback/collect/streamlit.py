@@ -25,11 +25,23 @@ class FeedbackCollector:
         self.tags = tags
         self.save_ui = save_ui
         self.allow_public_feedback = allow_public_feedback
-        self.email = None
-        self.password = None
+        self.email = ""
+        self.password = ""
         self.authenticated = False
 
+        if not self.save_ui and self.allow_public_feedback:
+            raise ValueError(
+                "The public feedback argument is only valid when saving to the Trubrics platform. It must also be"
+                " accompanied by save_ui=True."
+            )
+
     def st_trubrics_auth(self):
+        if self.allow_public_feedback:
+            raise ValueError(
+                "Allowing public feedback results in all feedback being saved to Trubrics with your credentials. The"
+                " `st_trubrics_auth` method is therefore disabled for this option."
+            )
+
         trubrics_config = load_trubrics_config()
         if self.authenticated:
             if st.button("Sign out"):
@@ -38,15 +50,12 @@ class FeedbackCollector:
         else:
             if self.save_ui:
                 with st.form("auth form"):
-                    # col1, col2, col3 = st.columns([2, 2, 1])
-                    # with col1:
                     self.email = st.text_input(
                         label=config.USER_EMAIL,
                         placeholder=config.USER_EMAIL,
                         label_visibility="collapsed",
                         key="email",
                     )
-                    # with col2:
                     self.password = st.text_input(
                         label=config.USER_PASSWORD,
                         placeholder=config.USER_PASSWORD,
@@ -54,7 +63,6 @@ class FeedbackCollector:
                         key="password",
                         type="password",
                     )
-                    # with col3:
                     submitted = st.form_submit_button("Sign In")
                     if submitted:
                         # check auth
@@ -77,10 +85,8 @@ class FeedbackCollector:
             path: path to save feedback local .json. Defaults to "./<timestamp>_feedback.json"
             type: type of feedback to be collected
                 - issue: issue with a open text title and description fields
-                - thumbs: a thumbs up or thumbs down feedback
-                - scale: a scale of 1 to n
-                - scale_open: a scale of 1 to n with an open text field
-                - n_open: n open text fields
+                - thumbs: positive or negative feedback with thumbs emojis
+                - faces: a scale of 1 to 5 with face emojis
         """
         title, description = None, None
         if type == "issue":
@@ -109,7 +115,10 @@ class FeedbackCollector:
                 metadata=metadata,
             )
             if self.save_ui:
-                feedback.save_ui(self.email, self.password)
+                if self.allow_public_feedback:
+                    feedback.save_ui(None, None)
+                else:
+                    feedback.save_ui(self.email, self.password)
             else:
                 feedback.save_local(path=path)
             st.success(config.FEEDBACK_SAVED)

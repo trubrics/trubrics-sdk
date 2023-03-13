@@ -30,6 +30,7 @@ def init_trubrics(save_ui):
         model_version="v0.0.1",
         tags=["Streamlit"],
         save_ui=save_ui,  # set to True to save feedback to Trubrics
+        allow_public_feedback=False,
     )
     return model, data_context, collector
 
