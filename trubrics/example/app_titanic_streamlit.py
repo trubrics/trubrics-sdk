@@ -13,8 +13,8 @@ from trubrics.feedback import (
 cli = typer.Typer()
 
 
-@cli.command()
-def main(save_ui: bool = False):
+@st.cache(allow_output_mutation=True)
+def init_trubrics(save_ui):
     _, test_df, model = get_titanic_data_and_model()
 
     data_context = DataContext(
@@ -24,12 +24,6 @@ def main(save_ui: bool = False):
         business_columns=tc.BUSINESS_COLUMNS,
     )
 
-    with st.sidebar:
-        st.title("Test the model with different inputs")
-        df = generate_what_if_streamlit(data_context=data_context)
-    wi_prediction = model.predict(df)[0]
-
-    metadata = {"what_if_data": df.to_dict(), "what_if_prediction": wi_prediction}
     collector = FeedbackCollector(
         data_context=data_context,
         model_name="my_model",
@@ -37,6 +31,21 @@ def main(save_ui: bool = False):
         tags=["Streamlit"],
         save_ui=save_ui,  # set to True to save feedback to Trubrics
     )
+    return model, data_context, collector
+
+
+@cli.command()
+def main(save_ui: bool = False):
+    model, data_context, collector = init_trubrics(save_ui)
+
+    with st.sidebar:
+        st.title("Authentication")
+        collector.st_trubrics_auth()
+        st.title("Test the model with different inputs")
+        df = generate_what_if_streamlit(data_context=data_context)
+    wi_prediction = model.predict(df)[0]
+
+    metadata = {"what_if_data": df.to_dict(), "what_if_prediction": wi_prediction}
 
     st.title("View model prediction")
     if wi_prediction:
