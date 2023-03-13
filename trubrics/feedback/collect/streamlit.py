@@ -96,18 +96,19 @@ class FeedbackCollector:
         elif type == "thumbs":
             thumbs_data = self._st_feedback_thumbs()
             if thumbs_data:
-                title = thumbs_data
-                description = "reaction"
+                title = "User satisfaction: thumbs"
+                description = thumbs_data
         elif type == "faces":
             faces_data = self._st_feedback_faces()
             if faces_data:
-                title = faces_data
-                description = "reaction"
+                title = "User satisfaction: faces"
+                description = faces_data
         else:
-            raise NotImplementedError()
+            raise ValueError("type must be one of ['issue', 'faces', 'thumbs'].")
 
         if title and description:
             feedback = Feedback(
+                type=type,
                 title=title,
                 description=description,
                 data_context_name=self.dc.name,
@@ -143,9 +144,9 @@ class FeedbackCollector:
         with col2:
             down = st.button("👎")
         if up:
-            return "up"
+            return ":thumbs up:"
         elif down:
-            return "down"
+            return ":thumbs down:"
         else:
             return None
 
@@ -163,14 +164,14 @@ class FeedbackCollector:
         with col5:
             five = st.button("😀")
         if one:
-            return "1"
+            return ":very negative:"
         elif two:
-            return "2"
+            return ":negative:"
         elif three:
-            return "3"
+            return ":neutral:"
         elif four:
-            return "4"
+            return ":positive:"
         elif five:
-            return "5"
+            return ":very positive:"
         else:
             return None

@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Union
 from git import InvalidGitRepositoryError
 from git.repo import Repo
 from loguru import logger
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 from trubrics.ui.auth import get_trubrics_auth_token
 from trubrics.ui.firestore import add_document_to_project_subcollection
@@ -15,6 +15,7 @@ from trubrics.ui.trubrics_config import load_trubrics_config
 class Feedback(BaseModel):
     """Dataclass for feedback given by a user from a UI component."""
 
+    type: str
     title: str
     description: str
     data_context_name: Optional[str]
@@ -30,6 +31,12 @@ class Feedback(BaseModel):
     closed_on: Optional[str] = None
     closed_by: Optional[str] = None
     metadata: Optional[Dict[str, Union[List[Any], float, int, str, dict]]] = None
+
+    @validator("type")
+    def target_column_must_be_in_data(cls, v):
+        if v not in ["issue", "faces", "thumbs"]:
+            raise ValueError("type must be one of ['issue', 'faces', 'thumbs'].")
+        return v
 
     def save_local(self, path: Optional[str] = None):
         self._set_fields_on_save()
