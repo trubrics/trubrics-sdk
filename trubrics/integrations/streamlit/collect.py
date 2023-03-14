@@ -42,6 +42,7 @@ class FeedbackCollector:
 
         trubrics_config = load_trubrics_config()
         if self.authenticated:
+            st.write(self.email + " signed in.")
             if st.button("Sign out"):
                 self.authenticated = False
                 self.st_trubrics_auth()

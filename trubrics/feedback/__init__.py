@@ -1,7 +1,7 @@
 from trubrics.feedback.collect.dash import collect_feedback_dash
 from trubrics.feedback.collect.gradio import collect_feedback_gradio
-from trubrics.feedback.collect.streamlit import FeedbackCollector
-from trubrics.feedback.experiment.streamlit import (
+from trubrics.integrations.streamlit.collect import FeedbackCollector
+from trubrics.integrations.streamlit.experiment import (
     explore_testing_data,
     generate_what_if_streamlit,
 )
