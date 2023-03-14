@@ -1,3 +1,5 @@
+from typing import Optional
+
 import streamlit as st
 import typer
 
@@ -14,7 +16,7 @@ cli = typer.Typer()
 
 
 @st.cache(allow_output_mutation=True)
-def init_trubrics(save_ui):
+def init_trubrics(trubrics_platform_auth):
     _, test_df, model = get_titanic_data_and_model()
 
     data_context = DataContext(
@@ -28,18 +30,17 @@ def init_trubrics(save_ui):
         data_context=data_context,
         model_name="my_model",
         model_version="v0.0.1",
-        save_ui=save_ui,  # set to True to save feedback to Trubrics
-        allow_public_feedback=False,
+        trubrics_platform_auth=trubrics_platform_auth,
     )
     return model, data_context, collector
 
 
 @cli.command()
-def main(save_ui: bool = False):
-    model, data_context, collector = init_trubrics(save_ui)
+def main(trubrics_platform_auth: Optional[str] = None):
+    model, data_context, collector = init_trubrics(trubrics_platform_auth)
 
     with st.sidebar:
-        if save_ui:
+        if trubrics_platform_auth == "multiple_users":
             st.title("Authentication")
             collector.st_trubrics_auth()
         st.title("Test the model with different inputs")

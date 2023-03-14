@@ -12,33 +12,30 @@ from trubrics.ui.trubrics_config import load_trubrics_config
 class FeedbackCollector:
     def __init__(
         self,
-        data_context: DataContext,
+        data_context: Optional[DataContext],
         model_name: Optional[str] = None,
         model_version: Optional[str] = None,
-        save_ui: bool = False,
-        allow_public_feedback: bool = False,
+        trubrics_platform_auth: Optional[str] = None,
     ):
-        self.dc = data_context
+        self.data_context_name = data_context.name if data_context else None
+        self.data_context_version = data_context.version if data_context else None
         self.model_name = model_name
         self.model_version = model_version
-        self.save_ui = save_ui
-        self.allow_public_feedback = allow_public_feedback
+        if trubrics_platform_auth in [None, "single_user", "multiple_users"]:
+            self.trubrics_platform_auth = trubrics_platform_auth
+        else:
+            raise ValueError(
+                f"trubrics_platform_auth={trubrics_platform_auth} not recognised. Must be one of [None, 'single_user',"
+                " 'multiple_users']."
+            )
+
         self.email = ""
         self.password = ""
         self.authenticated = False
 
-        if not self.save_ui and self.allow_public_feedback:
-            raise ValueError(
-                "The public feedback argument is only valid when saving to the Trubrics platform. It must also be"
-                " accompanied by save_ui=True."
-            )
-
     def st_trubrics_auth(self):
-        if self.allow_public_feedback:
-            raise ValueError(
-                "Allowing public feedback results in all feedback being saved to Trubrics with your credentials. The"
-                " `st_trubrics_auth` method is therefore disabled for this option."
-            )
+        if self.trubrics_platform_auth is None:
+            raise ValueError("The `.st_trubrics_auth()` method is reserved for usage with the Trubrics platform.")
 
         trubrics_config = load_trubrics_config()
         if self.authenticated:
@@ -47,34 +44,29 @@ class FeedbackCollector:
                 self.authenticated = False
                 self.st_trubrics_auth()
         else:
-            if self.save_ui:
-                with st.form("auth form"):
-                    self.email = st.text_input(
-                        label=config.USER_EMAIL,
-                        placeholder=config.USER_EMAIL,
-                        label_visibility="collapsed",
-                        key="email",
-                    )
-                    self.password = st.text_input(
-                        label=config.USER_PASSWORD,
-                        placeholder=config.USER_PASSWORD,
-                        label_visibility="collapsed",
-                        key="password",
-                        type="password",
-                    )
-                    submitted = st.form_submit_button("Sign In")
-                    if submitted:
-                        # check auth
-                        auth = get_trubrics_auth_token(trubrics_config.firebase_auth_api_url, self.email, self.password)
-                        if "error" in auth:
-                            st.error(f"Error authenticating user {self.email}. Try again or contact your admin team.")
-                        else:
-                            st.success(f"{self.email} successfully signed in.")
-                            self.authenticated = True
-            else:
-                raise ValueError(
-                    "Please set save_ui=True in FeedbackCollector to use Trubrics authentication to save feedback."
+            with st.form("auth form"):
+                self.email = st.text_input(
+                    label=config.USER_EMAIL,
+                    placeholder=config.USER_EMAIL,
+                    label_visibility="collapsed",
+                    key="email",
                 )
+                self.password = st.text_input(
+                    label=config.USER_PASSWORD,
+                    placeholder=config.USER_PASSWORD,
+                    label_visibility="collapsed",
+                    key="password",
+                    type="password",
+                )
+                submitted = st.form_submit_button("Sign In")
+                if submitted:
+                    # check auth
+                    auth = get_trubrics_auth_token(trubrics_config.firebase_auth_api_url, self.email, self.password)
+                    if "error" in auth:
+                        st.error(f"Error authenticating user {self.email}. Try again or contact your admin team.")
+                    else:
+                        st.success(f"{self.email} successfully signed in.")
+                        self.authenticated = True
 
     def st_feedback(
         self,
@@ -118,20 +110,24 @@ class FeedbackCollector:
                 type=type,
                 title=title,
                 description=description,
-                data_context_name=self.dc.name,
-                data_context_version=self.dc.version,
+                data_context_name=self.data_context_name,
+                data_context_version=self.data_context_version,
                 model_name=self.model_name,
                 model_version=self.model_version,
                 metadata=metadata,
                 tags=tags,
             )
-            if self.save_ui:
-                if self.allow_public_feedback:
-                    feedback.save_ui(None, None)
-                else:
-                    feedback.save_ui(self.email, self.password)
-            else:
+            if self.trubrics_platform_auth is None:
                 feedback.save_local(path=path)
+            elif self.trubrics_platform_auth == "multiple_users":
+                feedback.save_ui(self.email, self.password)
+            elif self.trubrics_platform_auth == "single_user":
+                feedback.save_ui(None, None)
+            else:
+                raise ValueError(
+                    f"trubrics_platform_auth={self.trubrics_platform_auth} not recognised. Must be one of [None,"
+                    " 'single_user', 'multiple_users']."
+                )
             st.success(config.FEEDBACK_SAVED)
 
     @staticmethod
@@ -174,14 +170,14 @@ class FeedbackCollector:
         with col5:
             five = st.button("😀")
         if one:
-            return ":very negative:"
+            return ":1 - very negative:"
         elif two:
-            return ":negative:"
+            return ":2 - negative:"
         elif three:
-            return ":neutral:"
+            return ":3 - neutral:"
         elif four:
-            return ":positive:"
+            return ":4 - positive:"
         elif five:
-            return ":very positive:"
+            return ":5 - very positive:"
         else:
             return None
