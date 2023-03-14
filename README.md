@@ -97,6 +97,10 @@ Trubrics feedback components help you collect feedback on your models with your 
 </td>
 <td>
 
+```console
+(venv)$ pip install "trubrics[streamlit]"
+```
+
 ```py
 from trubrics.feedback import collect_feedback_streamlit
 
@@ -129,6 +133,10 @@ collect_feedback_streamlit(
 
 <td>
 
+```console
+(venv)$ pip install "trubrics[dash]"
+```
+
 ```py
 from dash import Dash, html
 
@@ -155,6 +163,10 @@ if __name__ == "__main__":
 
 </td>
 <td>
+
+```console
+(venv)$ pip install "trubrics[gradio]"
+```
 
 ```py
 import gradio as gr
