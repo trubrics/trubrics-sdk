@@ -77,10 +77,16 @@ class Trubric(BaseModel):
         name: trubric name
         data_context_name: data context name (from DataContext)
         data_context_version: data context version (from DataContext)
+        validations: list of validations (defined by Validation)
         model_name: model name
         model_version: model version
+        tags: list of tags for the trubric
+        run_by: who the trubric was run by
+        git_commit: a git commit hash from the git repo where the trubric was run
         metadata: free textual metadata field
-        validations: list of validations (defined by Validation)
+        timestamp: timestamp at which the trubric was run
+        total_passed: number of validations that passed
+        total_passed_percent: percentage of passed validations
     """
 
     name: str
