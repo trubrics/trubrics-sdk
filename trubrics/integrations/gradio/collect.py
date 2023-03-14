@@ -45,9 +45,10 @@ def collect_feedback(
             )
             if save_ui:
                 feedback.save_ui(email, password)
+                return config.PLATFORM_SAVE_HTML
             else:
                 feedback.save_local(path=path)
-            return config.FEEDBACK_SAVED_HTML
+                return config.LOCAL_SAVE_HTML
         else:
             return config.FEEDBACK_NOT_SAVED_HTML
 

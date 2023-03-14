@@ -35,7 +35,10 @@ class FeedbackCollector:
 
     def st_trubrics_auth(self):
         if self.trubrics_platform_auth is None:
-            raise ValueError("The `.st_trubrics_auth()` method is reserved for usage with the Trubrics platform.")
+            raise ValueError(
+                "The `.st_trubrics_auth()` method is reserved for usage with the Trubrics platform. See the"
+                " 'trubrics_platform_auth' argument for authentication options."
+            )
 
         trubrics_config = load_trubrics_config()
         if self.authenticated:
@@ -119,16 +122,21 @@ class FeedbackCollector:
             )
             if self.trubrics_platform_auth is None:
                 feedback.save_local(path=path)
+                st.success(config.LOCAL_SAVE)
             elif self.trubrics_platform_auth == "multiple_users":
-                feedback.save_ui(self.email, self.password)
+                if self.authenticated:
+                    feedback.save_ui(self.email, self.password)
+                    st.success(config.PLATFORM_SAVE)
+                else:
+                    st.error("User is not authenticated. Please try again or contact your admin.")
             elif self.trubrics_platform_auth == "single_user":
                 feedback.save_ui(None, None)
+                st.success(config.PLATFORM_SAVE)
             else:
                 raise ValueError(
                     f"trubrics_platform_auth={self.trubrics_platform_auth} not recognised. Must be one of [None,"
                     " 'single_user', 'multiple_users']."
                 )
-            st.success(config.FEEDBACK_SAVED)
 
     @staticmethod
     def _st_feedback_issue():

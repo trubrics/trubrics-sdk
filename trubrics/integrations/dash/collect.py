@@ -85,7 +85,7 @@ def collect_feedback(
                 if save_ui:
                     raise NotImplementedError()
                     # feedback.save_ui()
-                return config.FEEDBACK_SAVED, {"color": "Green"}, None, None
+                return config.LOCAL_SAVE, {"color": "Green"}, None, None
         else:
             return None, None, title, description
 
