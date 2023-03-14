@@ -4,7 +4,7 @@ import typer
 from trubrics.context import DataContext
 from trubrics.example import get_titanic_data_and_model
 from trubrics.example import titanic_config as tc
-from trubrics.feedback import (
+from trubrics.integrations.streamlit import (
     FeedbackCollector,
     explore_testing_data,
     generate_what_if_streamlit,
