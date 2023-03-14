@@ -21,6 +21,9 @@ def collect_feedback(
 
     Args:
         path: path to save feedback local .json. Defaults to "./<timestamp>_feedback.json"
+        data_context: the DataContext containing your datasets
+        model_name: optional name of your model
+        model_version: optional version of your model
         metadata: any metric which the user wants to save into the feedback issue such as
                   feature values, prediction, etc. Defaults to None.
         tags: list of any tags for the feedback issue. Defaults to None.
