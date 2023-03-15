@@ -13,7 +13,27 @@ from trubrics.ui.trubrics_config import load_trubrics_config
 
 
 class Feedback(BaseModel):
-    """Dataclass for feedback given by a user from a UI component."""
+    """
+    Dataclass for feedback given by a user from a UI component.
+
+    Attributes:
+        type: feedback type ['issue', 'faces', 'thumbs']
+        title: a title of the feedback
+        description: a description of the feedback
+        data_context_name: data context name (from DataContext)
+        data_context_version: data context version (from DataContext)
+        model_name: model name
+        model_version: model version
+        collaborators: users who have collaborated so far on the issue
+        open: whether the feedback item is open or closed
+        tags: list of tags for the feedback issue
+        git_commit: a git commit hash from the git repo where the app was run to collect feedback
+        timestamp: timestamp at which the feedback was recorded
+        created_by: who the feedback was run by
+        closed_on: timestamp when the feedback was closed
+        closed_by: who the feedback was run by
+        metadata: free textual metadata field
+    """
 
     type: str
     title: str
