@@ -101,6 +101,11 @@ Then you have two options:
     (venv)$ trubrics example-app
     ```
 
+    <p align="center"><img width="80%" src="./assets/titanic-feedback-example.png"/></p>
+    <center>
+
+    _Our demo Streamlit app_
+    </center>
 
 - OR add this code snippet directly to your streamlit app:
     ```py
@@ -111,7 +116,6 @@ Then you have two options:
     ```
 
 Here's a screenshot of demo streamlit FeedbackCollector:
-<p align="center"><img src="./assets/titanic-feedback-example.png"/></p>
 
 For more information on our Streamlit integration, check our [docs](https://trubrics.github.io/trubrics-sdk/feedback/).
 
