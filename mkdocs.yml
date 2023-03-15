@@ -55,4 +55,9 @@ nav:
     - Save validations as a trubric: save_trubric.md
   - The Trubrics CLI: trubrics_cli.md
   - The FeedbackCollector: feedback.md
+  - Integrations:
+    - Streamlit: streamlit.md
+    - Gradio: gradio.md
+    - Dash: dash.md
+
 copyright: Copyright © 2022 Trubrics Ltd. All rights reserved. Trubrics and the Trubrics logo are trademarks of Trubrics Ltd.
