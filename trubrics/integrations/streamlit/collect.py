@@ -12,7 +12,7 @@ from trubrics.ui.trubrics_config import load_trubrics_config
 class FeedbackCollector:
     def __init__(
         self,
-        data_context: Optional[DataContext],
+        data_context: Optional[DataContext] = None,
         model_name: Optional[str] = None,
         model_version: Optional[str] = None,
         trubrics_platform_auth: Optional[str] = None,
@@ -77,6 +77,7 @@ class FeedbackCollector:
         type: str = "issue",
         metadata: Optional[Dict[str, Any]] = None,
         tags: Optional[List[str]] = None,
+        unique_key: Optional[str] = None,
     ):
         """
         Collect user feedback within a Streamlit web application.
@@ -92,16 +93,16 @@ class FeedbackCollector:
         """
         title, description = None, None
         if type == "issue":
-            issue_data = self._st_feedback_issue()
+            issue_data = self._st_feedback_issue(unique_key)
             if issue_data:
                 title, description = issue_data
         elif type == "thumbs":
-            thumbs_data = self._st_feedback_thumbs()
+            thumbs_data = self._st_feedback_thumbs(unique_key)
             if thumbs_data:
                 title = "User satisfaction: thumbs"
                 description = thumbs_data
         elif type == "faces":
-            faces_data = self._st_feedback_faces()
+            faces_data = self._st_feedback_faces(unique_key)
             if faces_data:
                 title = "User satisfaction: faces"
                 description = faces_data
@@ -139,10 +140,12 @@ class FeedbackCollector:
                 )
 
     @staticmethod
-    def _st_feedback_issue():
-        with st.form("issue form", clear_on_submit=True):
-            title = st.text_input(label=config.TITLE, help=config.TITLE_EXPLAIN, key="title")
-            description = st.text_input(label=config.DESCRIPTION, help=config.DESCRIPTION_EXPLAIN, key="description")
+    def _st_feedback_issue(unique_key):
+        with st.form(clear_on_submit=True, key=f"{unique_key}_form"):
+            title = st.text_input(label=config.TITLE, help=config.TITLE_EXPLAIN, key=f"{unique_key}_title")
+            description = st.text_input(
+                label=config.DESCRIPTION, help=config.DESCRIPTION_EXPLAIN, key=f"{unique_key}_description"
+            )
             submitted = st.form_submit_button(config.FEEDBACK_SAVE_BUTTON)
             if submitted:
                 if len(title) == 0 or len(description) == 0:
@@ -151,12 +154,12 @@ class FeedbackCollector:
                     return title, description
 
     @staticmethod
-    def _st_feedback_thumbs():
+    def _st_feedback_thumbs(unique_key):
         col1, col2 = st.columns([1, 15])
         with col1:
-            up = st.button("👍")
+            up = st.button("👍", key=f"{unique_key}_up")
         with col2:
-            down = st.button("👎")
+            down = st.button("👎", key=f"{unique_key}_down")
         if up:
             return ":thumbs up:"
         elif down:
@@ -165,18 +168,18 @@ class FeedbackCollector:
             return None
 
     @staticmethod
-    def _st_feedback_faces():
+    def _st_feedback_faces(unique_key):
         col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 10])
         with col1:
-            one = st.button("😞")
+            one = st.button("😞", key=f"{unique_key}_1")
         with col2:
-            two = st.button("🙁")
+            two = st.button("🙁", key=f"{unique_key}_2")
         with col3:
-            three = st.button("😐")
+            three = st.button("😐", key=f"{unique_key}_3")
         with col4:
-            four = st.button("🙂")
+            four = st.button("🙂", key=f"{unique_key}_4")
         with col5:
-            five = st.button("😀")
+            five = st.button("😀", key=f"{unique_key}_5")
         if one:
             return ":1 - very negative:"
         elif two:
