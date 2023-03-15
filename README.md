@@ -102,10 +102,7 @@ Then you have two options:
     ```
 
     <p align="center"><img width="80%" src="./assets/titanic-feedback-example.png"/></p>
-    <center>
-
-    _Our demo Streamlit app_
-    </center>
+    <p align="center"><em>Our demo Streamlit app</em></p>
 
 - OR add this code snippet directly to your streamlit app:
     ```py
