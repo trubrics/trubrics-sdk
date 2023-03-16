@@ -58,6 +58,13 @@ def main(trubrics_platform_auth: Optional[str] = None):
         st.markdown(prediction, unsafe_allow_html=True)
 
     st.markdown("## 3 types of feedback:")
+    st.markdown(
+        """
+        Here are examples of how you could implement different types of feedback within your app. Each
+        feedback component can be used independently, and customised to suit your needs.
+        """
+    )
+    st.markdown("***")
 
     st.markdown('##### 1 - "Does this prediction look correct?"')
     collector.st_feedback(type="thumbs", metadata=metadata, path="./thumbs_feedback.json")
