@@ -34,6 +34,22 @@ def init_trubrics(trubrics_platform_auth):
     return model, data_context, collector
 
 
+def feedback_example(type, collector, metadata):
+    file_name = f"{type}_feedback.json"
+    feedback = collector.st_feedback(type=type, metadata=metadata, path=file_name)
+    if feedback:
+        st.markdown(
+            """
+            As you collect feedback, .json files are saved to either you local filesystem, or to the Trubrics platform
+            (see [here](https://trubrics.github.io/trubrics-sdk/feedback/) for more info).
+
+            For this example, you can download the feedback.json file here:
+            """
+        )
+        st.download_button("Download example .json file", feedback, mime="text/json", file_name=file_name)
+    st.markdown("***")
+
+
 @cli.command()
 def main(trubrics_platform_auth: Optional[str] = None):
     model, data_context, collector = init_trubrics(trubrics_platform_auth)
@@ -67,15 +83,13 @@ def main(trubrics_platform_auth: Optional[str] = None):
     st.markdown("***")
 
     st.markdown('##### 1 - "Does this prediction look correct?"')
-    collector.st_feedback(type="thumbs", metadata=metadata, path="./thumbs_feedback.json")
-    st.markdown("***")
+    feedback_example("thumbs", collector=collector, metadata=metadata)
 
     st.markdown('##### 2 - "How satisfied are you with this prediction?"')
-    collector.st_feedback(type="faces", metadata=metadata, path="./thumbs_faces.json")
-    st.markdown("***")
+    feedback_example("faces", collector=collector, metadata=metadata)
 
     st.markdown('##### 3 - "Provide your feedback!"')
-    collector.st_feedback(type="issue", metadata=metadata, path="./thumbs_issue.json")
+    feedback_example("issue", collector=collector, metadata=metadata)
 
 
 if __name__ == "__main__":

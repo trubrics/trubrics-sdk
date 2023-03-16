@@ -153,6 +153,7 @@ class FeedbackCollector:
                     f"trubrics_platform_auth={self.trubrics_platform_auth} not recognised. Must be one of [None,"
                     " 'single_user', 'multiple_users']."
                 )
+            return feedback.json()
 
     @staticmethod
     def _st_feedback_issue(unique_key):
