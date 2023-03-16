@@ -124,7 +124,7 @@ To get started with [Dash](https://dash.plotly.com/), install the additional dep
 (venv)$ pip install "trubrics[dash]"
 ```
 
-And add this to your dash app:
+And add this to your Dash app:
 ```py
 from dash import Dash, html
 
@@ -142,13 +142,13 @@ if __name__ == "__main__":
 <details>
   <summary>Gradio</summary>
 
-[Gradio](https://gradio.app/)
-
+To get started with [Gradio](https://gradio.app/), install the additional dependency:
 
 ```console
 (venv)$ pip install "trubrics[gradio]"
 ```
 
+And add this to your Gradio app:
 ```py
 import gradio as gr
 

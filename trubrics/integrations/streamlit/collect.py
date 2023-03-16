@@ -17,6 +17,20 @@ class FeedbackCollector:
         model_version: Optional[str] = None,
         trubrics_platform_auth: Optional[str] = None,
     ):
+        """
+        The FeedbackCollector allows Data Scientists to collect feedback from with their app.
+
+        Args:
+            data_context: a trubrics DataContext, allowing you to record which datasets this app was build with
+            model_name: name of an ML model (if used)
+            model_version: version of an ML model (if used)
+            trubrics_platform_auth: option to save the feedback to the trubrics platform
+
+                - *None*: save feedback locally to .json
+                - *single_user*: save feedback directly to the Trubrics platform,
+                    using auth credentials of the app owner
+                - *multiple_users*: save feedback directly to the Trubrics platform, with full user auth
+        """
         self.data_context_name = data_context.name if data_context else None
         self.data_context_version = data_context.version if data_context else None
         self.model_name = model_name
@@ -73,8 +87,8 @@ class FeedbackCollector:
 
     def st_feedback(
         self,
-        path: Optional[str] = None,
         type: str = "issue",
+        path: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
         tags: Optional[List[str]] = None,
         unique_key: Optional[str] = None,
@@ -83,12 +97,13 @@ class FeedbackCollector:
         Collect user feedback within a Streamlit web application.
 
         Args:
-            path: path to save feedback local .json. Defaults to "./<timestamp>_feedback.json"
             type: type of feedback to be collected
+
                 - issue: issue with a open text title and description fields
                 - thumbs: positive or negative feedback with thumbs emojis
                 - faces: a scale of 1 to 5 with face emojis
             metadata: data to save with your feedback
+            path: path to save feedback local .json. Defaults to "./*timestamp*_feedback.json"
             tags: a list of tags for your feedback
         """
         title, description = None, None
