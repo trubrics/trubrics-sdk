@@ -77,7 +77,10 @@ def main(trubrics_platform_auth: Optional[str] = None):
     st.markdown(
         """
         Here are examples of how you could implement different types of feedback within your app. Each
-        feedback component can be used independently, and customised to suit your needs.
+        feedback component is:
+        - Independent, and can be duplicated around your app
+        - Able to collect data from a specific part of your app
+        - Saved to your local filesystem, with a customisable path
         """
     )
     st.markdown("***")
