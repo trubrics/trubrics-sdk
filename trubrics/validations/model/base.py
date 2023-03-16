@@ -142,7 +142,7 @@ class ModelValidator:
         minimum_functionality_df = self.tm.data.minimum_functionality_data
         if minimum_functionality_df is None:
             raise ValueError("Specify minimum_functionality_data attribute in DataContext.")
-        minimum_functionality_df["predictions"] = self.tm.predictions_minimum_functionality
+        minimum_functionality_df.loc[:, "predictions"] = self.tm.predictions_minimum_functionality
         errors_df = minimum_functionality_df.loc[lambda x: x[self.tm.data.target] != x["predictions"], :]
         return (
             len(errors_df) == 0,
