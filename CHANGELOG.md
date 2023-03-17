@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2023-03-03
+
+### Added
+- A brand new, shiny FeedbackCollector for streamlit 🎉. Highlights:
+  - A new demo app on Titanic, with options for auth directly in the CLI
+  - New FeedbackCollector object that stores metadata of your models and dataset versions
+  - New auth component for Trubrics platform
+  - New st_feedback() component with multiple types available
+  - Updated docs
+
+### Fixed
+- Flex dependencies versions
+- Moved Streamlit, Gradio and Dash to extra_dependencies
+- Moved feedback integrations to an integrations/ dir
+
 ## [1.2.9] - 2023-03-03
 
 ### Fixed
