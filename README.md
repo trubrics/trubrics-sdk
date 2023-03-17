@@ -82,103 +82,86 @@ _See a full tutorial on the titanic dataset [here](https://trubrics.github.io/tr
 
 ## Collect user feedback with the FeedbackCollector
 
-Trubrics feedback components help you collect feedback on your models with your favourite python web development library. Once feedback has been collected from business users, it should be translated into validation points to ensure repeatable validations  throughout the lifetime of the model. Add the trubrics feedback component to your ML apps now to start collecting feedback:
+The Trubrics FeedbackCollector helps you to collect user feedback on your models with your favourite python web development library. Exposing ML data and model results to users / domain experts is a great way to find bugs and issues. To close the loop on feedback issues and ensure they are not repeated, Data Scientists can build validations using the [ModelValidator](#validate-a-model-with-the-modelvalidator).
 
-<table>
-<tr>
-<th> Framework </th>
-<th style="text-align:center"> Getting Started Code Snippets </th>
-</tr>
-<tr>
-<td>
+Start collecting feedback directly from within your ML apps now with our various integrations:
 
-[Streamlit](https://streamlit.io/)
 
-</td>
-<td>
+### Streamlit
 
-```py
-from trubrics.feedback import collect_feedback_streamlit
+To get started with [Streamlit](https://streamlit.io/), install the additional dependency:
 
-collect_feedback_streamlit(
-    path="./feedback_issue.json",  # path to save feedback .json
-    tags=["streamlit"],
-    metadata={"some": "metadata"},
-    save_ui=False,  # set to True to save feedback to Trubrics
-)
+```console
+(venv)$ pip install "trubrics[streamlit]"
 ```
 
-</td>
-</tr>
-</table>
+Then you have two options:
+
+- Run our demo Streamlit app:
+    ```console
+    (venv)$ trubrics example-app
+    ```
+
+<p align="center"><img width="80%" src="./assets/titanic-feedback-example.png"/></p>
+<p align="center"><em>Our demo Streamlit app</em></p>
+
+- OR add this code snippet directly to your streamlit app:
+    ```py
+    from trubrics.integrations.streamlit import FeedbackCollector
+
+    collector = FeedbackCollector()
+    collector.st_feedback(type="issue")  # feedback is saved to a .json file
+    ```
+
+For more information on our Streamlit integration, check our [docs](https://trubrics.github.io/trubrics-sdk/feedback/).
 
 <details>
-  <summary>Dash and Gradio integrations</summary>
+  <summary>Dash</summary>
 
-<table>
-<tr>
-<th> Framework </th>
-<th style="text-align:center"> Getting Started Code Snippets </th>
-</tr>
-<tr>
-<td>
+To get started with [Dash](https://dash.plotly.com/), install the additional dependency:
 
-[Dash](https://dash.plotly.com/)
+```console
+(venv)$ pip install "trubrics[dash]"
+```
 
-</td>
-
-<td>
-
+And add this to your Dash app:
 ```py
 from dash import Dash, html
 
-from trubrics.feedback import collect_feedback_dash
+from trubrics.integrations.dash import collect_feedback
 
 app = Dash(__name__)
 
-app.layout = html.Div(
-    [
-        collect_feedback_dash()
-    ]
-)
+app.layout = html.Div([collect_feedback(tags=["Dash"])])
 
 if __name__ == "__main__":
     app.run_server(debug=True)
 ```
+</details>
 
-</td>
-</tr>
-<tr>
-<td>
+<details>
+  <summary>Gradio</summary>
 
-[Gradio](https://gradio.app/)
+To get started with [Gradio](https://gradio.app/), install the additional dependency:
 
-</td>
-<td>
+```console
+(venv)$ pip install "trubrics[gradio]"
+```
 
+And add this to your Gradio app:
 ```py
 import gradio as gr
 
-from trubrics.feedback import collect_feedback_gradio
+from trubrics.integrations.gradio import collect_feedback
 
 with gr.Blocks() as demo:
-    collect_feedback_gradio()
+    gr.Markdown("Gradio app to collect user feedback on models.")
+    with gr.Tab("Feedback"):
+        collect_feedback(tags=["Gradio"])
 
 demo.launch()
 ```
-
-</td>
-</tr>
-</table>
 </details>
-
-You can view our demo user feedback app, using the streamlit feedback collector and an example experimentation tool, on the titanic dataset & model on [Hugging Face Spaces](https://huggingface.co/spaces/trubrics/trubrics-titanic-demo), or run it locally with the CLI command:
-
-```console
-(venv)$ trubrics example-app
-```
-
-<p align="center"><img src="./assets/titanic-feedback-example.png"/></p>
 
 ## Track all validation runs and feedback in Trubrics
 

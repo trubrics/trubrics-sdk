@@ -3,12 +3,16 @@ from typing import Any, Dict, List, Optional
 import dash_bootstrap_components as dbc
 from dash import Input, Output, callback, callback_context, html
 
+from trubrics.context import DataContext
 from trubrics.feedback import config
 from trubrics.feedback.dataclass import Feedback
 
 
-def collect_feedback_dash(
+def collect_feedback(
     path: Optional[str] = None,
+    data_context: Optional[DataContext] = None,
+    model_name: Optional[str] = None,
+    model_version: Optional[str] = None,
     metadata: Optional[Dict[str, Any]] = None,
     tags: Optional[List[str]] = None,
     save_ui: bool = False,
@@ -18,6 +22,9 @@ def collect_feedback_dash(
 
     Args:
         path: path to save feedback local .json. Defaults to "./<timestamp>_feedback.json"
+        data_context: the DataContext containing your datasets
+        model_name: optional name of your model
+        model_version: optional version of your model
         metadata: any metric which the user wants to save into the feedback issue such as
                   feature values, prediction, etc. Defaults to None.
         tags: list of any tags for the feedback issue. Defaults to None.
@@ -63,12 +70,22 @@ def collect_feedback_dash(
             if title is None or description is None:
                 return config.FEEDBACK_NOT_SAVED, {"color": "Red"}, title, description
             else:
-                feedback = Feedback(title=title, description=description, tags=tags, metadata=metadata)
+                feedback = Feedback(
+                    type="issue",
+                    title=title,
+                    description=description,
+                    data_context_name=data_context.name if data_context else None,
+                    data_context_version=data_context.version if data_context else None,
+                    model_name=model_name,
+                    model_version=model_version,
+                    metadata=metadata,
+                    tags=tags,
+                )
                 feedback.save_local(path=path)
                 if save_ui:
                     raise NotImplementedError()
                     # feedback.save_ui()
-                return config.FEEDBACK_SAVED, {"color": "Green"}, None, None
+                return config.LOCAL_SAVE, {"color": "Green"}, None, None
         else:
             return None, None, title, description
 

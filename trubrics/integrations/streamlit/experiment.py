@@ -21,7 +21,7 @@ def generate_what_if_streamlit(data_context: DataContext):
                 "A list of categorical_columns must be specified in the DataContext for the what-if functionality."
             )
         if col in data_context.categorical_columns:
-            out_df[col] = [st.selectbox(renamed_col, tuple(series.dropna().unique()))]
+            out_df[col] = [st.selectbox(label=renamed_col, options=tuple(series.dropna().unique()))]
         else:
             out_df[col] = [
                 st.slider(
@@ -35,15 +35,26 @@ def generate_what_if_streamlit(data_context: DataContext):
 
 
 def explore_testing_data(data_context, model):
-    data_view = st.selectbox(label="", options=("View full test set", "View test set errors", "View split by target"))
-    if data_view == "View full test set":
+    test_set = "Full test set"
+    test_set_errors = "Test set errors"
+    filtered_target = "Filtered prediction value"
+    data_view = st.selectbox(
+        label="Which data would you like to view?",
+        options=[test_set, test_set_errors, filtered_target],
+        label_visibility="collapsed",
+    )
+    if data_view == test_set:
         st.dataframe(data_context.renamed_testing_data)
-    elif data_view == "View test set errors":
+    elif data_view == test_set_errors:
         st.dataframe(
             _filter_testing_data_errors(data_context=data_context, model=model).rename(data_context.business_columns)
         )
-    elif data_view == "View split by target":
-        target_split = st.radio(label="", options=data_context.testing_data[data_context.target].unique())
+    elif data_view == filtered_target:
+        target_split = st.radio(
+            label="Prediction value",
+            options=data_context.testing_data[data_context.target].unique(),
+            label_visibility="collapsed",
+        )
         st.dataframe(data_context.testing_data.loc[lambda x: x[data_context.target] == target_split])
 
 

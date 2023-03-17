@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional
 
 import pandas as pd
 from loguru import logger
-from pydantic import BaseModel, root_validator, validator
+from pydantic import BaseModel, class_validators, root_validator, validator
 
 from trubrics.exceptions import (
     EstimatorTypeError,
@@ -10,6 +10,9 @@ from trubrics.exceptions import (
     PandasSchemaError,
 )
 from trubrics.utils.pandas import schema_is_equal
+
+# to solve streamlit bug: https://github.com/streamlit/streamlit/issues/3218
+class_validators._FUNCS.clear()
 
 
 class DataContext(BaseModel):

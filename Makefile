@@ -7,9 +7,6 @@ lint:
 local-build:
 	@pip install -e .
 
-streamlit-demo:
-	@streamlit run examples/app_generate_trubric.py
-
 docs-serve:
 	@mkdocs serve
 
@@ -24,13 +21,6 @@ test:
 
 test-coverage:
 	@pytest --cov=trubrics tests
-
-example-run-trubric:
-	@trubrics run \
-	--no-save-ui \
-	--trubric-config-path "examples/classification_titanic" \
-	--trubric-output-file-path "examples/classification_titanic" \
-	--trubric-output-file-name "my_new_trubric.json"
 
 save-titanic-tutorial-notebook:
 	@python -m ipykernel install --user --name=trubrics-venv

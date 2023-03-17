@@ -138,21 +138,31 @@ def _framework_callback(value: str):
 
 
 @app.command()
-def example_app(framework: str = typer.Option("streamlit", callback=_framework_callback), save_ui: bool = False):
+def example_app(
+    framework: str = typer.Option("streamlit", callback=_framework_callback),
+    trubrics_platform_auth: Optional[str] = None,
+):
     """Runs the example titanic user feedback collector app.
 
     Args:
         framework: framework of streamlit, dash or gradio
-        save_ui: whether to save feedback to the UI with in app user authentication
+        trubrics_platform_auth: whether to save feedback to the Trubrics platform
     """
     dirname = os.path.dirname(__file__)
     filename = os.path.join(dirname, f"../example/app_titanic_{framework}.py")
+    if trubrics_platform_auth not in [None, "single_user", "multiple_users"]:
+        raise ValueError(
+            f"trubrics_platform_auth={trubrics_platform_auth} not recognised. Must be one of [None, 'single_user',"
+            " 'multiple_users']."
+        )
     if framework == "streamlit":
-        if save_ui:
-            subprocess.call(["streamlit", "run", filename, "--", "--save-ui"])
+        if trubrics_platform_auth:
+            subprocess.call(["streamlit", "run", filename, "--", "--trubrics-platform-auth", trubrics_platform_auth])
         else:
             subprocess.call(["streamlit", "run", filename])
     elif framework in ["gradio", "dash"]:
+        if trubrics_platform_auth:
+            raise ValueError("Trubrics auth currently only available with Streamlit.")
         subprocess.call(["python3", filename])
 
 
