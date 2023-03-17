@@ -89,6 +89,8 @@ Start collecting feedback directly from within your ML apps now with our various
 
 ### Streamlit
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://trubrics-titanic-example.streamlit.app)
+
 To get started with [Streamlit](https://streamlit.io/), install the additional dependency:
 
 ```console
