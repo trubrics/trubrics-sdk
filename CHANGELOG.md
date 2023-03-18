@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.3.0] - 2023-03-03
+## [1.3.1] - 2023-03-18
+
+### Added
+- Custom type for streamlit FeedbackCollector
+- Unit tests for streamlit FeedbackCollector
+- Example code snippets for Demo app
+
+## [1.3.0] - 2023-03-17
 
 ### Added
 - A brand new, shiny FeedbackCollector for streamlit 🎉. Highlights:
