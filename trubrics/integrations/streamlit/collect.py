@@ -104,6 +104,7 @@ class FeedbackCollector:
                 - issue: issue with a open text title and description fields
                 - thumbs: positive or negative feedback with thumbs emojis
                 - faces: a scale of 1 to 5 with face emojis
+                - custom: any custom title and description str
             metadata: data to save with your feedback
             path: path to save feedback local .json. Defaults to "./*timestamp*_feedback.json"
             tags: a list of tags for your feedback
