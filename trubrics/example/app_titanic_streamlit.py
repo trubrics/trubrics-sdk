@@ -41,7 +41,14 @@ def feedback_example(type, collector, metadata, title=None, description=None):
             type=type, metadata=metadata, path=file_name, title=title, description=description
         )
     else:
+        code_snippet = f"""
+        from trubrics.integrations.streamlit import FeedbackCollector
+collector = FeedbackCollector()
+collector.st_feedback(type="{type}")
+        """
         feedback = collector.st_feedback(type=type, metadata=metadata, path=file_name)
+        with st.expander(f"See code snippet for type='{type}'"):
+            st.code(code_snippet)
     if feedback:
         st.markdown(
             """
@@ -104,7 +111,24 @@ def main(trubrics_platform_auth: Optional[str] = None):
     st.markdown('##### 4 - "How much do you love this component?"')
     slider = st.slider("Custom feedback slider", max_value=10, value=9)
     submit = st.button("Save feedback")
+    code_snippet = """
+    from trubrics.integrations.streamlit import FeedbackCollector
+import streamlit as st
 
+collector = FeedbackCollector()
+
+slider = st.slider("Custom feedback slider", max_value=10, value=5)
+submit = st.button("Save feedback")
+
+if submit and slider:
+    collector.st_feedback(
+        "custom",
+        title="my custom feedback",
+        description=str(slider),
+    )
+        """
+    with st.expander("See code snippet for type='custom'"):
+        st.code(code_snippet)
     if submit and slider:
         feedback_example(
             "custom",
