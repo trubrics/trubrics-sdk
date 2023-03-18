@@ -21,3 +21,6 @@ types-requests>=2.27.25
 #tests
 pytest>=7.1.2
 pytest-cov>=3.0.0
+
+#extras (Note: in setup.cfg)
+streamlit>=1.11.1,<1.18.0

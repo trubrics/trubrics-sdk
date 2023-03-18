@@ -17,7 +17,7 @@ class Feedback(BaseModel):
     Dataclass for feedback given by a user from a UI component.
 
     Attributes:
-        type: feedback type ['issue', 'faces', 'thumbs']
+        type: feedback type ['issue', 'faces', 'thumbs', 'custom']
         title: a title of the feedback
         description: a description of the feedback
         data_context_name: data context name (from DataContext)
@@ -54,8 +54,8 @@ class Feedback(BaseModel):
 
     @validator("type")
     def target_column_must_be_in_data(cls, v):
-        if v not in ["issue", "faces", "thumbs"]:
-            raise ValueError("type must be one of ['issue', 'faces', 'thumbs'].")
+        if v not in ["issue", "faces", "thumbs", "custom"]:
+            raise ValueError("type must be one of ['issue', 'faces', 'thumbs', 'custom'].")
         return v
 
     def save_local(self, path: Optional[str] = None):

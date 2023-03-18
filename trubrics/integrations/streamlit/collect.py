@@ -90,6 +90,8 @@ class FeedbackCollector:
         type: str = "issue",
         path: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
         tags: Optional[List[str]] = None,
         unique_key: Optional[str] = None,
     ):
@@ -102,27 +104,39 @@ class FeedbackCollector:
                 - issue: issue with a open text title and description fields
                 - thumbs: positive or negative feedback with thumbs emojis
                 - faces: a scale of 1 to 5 with face emojis
+                - custom: any custom title and description str
             metadata: data to save with your feedback
+            title: optional title of Feedback
+            description: optional description of Feedback
             path: path to save feedback local .json. Defaults to "./*timestamp*_feedback.json"
             tags: a list of tags for your feedback
+            unique_key: a unique key for multiple st_feedback() components within the same app
         """
-        title, description = None, None
         if type == "issue":
+            if title or description:
+                raise ValueError("For type='issue', title and description may not be overwritten (must be None).")
             issue_data = self._st_feedback_issue(unique_key)
             if issue_data:
                 title, description = issue_data
         elif type == "thumbs":
+            if description:
+                raise ValueError("For type='thumbs', description is set inside the component (must be None).")
             thumbs_data = self._st_feedback_thumbs(unique_key)
             if thumbs_data:
-                title = "User satisfaction: thumbs"
+                title = title or "User satisfaction: thumbs"
                 description = thumbs_data
         elif type == "faces":
+            if description:
+                raise ValueError("For type='faces', description is set inside the component (must be None).")
             faces_data = self._st_feedback_faces(unique_key)
             if faces_data:
-                title = "User satisfaction: faces"
+                title = title or "User satisfaction: faces"
                 description = faces_data
+        elif type == "custom":
+            if not title or not description:
+                raise ValueError("For type='custom', title and description parameters must not be None.")
         else:
-            raise ValueError("type must be one of ['issue', 'faces', 'thumbs'].")
+            raise ValueError("type must be one of ['issue', 'faces', 'thumbs', 'custom'].")
 
         if title and description:
             feedback = Feedback(
