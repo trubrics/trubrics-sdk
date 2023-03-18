@@ -76,7 +76,14 @@ collector = FeedbackCollector(
     For more information on authentication options and the `trubrics_platform_auth` attribute, see [st_trubrics_auth()](#st_trubrics_auth).
 
 ### .st_feedback()
-Once the FeedbackCollector created, the .st_feedback() method is used to actually add feedback visual components to your app.
+Once the FeedbackCollector created, the .st_feedback() method is used to actually add feedback visual components to your app and to transform these inputs into [data](#feedback-data):
+
+```py
+from trubrics.integrations.streamlit import FeedbackCollector
+
+collector = FeedbackCollector()
+collector.st_feedback(type="faces")
+```
 
 !!!tip ".st_feedback() parameters"
     :::trubrics.integrations.streamlit.FeedbackCollector.st_feedback
