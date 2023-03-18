@@ -106,8 +106,11 @@ class FeedbackCollector:
                 - faces: a scale of 1 to 5 with face emojis
                 - custom: any custom title and description str
             metadata: data to save with your feedback
+            title: optional title of Feedback
+            description: optional description of Feedback
             path: path to save feedback local .json. Defaults to "./*timestamp*_feedback.json"
             tags: a list of tags for your feedback
+            unique_key: a unique key for multiple st_feedback() components within the same app
         """
         if type == "issue":
             if title or description:
