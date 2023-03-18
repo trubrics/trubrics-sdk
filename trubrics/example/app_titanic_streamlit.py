@@ -34,9 +34,14 @@ def init_trubrics(trubrics_platform_auth):
     return model, data_context, collector
 
 
-def feedback_example(type, collector, metadata):
+def feedback_example(type, collector, metadata, title=None, description=None):
     file_name = f"{type}_feedback.json"
-    feedback = collector.st_feedback(type=type, metadata=metadata, path=file_name)
+    if title and description:
+        feedback = collector.st_feedback(
+            type=type, metadata=metadata, path=file_name, title=title, description=description
+        )
+    else:
+        feedback = collector.st_feedback(type=type, metadata=metadata, path=file_name)
     if feedback:
         st.markdown(
             """
@@ -73,7 +78,9 @@ def main(trubrics_platform_auth: Optional[str] = None):
     with col2:
         st.markdown(prediction, unsafe_allow_html=True)
 
-    st.markdown("## 3 types of feedback:")
+    st.markdown("")
+    st.markdown("")
+    st.markdown("## Feedback types")
     st.markdown(
         """
         Here are examples of how you could implement different types of feedback within your app. Each
@@ -93,6 +100,19 @@ def main(trubrics_platform_auth: Optional[str] = None):
 
     st.markdown('##### 3 - "Provide your feedback!"')
     feedback_example("issue", collector=collector, metadata=metadata)
+
+    st.markdown('##### 4 - "How much do you love this component?"')
+    slider = st.slider("Custom feedback slider", max_value=10, value=9)
+    submit = st.button("Save feedback")
+
+    if submit and slider:
+        feedback_example(
+            "custom",
+            collector=collector,
+            metadata=metadata,
+            title="my custom feedback",
+            description=str(slider),
+        )
 
 
 if __name__ == "__main__":
