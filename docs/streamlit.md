@@ -76,23 +76,51 @@ collector = FeedbackCollector(
     For more information on authentication options and the `trubrics_platform_auth` attribute, see [st_trubrics_auth()](#st_trubrics_auth).
 
 ### .st_feedback()
-Once the FeedbackCollector created, the .st_feedback() method is used to actually add feedback visual components to your app.
+Once the FeedbackCollector created, the .st_feedback() method is used to actually add feedback visual components to your app and to transform these inputs into [data](#feedback-data):
+
+```py
+from trubrics.integrations.streamlit import FeedbackCollector
+
+collector = FeedbackCollector()
+collector.st_feedback(type="faces")
+```
 
 !!!tip ".st_feedback() parameters"
     :::trubrics.integrations.streamlit.FeedbackCollector.st_feedback
 
 #### Feedback types
 - `type="issue"`:
-  
+  The issue type provides a form with a title and description box for users to enter qualitative feedback.
   ![](./assets/feedback-issue.png){: style="width:70%"}
 
-- `type="faces"`
-
+- `type="faces"`:
+  The faces type provides a choice of 5 emoji faces.
   ![](./assets/feedback-faces.png){: style="width:50%"}
 
-- `type="thumbs"`
-
+- `type="thumbs"`:
+  The faces type provides a choice of 2 emoji thumbs.
   ![](./assets/feedback-thumbs.png){: style="width:20%"}
+
+- `type="custom"`:
+  The custom type allows developers to create any custom Streamlit code (e.g in a form).
+  Here's an example:
+  ```py
+  from trubrics.integrations.streamlit import FeedbackCollector
+  import streamlit as st
+
+  collector = FeedbackCollector()
+
+  slider = st.slider("Custom feedback slider", max_value=10, value=5)
+  submit = st.button("Save feedback")
+
+  if submit and slider:
+      collector.st_feedback(
+          "custom",
+          title="my custom feedback",
+          description=str(slider),
+      )
+  ```
+  ![](./assets/feedback-custom.png){: style="width:80%"}
 
 #### Metadata
 You can use the metadata argument to track specific data within your app, for example to be able to recreate the figure that your users are viewing:
