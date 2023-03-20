@@ -98,7 +98,7 @@ collector.st_feedback(type="faces")
   ![](./assets/feedback-faces.png){: style="width:50%"}
 
 - `type="thumbs"`:
-  The faces type provides a choice of 2 emoji thumbs.
+  The thumbs type provides a choice of 2 emoji thumbs.
   ![](./assets/feedback-thumbs.png){: style="width:20%"}
 
 - `type="custom"`:
