@@ -67,6 +67,14 @@ def main(trubrics_platform_auth: Optional[str] = None):
     model, data_context, collector = init_trubrics(trubrics_platform_auth)
 
     st.title("Titanic Demo App")
+    with st.expander("Notes on the demo"):
+        st.markdown(
+            """
+        The sidebar of features and the '**Model prediction**' section below are not a part
+        of the FeedbackCollector, but rather a demo of a basic application of how
+        you could allow users to test your model and provide feedback.
+        """
+        )
 
     with st.sidebar:
         if trubrics_platform_auth == "multiple_users":
