@@ -27,7 +27,7 @@ The trubrics-sdk allows ML practitioners to collect human feedback on datasets &
 
 ## Collect human feedback with the FeedbackCollector
 
-The Trubrics FeedbackCollector helps you to collect user feedback on your models with your favourite python web development library. Exposing ML data and model results to users / domain experts is a great way to find bugs and issues. To close the loop on feedback issues and ensure they are not repeated, Data Scientists can build validations using the [ModelValidator](#validate-a-model-with-the-modelvalidator).
+The Trubrics FeedbackCollector helps you to collect user feedback on your models with your favourite python web development library. Exposing ML data and model results to users / domain experts is a great way to find bugs and issues.
 
 Start collecting feedback directly from within your ML apps now with our various integrations:
 
@@ -105,7 +105,8 @@ demo.launch()
 
 ## Validate a model with the ModelValidator
 
-There are three basic steps to creating model validations with the trubrics-sdk:
+To close the loop on feedback issues and ensure they are not repeated, ML practitioners can build validations.
+There are three main steps to creating model validations with the trubrics-sdk:
 
 1. Initialise a `DataContext`, that wraps ML datasets and metadata into a trubrics friendly object.
 2. Build validations with the `ModelValidator`, using the `DataContext` and any ML model (scikit-learn or [any python model](https://trubrics.github.io/trubrics-sdk/models/)). The `ModelValidator` holds a number of [out-of-the-box validations](https://trubrics.github.io/trubrics-sdk/validations/) and can also be used to build [custom validations](https://trubrics.github.io/trubrics-sdk/custom_validations/) from a python function.
