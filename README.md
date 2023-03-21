@@ -15,7 +15,7 @@ The trubrics-sdk allows ML practitioners to collect human feedback on datasets &
 
 ## Key Features
 
-- Feedback collection on ML models / data from users with the [FeedbackCollector](#collect-user-feedback-with-the-feedbackcollector)
+- Feedback collection on ML models / data from users with the [FeedbackCollector](#collect-human-feedback-with-the-feedbackcollector)
 - Integration of feedback into ML workflows with the [ModelValidator](#validate-a-model-with-the-modelvalidator)
 - Tracking and management of user feedback in the [Trubrics platform](#track-all-feedback-and-validations-in-trubrics)
 
@@ -25,7 +25,7 @@ The trubrics-sdk allows ML practitioners to collect human feedback on datasets &
 (venv)$ pip install trubrics
 ```
 
-## Collect user feedback with the FeedbackCollector
+## Collect human feedback with the FeedbackCollector
 
 The Trubrics FeedbackCollector helps you to collect user feedback on your models with your favourite python web development library. Exposing ML data and model results to users / domain experts is a great way to find bugs and issues. To close the loop on feedback issues and ensure they are not repeated, Data Scientists can build validations using the [ModelValidator](#validate-a-model-with-the-modelvalidator).
 
@@ -33,31 +33,25 @@ Start collecting feedback directly from within your ML apps now with our various
 
 ### Streamlit
 
+👇 click here to view our demo app
+
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://trubrics-titanic-example.streamlit.app)
 
-To get started with [Streamlit](https://streamlit.io/), install the additional dependency:
+
+
+To start collecting feedback from your [Streamlit](https://streamlit.io/) app, install the additional dependency:
 
 ```console
 (venv)$ pip install "trubrics[streamlit]"
 ```
 
-Then you have two options:
+and add this code snippet directly to your streamlit app:
+```py
+from trubrics.integrations.streamlit import FeedbackCollector
 
-- Run our demo Streamlit app:
-    ```console
-    (venv)$ trubrics example-app
-    ```
-
-<p align="center"><img width="80%" src="./assets/titanic-feedback-example.png"/></p>
-<p align="center"><em>Our demo Streamlit app</em></p>
-
-- OR add this code snippet directly to your streamlit app:
-    ```py
-    from trubrics.integrations.streamlit import FeedbackCollector
-
-    collector = FeedbackCollector()
-    collector.st_feedback(type="issue")  # feedback is saved to a .json file
-    ```
+collector = FeedbackCollector()
+collector.st_feedback(type="issue")  # feedback is saved to a .json file
+```
 
 For more information on our Streamlit integration, check our [docs](https://trubrics.github.io/trubrics-sdk/feedback/).
 
