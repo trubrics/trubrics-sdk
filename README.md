@@ -37,7 +37,7 @@ Start collecting feedback directly from within your ML apps now with our various
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://trubrics-titanic-example.streamlit.app)
 
-
+<img src="./assets/streamlit-cloud-demo.png"  width="800">
 
 To start collecting feedback from your [Streamlit](https://streamlit.io/) app, install the additional dependency:
 
