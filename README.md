@@ -11,7 +11,7 @@
 
 ---
 
-The trubrics-sdk allows ML practitioners to collect user feedback on datasets & ML models, and integrate this feedback into the ML workflow.
+The trubrics-sdk allows ML practitioners to collect human feedback on datasets & ML models, and integrate this feedback into the ML workflow.
 
 ## Key Features
 
