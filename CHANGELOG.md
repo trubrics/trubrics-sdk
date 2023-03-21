@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Add a note to the demo app explaining the experiment features
+- Changed order of feedback and validations in README
+
 ## [1.3.1] - 2023-03-18
 
 ### Added
