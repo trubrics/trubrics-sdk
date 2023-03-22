@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import streamlit as st
 
@@ -93,7 +93,7 @@ class FeedbackCollector:
         title: Optional[str] = None,
         description: Optional[str] = None,
         tags: Optional[List[str]] = None,
-        unique_key: Optional[str] = None,
+        key: Optional[str] = None,
     ):
         """
         Collect user feedback within a Streamlit web application.
@@ -110,25 +110,27 @@ class FeedbackCollector:
             description: optional description of Feedback
             path: path to save feedback local .json. Defaults to "./*timestamp*_feedback.json"
             tags: a list of tags for your feedback
-            unique_key: a unique key for multiple st_feedback() components within the same app
+            key: a key for each streamlit component
         """
+        if key is None:
+            key = type
         if type == "issue":
             if title or description:
                 raise ValueError("For type='issue', title and description may not be overwritten (must be None).")
-            issue_data = self._st_feedback_issue(unique_key)
+            issue_data = self.st_issue_ui(key)
             if issue_data:
                 title, description = issue_data
         elif type == "thumbs":
             if description:
                 raise ValueError("For type='thumbs', description is set inside the component (must be None).")
-            thumbs_data = self._st_feedback_thumbs(unique_key)
+            thumbs_data = self.st_thumbs_ui(key)
             if thumbs_data:
                 title = title or "User satisfaction: thumbs"
                 description = thumbs_data
         elif type == "faces":
             if description:
                 raise ValueError("For type='faces', description is set inside the component (must be None).")
-            faces_data = self._st_feedback_faces(unique_key)
+            faces_data = self.st_faces_ui(key)
             if faces_data:
                 title = title or "User satisfaction: faces"
                 description = faces_data
@@ -170,26 +172,41 @@ class FeedbackCollector:
             return feedback.json()
 
     @staticmethod
-    def _st_feedback_issue(unique_key):
-        with st.form(clear_on_submit=True, key=f"{unique_key}_form"):
-            title = st.text_input(label=config.TITLE, help=config.TITLE_EXPLAIN, key=f"{unique_key}_title")
+    def st_issue_ui(key: Optional[str] = None) -> Optional[Tuple[str, str]]:
+        if key is None:
+            key = "issue"
+        with st.form(clear_on_submit=True, key=f"{key}_form"):
+            title = st.text_input(
+                label=config.TITLE,
+                value=st.session_state[f"{key}_title"],
+                help=config.TITLE_EXPLAIN,
+                key=f"{key}_title",
+            )
             description = st.text_input(
-                label=config.DESCRIPTION, help=config.DESCRIPTION_EXPLAIN, key=f"{unique_key}_description"
+                label=config.DESCRIPTION,
+                value=st.session_state[f"{key}_description"],
+                help=config.DESCRIPTION_EXPLAIN,
+                key=f"{key}_description",
             )
             submitted = st.form_submit_button(config.FEEDBACK_SAVE_BUTTON)
             if submitted:
                 if len(title) == 0 or len(description) == 0:
                     st.error(config.FEEDBACK_NOT_SAVED)
+                    return None
                 else:
                     return title, description
+            else:
+                return None
 
     @staticmethod
-    def _st_feedback_thumbs(unique_key):
+    def st_thumbs_ui(key: Optional[str] = None) -> Optional[str]:
+        if key is None:
+            key = "thumbs"
         col1, col2 = st.columns([1, 15])
         with col1:
-            up = st.button("👍", key=f"{unique_key}_up")
+            up = st.button("👍", key=f"{key}_up")
         with col2:
-            down = st.button("👎", key=f"{unique_key}_down")
+            down = st.button("👎", key=f"{key}_down")
         if up:
             return ":thumbs up:"
         elif down:
@@ -198,18 +215,20 @@ class FeedbackCollector:
             return None
 
     @staticmethod
-    def _st_feedback_faces(unique_key):
+    def st_faces_ui(key: Optional[str] = None) -> Optional[str]:
+        if key is None:
+            key = "faces"
         col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 10])
         with col1:
-            one = st.button("😞", key=f"{unique_key}_1")
+            one = st.button("😞", key=f"{key}_1")
         with col2:
-            two = st.button("🙁", key=f"{unique_key}_2")
+            two = st.button("🙁", key=f"{key}_2")
         with col3:
-            three = st.button("😐", key=f"{unique_key}_3")
+            three = st.button("😐", key=f"{key}_3")
         with col4:
-            four = st.button("🙂", key=f"{unique_key}_4")
+            four = st.button("🙂", key=f"{key}_4")
         with col5:
-            five = st.button("😀", key=f"{unique_key}_5")
+            five = st.button("😀", key=f"{key}_5")
         if one:
             return ":1 - very negative:"
         elif two:
