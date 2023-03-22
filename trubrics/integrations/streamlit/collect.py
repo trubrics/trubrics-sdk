@@ -175,6 +175,10 @@ class FeedbackCollector:
     def st_issue_ui(key: Optional[str] = None) -> Optional[Tuple[str, str]]:
         if key is None:
             key = "issue"
+        if f"{key}_title" not in st.session_state:
+            st.session_state[f"{key}_title"] = ""
+        if f"{key}_description" not in st.session_state:
+            st.session_state[f"{key}_description"] = ""
         with st.form(clear_on_submit=True, key=f"{key}_form"):
             title = st.text_input(
                 label=config.TITLE,
