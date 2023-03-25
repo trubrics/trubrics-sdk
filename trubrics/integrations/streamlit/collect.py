@@ -144,7 +144,15 @@ class FeedbackCollector:
             )
         elif type == "custom":
             if not title or not description:
-                raise ValueError("For type='custom', title and description parameters must not be None.")
+                raise ValueError("For type='custom', title and description parameters must be specified.")
+            self._save_feedback(
+                type=type,
+                path=path,
+                metadata=metadata,
+                title=title,
+                description=description,
+                tags=tags,
+            )
         else:
             raise ValueError("type must be one of ['issue', 'faces', 'thumbs', 'custom'].")
 
