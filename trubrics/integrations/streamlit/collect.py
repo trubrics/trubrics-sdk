@@ -94,6 +94,7 @@ class FeedbackCollector:
         description: Optional[str] = None,
         tags: Optional[List[str]] = None,
         key: Optional[str] = None,
+        open_feedback_label: Optional[str] = None,
     ):
         """
         Collect user feedback within a Streamlit web application.
@@ -111,35 +112,43 @@ class FeedbackCollector:
             path: path to save feedback local .json. Defaults to "./*timestamp*_feedback.json"
             tags: a list of tags for your feedback
             key: a key for each streamlit component
+            open_feedback_label: label of optional text_input for "faces" or "thumbs" type
         """
         if key is None:
             key = type
         if type == "issue":
-            if title or description:
-                raise ValueError("For type='issue', title and description may not be overwritten (must be None).")
+            if title or description or open_feedback_label:
+                raise ValueError("For type='issue', title, description and open_feedback_label must be None.")
             issue_data = self.st_issue_ui(key)
             if issue_data:
                 title, description = issue_data
-        elif type == "thumbs":
+                self._save_feedback(
+                    type=type,
+                    path=path,
+                    metadata=metadata,
+                    title=title,
+                    description=description,
+                    tags=tags,
+                )
+        elif type in ("thumbs", "faces"):
             if description:
-                raise ValueError("For type='thumbs', description is set inside the component (must be None).")
-            thumbs_data = self.st_thumbs_ui(key)
-            if thumbs_data:
-                title = title or "User satisfaction: thumbs"
-                description = thumbs_data
-        elif type == "faces":
-            if description:
-                raise ValueError("For type='faces', description is set inside the component (must be None).")
-            faces_data = self.st_faces_ui(key)
-            if faces_data:
-                title = title or "User satisfaction: faces"
-                description = faces_data
+                raise ValueError(f"For type='{type}', description is set inside the component (must be None).")
+            self._save_quantitative_feedback(
+                type=type,
+                path=path,
+                metadata=metadata,
+                title=title,
+                tags=tags,
+                key=key,
+                open_feedback_label=open_feedback_label,
+            )
         elif type == "custom":
             if not title or not description:
                 raise ValueError("For type='custom', title and description parameters must not be None.")
         else:
             raise ValueError("type must be one of ['issue', 'faces', 'thumbs', 'custom'].")
 
+    def _save_feedback(self, title, description, type, metadata, path, tags):
         if title and description:
             feedback = Feedback(
                 type=type,
@@ -169,38 +178,65 @@ class FeedbackCollector:
                     f"trubrics_platform_auth={self.trubrics_platform_auth} not recognised. Must be one of [None,"
                     " 'single_user', 'multiple_users']."
                 )
-            return feedback.json()
+
+    def _save_quantitative_feedback(self, key, title, open_feedback_label, type, metadata, path, tags):
+        if f"{key}_state" not in st.session_state:
+            st.session_state[f"{key}_state"] = ""
+        title = title or f"User satisfaction: {type}"
+
+        def feedback_handler():
+            description = f"{st.session_state[f'{key}_state']} {st.session_state[f'{type}_description']}".rstrip()
+            self._save_feedback(title, description, type, metadata, path, tags)
+            st.session_state[f"{key}_state"] = ""
+
+        ui_state = getattr(self, f"st_{type}_ui")()
+
+        if ui_state or st.session_state[f"{key}_state"]:
+            if open_feedback_label:
+                if st.session_state[f"{key}_state"] == "":
+                    st.session_state[f"{key}_state"] = ui_state
+                st.text_input(open_feedback_label, key=f"{type}_description")
+                st.button(config.FEEDBACK_SAVE_BUTTON, on_click=feedback_handler)
+            else:
+                st.session_state[f"{key}_state"] = ui_state
+                self._save_feedback(title, ui_state, type, metadata, path, tags)
 
     @staticmethod
     def st_issue_ui(key: Optional[str] = None) -> Optional[Tuple[str, str]]:
         if key is None:
             key = "issue"
-        if f"{key}_title" not in st.session_state:
+
+        if f"{key}_save_button" not in st.session_state:
+            st.session_state[f"{key}_save_button"] = False
+
+        if f"previous_{key}_state" not in st.session_state:
+            st.session_state[f"previous_{key}_state"] = ""
+
+        def clear_session_state():
+            st.session_state[f"previous_{key}_state"] = (
+                st.session_state[f"{key}_title"],
+                st.session_state[f"{key}_description"],
+            )
             st.session_state[f"{key}_title"] = ""
-        if f"{key}_description" not in st.session_state:
             st.session_state[f"{key}_description"] = ""
-        with st.form(clear_on_submit=True, key=f"{key}_form"):
-            title = st.text_input(
-                label=config.TITLE,
-                value=st.session_state[f"{key}_title"],
-                help=config.TITLE_EXPLAIN,
-                key=f"{key}_title",
-            )
-            description = st.text_input(
-                label=config.DESCRIPTION,
-                value=st.session_state[f"{key}_description"],
-                help=config.DESCRIPTION_EXPLAIN,
-                key=f"{key}_description",
-            )
-            submitted = st.form_submit_button(config.FEEDBACK_SAVE_BUTTON)
-            if submitted:
-                if len(title) == 0 or len(description) == 0:
-                    st.error(config.FEEDBACK_NOT_SAVED)
-                    return None
-                else:
-                    return title, description
-            else:
-                return None
+
+        title = st.text_input(
+            label=config.TITLE,
+            help=config.TITLE_EXPLAIN,
+            key=f"{key}_title",
+        )
+        description = st.text_input(
+            label=config.DESCRIPTION,
+            help=config.DESCRIPTION_EXPLAIN,
+            key=f"{key}_description",
+        )
+        enabled = title and description
+        if enabled:
+            st.button(config.FEEDBACK_SAVE_BUTTON, on_click=clear_session_state, key=f"{key}_save_button")
+        if st.session_state[f"{key}_save_button"]:
+            return st.session_state[f"previous_{key}_state"]
+        else:
+            return None
 
     @staticmethod
     def st_thumbs_ui(key: Optional[str] = None) -> Optional[str]:
