@@ -95,7 +95,7 @@ class FeedbackCollector:
         tags: Optional[List[str]] = None,
         key: Optional[str] = None,
         open_feedback_label: Optional[str] = None,
-    ):
+    ) -> Optional[Feedback]:
         """
         Collect user feedback within a Streamlit web application.
 
@@ -122,7 +122,7 @@ class FeedbackCollector:
             issue_data = self.st_issue_ui(key)
             if issue_data:
                 title, description = issue_data
-                self._save_feedback(
+                return self._save_feedback(
                     type=type,
                     path=path,
                     metadata=metadata,
@@ -133,7 +133,7 @@ class FeedbackCollector:
         elif type in ("thumbs", "faces"):
             if description:
                 raise ValueError(f"For type='{type}', description is set inside the component (must be None).")
-            self._save_quantitative_feedback(
+            return self._save_quantitative_feedback(
                 type=type,
                 path=path,
                 metadata=metadata,
@@ -143,58 +143,82 @@ class FeedbackCollector:
                 open_feedback_label=open_feedback_label,
             )
         elif type == "custom":
-            if not title or not description:
+            if title and description:
+                return self._save_feedback(
+                    type=type,
+                    path=path,
+                    metadata=metadata,
+                    title=title,
+                    description=description,
+                    tags=tags,
+                )
+            else:
                 raise ValueError("For type='custom', title and description parameters must be specified.")
-            self._save_feedback(
-                type=type,
-                path=path,
-                metadata=metadata,
-                title=title,
-                description=description,
-                tags=tags,
-            )
         else:
             raise ValueError("type must be one of ['issue', 'faces', 'thumbs', 'custom'].")
+        return None
 
-    def _save_feedback(self, title, description, type, metadata, path, tags):
-        if title and description:
-            feedback = Feedback(
-                type=type,
-                title=title,
-                description=description,
-                data_context_name=self.data_context_name,
-                data_context_version=self.data_context_version,
-                model_name=self.model_name,
-                model_version=self.model_version,
-                metadata=metadata,
-                tags=tags,
-            )
-            if self.trubrics_platform_auth is None:
-                feedback.save_local(path=path)
-                st.success(config.LOCAL_SAVE)
-            elif self.trubrics_platform_auth == "multiple_users":
-                if self.authenticated:
-                    feedback.save_ui(self.email, self.password)
-                    st.success(config.PLATFORM_SAVE)
-                else:
-                    st.error("User is not authenticated. Please try again or contact your admin.")
-            elif self.trubrics_platform_auth == "single_user":
-                feedback.save_ui(None, None)
+    def _save_feedback(
+        self,
+        type: str,
+        title: str,
+        description: str,
+        path: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        tags: Optional[List[str]] = None,
+    ) -> Optional[Feedback]:
+        feedback = Feedback(
+            type=type,
+            title=title,
+            description=description,
+            data_context_name=self.data_context_name,
+            data_context_version=self.data_context_version,
+            model_name=self.model_name,
+            model_version=self.model_version,
+            metadata=metadata,
+            tags=tags,
+        )
+        if self.trubrics_platform_auth is None:
+            feedback.save_local(path=path)
+            st.success(config.LOCAL_SAVE)
+        elif self.trubrics_platform_auth == "multiple_users":
+            if self.authenticated:
+                feedback.save_ui(self.email, self.password)
                 st.success(config.PLATFORM_SAVE)
             else:
-                raise ValueError(
-                    f"trubrics_platform_auth={self.trubrics_platform_auth} not recognised. Must be one of [None,"
-                    " 'single_user', 'multiple_users']."
-                )
+                st.error("User is not authenticated. Please try again or contact your admin.")
+        elif self.trubrics_platform_auth == "single_user":
+            feedback.save_ui(None, None)
+            st.success(config.PLATFORM_SAVE)
+        else:
+            raise ValueError(
+                f"trubrics_platform_auth={self.trubrics_platform_auth} not recognised. Must be one of [None,"
+                " 'single_user', 'multiple_users']."
+            )
+        return feedback
 
-    def _save_quantitative_feedback(self, key, title, open_feedback_label, type, metadata, path, tags):
+    def _save_quantitative_feedback(
+        self,
+        type,
+        key,
+        title: Optional[str],
+        open_feedback_label: Optional[str],
+        path: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        tags: Optional[List[str]] = None,
+    ) -> Optional[Feedback]:
         if f"{key}_state" not in st.session_state:
             st.session_state[f"{key}_state"] = ""
+        if f"{key}_save_button" not in st.session_state:
+            st.session_state[f"{key}_save_button"] = ""
+        if f"previous_{key}_state" not in st.session_state:
+            st.session_state[f"previous_{key}_state"] = ""
+
         title = title or f"User satisfaction: {type}"
 
         def feedback_handler():
             description = f"{st.session_state[f'{key}_state']} {st.session_state[f'{type}_description']}".rstrip()
-            self._save_feedback(title, description, type, metadata, path, tags)
+            st.session_state[f"previous_{key}_state"] = description
             st.session_state[f"{key}_state"] = ""
 
         ui_state = getattr(self, f"st_{type}_ui")()
@@ -204,10 +228,22 @@ class FeedbackCollector:
                 if st.session_state[f"{key}_state"] == "":
                     st.session_state[f"{key}_state"] = ui_state
                 st.text_input(open_feedback_label, key=f"{type}_description")
-                st.button(config.FEEDBACK_SAVE_BUTTON, on_click=feedback_handler)
+                st.button(config.FEEDBACK_SAVE_BUTTON, on_click=feedback_handler, key=f"{key}_save_button")
             else:
                 st.session_state[f"{key}_state"] = ui_state
-                self._save_feedback(title, ui_state, type, metadata, path, tags)
+                return self._save_feedback(
+                    title=title, description=ui_state, type=type, metadata=metadata, path=path, tags=tags
+                )
+        if st.session_state[f"{key}_save_button"]:
+            return self._save_feedback(
+                title=title,
+                description=st.session_state[f"previous_{key}_state"],
+                type=type,
+                metadata=metadata,
+                path=path,
+                tags=tags,
+            )
+        return None
 
     @staticmethod
     def st_issue_ui(key: Optional[str] = None) -> Optional[Tuple[str, str]]:
