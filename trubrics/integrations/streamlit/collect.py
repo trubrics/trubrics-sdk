@@ -194,7 +194,7 @@ class FeedbackCollector:
         if f"{key}_state" not in st.session_state:
             st.session_state[f"{key}_state"] = ""
         if f"{key}_save_button" not in st.session_state:
-            st.session_state[f"{key}_save_button"] = ""
+            st.session_state[f"{key}_save_button"] = False
         if f"previous_{key}_state" not in st.session_state:
             st.session_state[f"previous_{key}_state"] = ""
 

@@ -17,24 +17,12 @@ def test_st_auth_raises():
 @pytest.mark.parametrize(
     "kwargs",
     [
-        ({"type": "thumbs"}),
-        ({"type": "faces"}),
-        ({"type": "issue"}),
-    ],
-)
-def test_st_feedback_types(kwargs):
-    collector = FeedbackCollector()
-    collector.st_feedback(**kwargs)
-
-
-@pytest.mark.parametrize(
-    "kwargs",
-    [
         ({"type": "custom"}),
-        ({"type": "custom", "title": "foo"}),  # no description
         ({"type": "random"}),
-        ({"type": "faces", "description": "desc"}),
-        ({"type": "thumbs", "description": "desc"}),
+        ({"type": "issue", "user_response": {"test": "test"}}),
+        ({"type": "issue", "open_feedback_label": "test"}),
+        ({"type": "faces", "user_response": "desc"}),
+        ({"type": "thumbs", "user_response": "desc"}),
     ],
 )
 def test_st_feedback_raises(kwargs):
