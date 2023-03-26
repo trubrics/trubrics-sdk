@@ -19,8 +19,8 @@ class Feedback(BaseModel):
     Attributes:
         type: feedback type ['issue', 'faces', 'thumbs', 'custom']
         user_response: dict of all feedback given by the user
-        data: a reference to the data that was used to collect the feedback
-        model: a reference to the model that was used to collect the feedback
+        data: a reference to the dataset used in the app
+        model: a reference to the model used in the app
         collaborators: users who have collaborated so far on the issue
         open: whether the feedback item is open or closed
         tags: list of tags for the feedback issue

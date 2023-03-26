@@ -208,7 +208,12 @@ class FeedbackCollector:
             st.session_state[f"previous_{key}_state"] = user_response
             st.session_state[f"{key}_state"] = ""
 
-        ui_state = getattr(self, f"st_{type}_ui")()
+            # re-enable all buttons
+            disabled_keys = [f"{key}_{index}_disable" for index in range(1, 6 if type == "faces" else 3)]
+            for disabled_key in disabled_keys:
+                st.session_state[disabled_key] = False
+
+        ui_state = getattr(self, f"st_{type}_ui")(key=key, disable_on_click=True if open_feedback_label else False)
 
         if ui_state or st.session_state[f"{key}_state"]:
             if open_feedback_label:
@@ -275,37 +280,40 @@ class FeedbackCollector:
         else:
             return None
 
-    @staticmethod
-    def st_thumbs_ui(key: Optional[str] = None) -> Optional[str]:
+    def st_thumbs_ui(self, disable_on_click: bool = False, key: Optional[str] = None) -> Optional[str]:
         if key is None:
             key = "thumbs"
+
+        button_states = [f"{key}_1", f"{key}_2"]
         col1, col2 = st.columns([1, 15])
         with col1:
-            up = st.button("👍", key=f"{key}_up")
+            up = self._emoji_button("👍", key, disable_on_click, button_states, 1)
         with col2:
-            down = st.button("👎", key=f"{key}_down")
+            down = self._emoji_button("👎", key, disable_on_click, button_states, 2)
         if up:
-            return ":thumbs up:"
+            return ":1 - thumbs up:"
         elif down:
-            return ":thumbs down:"
+            return ":2 - thumbs down:"
         else:
             return None
 
-    @staticmethod
-    def st_faces_ui(key: Optional[str] = None) -> Optional[str]:
+    def st_faces_ui(self, disable_on_click: bool = False, key: Optional[str] = None) -> Optional[str]:
         if key is None:
             key = "faces"
+
+        button_states = [f"{key}_1", f"{key}_2", f"{key}_3", f"{key}_4", f"{key}_5"]
         col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 10])
         with col1:
-            one = st.button("😞", key=f"{key}_1")
+            one = self._emoji_button("😞", key, disable_on_click, button_states, 1)
         with col2:
-            two = st.button("🙁", key=f"{key}_2")
+            two = self._emoji_button("🙁", key, disable_on_click, button_states, 2)
         with col3:
-            three = st.button("😐", key=f"{key}_3")
+            three = self._emoji_button("😐", key, disable_on_click, button_states, 3)
         with col4:
-            four = st.button("🙂", key=f"{key}_4")
+            four = self._emoji_button("🙂", key, disable_on_click, button_states, 4)
         with col5:
-            five = st.button("😀", key=f"{key}_5")
+            five = self._emoji_button("😀", key, disable_on_click, button_states, 5)
+
         if one:
             return ":1 - very negative:"
         elif two:
@@ -318,3 +326,20 @@ class FeedbackCollector:
             return ":5 - very positive:"
         else:
             return None
+
+    def _emoji_button(self, emoji, key, disable_on_click, keys, index):
+        return st.button(
+            emoji,
+            key=f"{key}_{index}",
+            on_click=self._disable_buttons,
+            args=(disable_on_click, index, keys),
+            disabled=st.session_state.get(f"{key}_{index}_disable", False),
+        )
+
+    @staticmethod
+    def _disable_buttons(disable_on_click, index, button_states):
+        if disable_on_click:
+            enabled = button_states.pop(index - 1)
+            st.session_state[enabled + "_disable"] = False
+            for button_state in button_states:
+                st.session_state[button_state + "_disable"] = True
