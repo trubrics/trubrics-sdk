@@ -227,11 +227,12 @@ class FeedbackCollector:
                     key=f"{key}_save_button",
                 )
             else:
-                st.session_state[f"{key}_state"] = ui_state
-                user_response = {title: ui_state}
-                return self._save_feedback(
-                    user_response=user_response, type=type, metadata=metadata, path=path, tags=tags
-                )
+                if ui_state:
+                    st.session_state[f"{key}_state"] = ui_state
+                    user_response = {title: ui_state}
+                    return self._save_feedback(
+                        user_response=user_response, type=type, metadata=metadata, path=path, tags=tags
+                    )
         if st.session_state[f"{key}_save_button"]:
             user_response = {title: ui_state}
             return self._save_feedback(

@@ -46,6 +46,7 @@ collector = FeedbackCollector()
 collector.st_feedback(type="{type}")
         """
         feedback = collector.st_feedback(type=type, metadata=metadata, path=file_name)
+        st.write(feedback.dict() if feedback else "")
         with st.expander(f"See code snippet for type='{type}'"):
             st.code(code_snippet)
     if feedback:
@@ -57,7 +58,7 @@ collector.st_feedback(type="{type}")
             For this example, you can download the feedback.json file here:
             """
         )
-        st.download_button("Download example .json file", feedback, mime="text/json", file_name=file_name)
+        st.download_button("Download example .json file", feedback.json(), mime="text/json", file_name=file_name)
     st.markdown("***")
 
 
