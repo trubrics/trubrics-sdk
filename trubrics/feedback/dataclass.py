@@ -19,10 +19,8 @@ class Feedback(BaseModel):
     Attributes:
         type: feedback type ['issue', 'faces', 'thumbs', 'custom']
         user_response: dict of all feedback given by the user
-        data_context_name: data context name (from DataContext)
-        data_context_version: data context version (from DataContext)
-        model_name: model name
-        model_version: model version
+        data: a reference to the data that was used to collect the feedback
+        model: a reference to the model that was used to collect the feedback
         collaborators: users who have collaborated so far on the issue
         open: whether the feedback item is open or closed
         tags: list of tags for the feedback issue
@@ -36,10 +34,8 @@ class Feedback(BaseModel):
 
     type: str
     user_response: Dict[str, Union[float, int, str, bool]]
-    data_context_name: Optional[str]
-    data_context_version: Optional[str]
-    model_name: Optional[str] = None
-    model_version: Optional[str] = None
+    data: Optional[str]
+    model: Optional[str] = None
     collaborators: List[Optional[str]] = []
     open: bool = True
     tags: Optional[List[str]] = None

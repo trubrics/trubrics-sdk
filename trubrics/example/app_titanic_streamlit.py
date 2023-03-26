@@ -26,9 +26,8 @@ def init_trubrics(trubrics_platform_auth):
     )
 
     collector = FeedbackCollector(
-        data_context=data_context,
-        model_name="my_model",
-        model_version="v0.0.1",
+        data="trubrics data_context",
+        model="rf_model",
         trubrics_platform_auth=trubrics_platform_auth,
     )
     return model, data_context, collector

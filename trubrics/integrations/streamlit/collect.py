@@ -2,7 +2,6 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 import streamlit as st
 
-from trubrics.context import DataContext
 from trubrics.feedback import config
 from trubrics.feedback.dataclass import Feedback
 from trubrics.ui.auth import get_trubrics_auth_token
@@ -12,18 +11,16 @@ from trubrics.ui.trubrics_config import load_trubrics_config
 class FeedbackCollector:
     def __init__(
         self,
-        data_context: Optional[DataContext] = None,
-        model_name: Optional[str] = None,
-        model_version: Optional[str] = None,
+        data: Optional[str] = None,
+        model: Optional[str] = None,
         trubrics_platform_auth: Optional[str] = None,
     ):
         """
         The FeedbackCollector allows Data Scientists to collect feedback from with their app.
 
         Args:
-            data_context: a trubrics DataContext, allowing you to record which datasets this app was build with
-            model_name: name of an ML model (if used)
-            model_version: version of an ML model (if used)
+            data: a reference to the data that was used to collect the feedback (e.g. a link to a dataset)
+            model: a reference to the model that was used to collect the feedback (e.g. a link to a model)
             trubrics_platform_auth: option to save the feedback to the trubrics platform
 
                 - *None*: save feedback locally to .json
@@ -31,10 +28,8 @@ class FeedbackCollector:
                     using auth credentials of the app owner
                 - *multiple_users*: save feedback directly to the Trubrics platform, with full user auth
         """
-        self.data_context_name = data_context.name if data_context else None
-        self.data_context_version = data_context.version if data_context else None
-        self.model_name = model_name
-        self.model_version = model_version
+        self.data = data
+        self.model = model
         if trubrics_platform_auth in [None, "single_user", "multiple_users"]:
             self.trubrics_platform_auth = trubrics_platform_auth
         else:
@@ -163,10 +158,8 @@ class FeedbackCollector:
         feedback = Feedback(
             type=type,
             user_response=user_response,
-            data_context_name=self.data_context_name,
-            data_context_version=self.data_context_version,
-            model_name=self.model_name,
-            model_version=self.model_version,
+            data=self.data,
+            model=self.model,
             metadata=metadata,
             tags=tags,
         )

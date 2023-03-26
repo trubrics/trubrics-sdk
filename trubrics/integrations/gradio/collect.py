@@ -11,7 +11,6 @@ def collect_feedback(
     path: Optional[str] = None,
     data_context: Optional[DataContext] = None,
     model_name: Optional[str] = None,
-    model_version: Optional[str] = None,
     metadata: Optional[Dict[str, Any]] = None,
     tags: Optional[List[str]] = None,
     save_ui: bool = False,
@@ -35,10 +34,8 @@ def collect_feedback(
             feedback = Feedback(
                 type="issue",
                 user_response={title: description},
-                data_context_name=data_context.name if data_context else None,
-                data_context_version=data_context.version if data_context else None,
-                model_name=model_name,
-                model_version=model_version,
+                data=data_context.name if data_context else None,
+                model=model_name,
                 metadata=metadata,
                 tags=tags,
             )
