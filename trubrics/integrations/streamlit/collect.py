@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import streamlit as st
 
@@ -88,10 +88,9 @@ class FeedbackCollector:
     def st_feedback(
         self,
         type: str = "issue",
+        user_response: Optional[Dict[str, Union[float, int, str, bool]]] = None,
         path: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
         tags: Optional[List[str]] = None,
         key: Optional[str] = None,
         open_feedback_label: Optional[str] = None,
@@ -106,10 +105,9 @@ class FeedbackCollector:
                 - thumbs: positive or negative feedback with thumbs emojis
                 - faces: a scale of 1 to 5 with face emojis
                 - custom: any custom title and description str
-            metadata: data to save with your feedback
-            title: optional title of Feedback
-            description: optional description of Feedback
+            user_response: a dict of user responses to save with your feedback
             path: path to save feedback local .json. Defaults to "./*timestamp*_feedback.json"
+            metadata: data to save with your feedback
             tags: a list of tags for your feedback
             key: a key for each streamlit component
             open_feedback_label: label of optional text_input for "faces" or "thumbs" type
@@ -117,39 +115,35 @@ class FeedbackCollector:
         if key is None:
             key = type
         if type == "issue":
-            if title or description or open_feedback_label:
+            if user_response or open_feedback_label:
                 raise ValueError("For type='issue', title, description and open_feedback_label must be None.")
             issue_data = self.st_issue_ui(key)
             if issue_data:
-                title, description = issue_data
                 return self._save_feedback(
                     type=type,
                     path=path,
                     metadata=metadata,
-                    title=title,
-                    description=description,
+                    user_response={issue_data[0]: issue_data[1]},
                     tags=tags,
                 )
         elif type in ("thumbs", "faces"):
-            if description:
-                raise ValueError(f"For type='{type}', description is set inside the component (must be None).")
+            if user_response:
+                raise ValueError(f"For type='{type}', user_response is set inside the component (must be None).")
             return self._save_quantitative_feedback(
                 type=type,
                 path=path,
                 metadata=metadata,
-                title=title,
                 tags=tags,
                 key=key,
                 open_feedback_label=open_feedback_label,
             )
         elif type == "custom":
-            if title and description:
+            if user_response:
                 return self._save_feedback(
                     type=type,
+                    user_response=user_response,
                     path=path,
                     metadata=metadata,
-                    title=title,
-                    description=description,
                     tags=tags,
                 )
             else:
@@ -161,16 +155,14 @@ class FeedbackCollector:
     def _save_feedback(
         self,
         type: str,
-        title: str,
-        description: str,
+        user_response: Dict[str, Union[float, int, str, bool]],
         path: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
         tags: Optional[List[str]] = None,
     ) -> Optional[Feedback]:
         feedback = Feedback(
             type=type,
-            title=title,
-            description=description,
+            user_response=user_response,
             data_context_name=self.data_context_name,
             data_context_version=self.data_context_version,
             model_name=self.model_name,
@@ -201,7 +193,6 @@ class FeedbackCollector:
         self,
         type,
         key,
-        title: Optional[str],
         open_feedback_label: Optional[str],
         path: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
@@ -214,11 +205,14 @@ class FeedbackCollector:
         if f"previous_{key}_state" not in st.session_state:
             st.session_state[f"previous_{key}_state"] = ""
 
-        title = title or f"User satisfaction: {type}"
+        title = f"User satisfaction: {type}"
 
-        def feedback_handler():
-            description = f"{st.session_state[f'{key}_state']} {st.session_state[f'{type}_description']}".rstrip()
-            st.session_state[f"previous_{key}_state"] = description
+        def feedback_handler(open_feedback_label):
+            user_response = {
+                title: st.session_state[f"{key}_state"],
+                open_feedback_label: st.session_state[f"{type}_open_feedback"].rstrip(),
+            }
+            st.session_state[f"previous_{key}_state"] = user_response
             st.session_state[f"{key}_state"] = ""
 
         ui_state = getattr(self, f"st_{type}_ui")()
@@ -227,17 +221,23 @@ class FeedbackCollector:
             if open_feedback_label:
                 if st.session_state[f"{key}_state"] == "":
                     st.session_state[f"{key}_state"] = ui_state
-                st.text_input(open_feedback_label, key=f"{type}_description")
-                st.button(config.FEEDBACK_SAVE_BUTTON, on_click=feedback_handler, key=f"{key}_save_button")
+                st.text_input(open_feedback_label, key=f"{type}_open_feedback")
+                st.button(
+                    config.FEEDBACK_SAVE_BUTTON,
+                    on_click=feedback_handler,
+                    args=(open_feedback_label,),
+                    key=f"{key}_save_button",
+                )
             else:
                 st.session_state[f"{key}_state"] = ui_state
+                user_response = {title: ui_state}
                 return self._save_feedback(
-                    title=title, description=ui_state, type=type, metadata=metadata, path=path, tags=tags
+                    user_response=user_response, type=type, metadata=metadata, path=path, tags=tags
                 )
         if st.session_state[f"{key}_save_button"]:
+            user_response = {title: ui_state}
             return self._save_feedback(
-                title=title,
-                description=st.session_state[f"previous_{key}_state"],
+                user_response=st.session_state[f"previous_{key}_state"],
                 type=type,
                 metadata=metadata,
                 path=path,

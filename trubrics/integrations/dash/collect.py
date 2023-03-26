@@ -72,8 +72,7 @@ def collect_feedback(
             else:
                 feedback = Feedback(
                     type="issue",
-                    title=title,
-                    description=description,
+                    user_response={title: description},
                     data_context_name=data_context.name if data_context else None,
                     data_context_version=data_context.version if data_context else None,
                     model_name=model_name,

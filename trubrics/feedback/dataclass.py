@@ -18,8 +18,7 @@ class Feedback(BaseModel):
 
     Attributes:
         type: feedback type ['issue', 'faces', 'thumbs', 'custom']
-        title: a title of the feedback
-        description: a description of the feedback
+        user_response: dict of all feedback given by the user
         data_context_name: data context name (from DataContext)
         data_context_version: data context version (from DataContext)
         model_name: model name
@@ -36,8 +35,7 @@ class Feedback(BaseModel):
     """
 
     type: str
-    title: str
-    description: str
+    user_response: Dict[str, Union[float, int, str, bool]]
     data_context_name: Optional[str]
     data_context_version: Optional[str]
     model_name: Optional[str] = None
