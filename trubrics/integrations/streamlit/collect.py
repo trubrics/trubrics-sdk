@@ -339,12 +339,12 @@ class FeedbackCollector:
         else:
             return f":{index} - {output_str}:"
 
-    def _emoji_button(self, emoji, key, disable_on_click, keys, index):
+    def _emoji_button(self, emoji, key, disable_on_click, button_states, index):
         return st.button(
             emoji,
             key=f"{key}_{index}",
             on_click=self._disable_buttons,
-            args=(key, disable_on_click, index, keys),
+            args=(key, disable_on_click, index, button_states),
             disabled=st.session_state.get(f"{key}_{index}_disable", False),
         )
 
