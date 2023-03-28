@@ -108,9 +108,10 @@ def main(trubrics_platform_auth: Optional[str] = None):
     st.markdown('##### 1 - "Does this prediction look correct?"')
     thumbs_open_feedback = st.radio(
         "Add open feedback?",
-        ("With open feedback", "No open feedback"),
+        ("No open feedback", "With open feedback"),
         label_visibility="collapsed",
         key="thumbs_radio",
+        horizontal=True,
     )
     if thumbs_open_feedback == "With open feedback":
         feedback_example(
@@ -124,9 +125,10 @@ def main(trubrics_platform_auth: Optional[str] = None):
     st.markdown('##### 2 - "How satisfied are you with this prediction?"')
     faces_open_feedback = st.radio(
         "Add open feedback?",
-        ("With open feedback", "No open feedback"),
+        ("No open feedback", "With open feedback"),
         label_visibility="collapsed",
         key="faces_radio",
+        horizontal=True,
     )
     if faces_open_feedback == "With open feedback":
         feedback_example(
@@ -137,7 +139,7 @@ def main(trubrics_platform_auth: Optional[str] = None):
     else:
         raise NotImplementedError()
 
-    st.markdown('##### 3 - "Raise a specific issue:"')
+    st.markdown('##### 3 - "Raise a specific issue"')
     feedback_example("issue", collector=collector, metadata=metadata)
 
     custom_question = "How much do you love this component?"

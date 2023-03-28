@@ -208,17 +208,14 @@ class FeedbackCollector:
             st.session_state[f"previous_{key}_state"] = user_response
             st.session_state[f"{key}_state"] = ""
 
-            # re-enable all buttons
-            disabled_keys = [f"{key}_{index}_disable" for index in range(1, 6 if type == "faces" else 3)]
-            for disabled_key in disabled_keys:
-                st.session_state[disabled_key] = False
+            self._enable_all_buttons(type=type)
 
         ui_state = getattr(self, f"st_{type}_ui")(key=key, disable_on_click=True if open_feedback_label else False)
+        if ui_state:
+            st.session_state[f"{key}_state"] = ui_state
 
-        if ui_state or st.session_state[f"{key}_state"]:
-            if open_feedback_label:
-                if st.session_state[f"{key}_state"] == "":
-                    st.session_state[f"{key}_state"] = ui_state
+        if open_feedback_label:
+            if st.session_state.get(f"{key}_state_clicked", "") != "":
                 st.text_input(open_feedback_label, key=f"{type}_open_feedback")
                 st.button(
                     config.FEEDBACK_SAVE_BUTTON,
@@ -226,13 +223,12 @@ class FeedbackCollector:
                     args=(open_feedback_label,),
                     key=f"{key}_save_button",
                 )
-            else:
-                if ui_state:
-                    st.session_state[f"{key}_state"] = ui_state
-                    user_response = {title: ui_state}
-                    return self._save_feedback(
-                        user_response=user_response, type=type, metadata=metadata, path=path, tags=tags
-                    )
+        else:
+            if ui_state:
+                user_response = {title: ui_state}
+                return self._save_feedback(
+                    user_response=user_response, type=type, metadata=metadata, path=path, tags=tags
+                )
         if st.session_state[f"{key}_save_button"]:
             user_response = {title: ui_state}
             return self._save_feedback(
@@ -291,10 +287,11 @@ class FeedbackCollector:
             up = self._emoji_button("👍", key, disable_on_click, button_states, 1)
         with col2:
             down = self._emoji_button("👎", key, disable_on_click, button_states, 2)
+
         if up:
-            return ":1 - thumbs up:"
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 1, "thumbs up")
         elif down:
-            return ":2 - thumbs down:"
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 2, "thumbs down")
         else:
             return None
 
@@ -316,31 +313,56 @@ class FeedbackCollector:
             five = self._emoji_button("😀", key, disable_on_click, button_states, 5)
 
         if one:
-            return ":1 - very negative:"
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 1, "very negative")
         elif two:
-            return ":2 - negative:"
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 2, "negative")
         elif three:
-            return ":3 - neutral:"
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 3, "neutral")
         elif four:
-            return ":4 - positive:"
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 4, "positive")
         elif five:
-            return ":5 - very positive:"
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 5, "very positive")
         else:
             return None
+
+    @staticmethod
+    def _return_quantitative_ui_button(ui_type, disable_on_click, button_states, index, output_str):
+        if disable_on_click:
+            if st.session_state[f"{ui_type}_state_clicked"] == button_states[index - 1]:
+                return f":{index} - {output_str}:"
+            else:
+                return None
+        else:
+            return f":{index} - {output_str}:"
 
     def _emoji_button(self, emoji, key, disable_on_click, keys, index):
         return st.button(
             emoji,
             key=f"{key}_{index}",
             on_click=self._disable_buttons,
-            args=(disable_on_click, index, keys),
+            args=(key, disable_on_click, index, keys),
             disabled=st.session_state.get(f"{key}_{index}_disable", False),
         )
 
     @staticmethod
-    def _disable_buttons(disable_on_click, index, button_states):
+    def _disable_buttons(key, disable_on_click, index, button_states):
+        """Disable all buttons except the one that was clicked, and re-enable all buttons if re-clicked."""
         if disable_on_click:
-            enabled = button_states.pop(index - 1)
-            st.session_state[enabled + "_disable"] = False
-            for button_state in button_states:
-                st.session_state[button_state + "_disable"] = True
+            if any([st.session_state.get(button_state + "_disable", False) for button_state in button_states]):
+                st.session_state[f"{key}_state_clicked"] = ""
+                for button_state in button_states:
+                    st.session_state[button_state + "_disable"] = False
+            else:
+                enabled = button_states.pop(index - 1)
+                st.session_state[enabled + "_disable"] = False
+                st.session_state[f"{key}_state_clicked"] = enabled
+                for button_state in button_states:
+                    st.session_state[button_state + "_disable"] = True
+
+    @staticmethod
+    def _enable_all_buttons(type):
+        for key in st.session_state:
+            if key.endswith("_disable") and key.startswith(type):
+                st.session_state[key] = False
+            if key == f"{type}_state_clicked":
+                st.session_state[key] = ""
