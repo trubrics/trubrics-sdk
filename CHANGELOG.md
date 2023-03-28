@@ -7,9 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.2] - 2023-03-28
+
+### Added
+- New methods of `FeedbackCollector` to allow for the use of standalone Trubrics UI components. E.g. `collector.st_faces_ui()`
+- Open question feedback option to collect with feedback types "issue" & "faces"
+- Disable on click functionality for a smoother user experience with feedback types
+- `Feedback` pydantic model returned from `st_feedback()` method
+
 ### Changed
+- Updated data model for the Feedback object
 - Add a note to the demo app explaining the experiment features
 - Changed order of feedback and validations in README
+- `Feedback` components are now decoupled from the data context
 
 ## [1.3.1] - 2023-03-18
 
