@@ -32,7 +32,7 @@ def collect_feedback(
     def get_feedback(title: str, description: str, email: str, password: str):
         if not (len(title) == 0 or len(description) == 0):
             feedback = Feedback(
-                type="issue",
+                feedback_type="issue",
                 user_response={title: description},
                 data=data_context.name if data_context else None,
                 model=model_name,

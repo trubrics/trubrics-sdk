@@ -70,7 +70,7 @@ def collect_feedback(
                 return config.FEEDBACK_NOT_SAVED, {"color": "Red"}, title, description
             else:
                 feedback = Feedback(
-                    type="issue",
+                    feedback_type="issue",
                     user_response={title: description},
                     data=data_context.name if data_context else None,
                     model=model_name,
