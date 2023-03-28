@@ -33,7 +33,7 @@ Start collecting feedback directly from within your ML apps now with our various
 
 ### Streamlit
 
-👇 click here to view our demo app
+👇 **click here** to view our demo app with interactive examples and code snippets
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://trubrics-titanic-example.streamlit.app)
 
@@ -50,7 +50,7 @@ and add this code snippet directly to your streamlit app:
 from trubrics.integrations.streamlit import FeedbackCollector
 
 collector = FeedbackCollector()
-collector.st_feedback(type="issue")  # feedback is saved to a .json file
+collector.st_feedback(feedback_type="issue")  # feedback is saved to a .json file
 ```
 
 For more information on our Streamlit integration, check our [docs](https://trubrics.github.io/trubrics-sdk/feedback/).

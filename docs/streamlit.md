@@ -1,5 +1,9 @@
 # FeedbackCollector Streamlit Integration
-The FeedbackCollector takes user feedback from within an app, and saves it as a .json file or directly to the Trubrics platform.
+The FeedbackCollector takes user feedback from within an app and saves it as a local .json file, or directly to the Trubrics platform.
+
+👇 **click here** to view our demo app with interactive examples and code snippets
+
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://trubrics-titanic-example.streamlit.app)
 
 ## 1. Install the Streamlit integration
 To get started with [Streamlit](https://streamlit.io/), install the additional dependency:
@@ -27,45 +31,38 @@ To get started with [Streamlit](https://streamlit.io/), install the additional d
 
 
 ## 3. Add the FeedbackCollector to your App
-To get started with the bare bones code, you can add this code snippet to your app:
+To get started with the bare bones code, you can add this code snippet directly to your streamlit app:
 ```py
 from trubrics.integrations.streamlit import FeedbackCollector
 
 collector = FeedbackCollector()
-collector.st_feedback(type="issue")
+collector.st_feedback(feedback_type="issue")
 ```
 
-We can breakdown this snippet in to:
+What's going on here? Let's break down this snippet:
 
-1. The [FeedbackCollector](#feedbackcollector) object that holds metadata (about datasets, models and authentication)
-2. Its [st_feeedback()](#st_feedback) method that allows users to collect different types of feedback
+1. The [FeedbackCollector](#feedbackcollector) object holds all metadata (about datasets, models and authentication)
+2. Its [st_feeedback()](#st_feedback) method allows users to embed components in their apps to collect different
+   types of feedback
 
 !!!Note
     A second method [st_trubrics_auth()](#st_trubrics_auth) also exists, allowing users to authenticate with the Trubrics platform.
 
 ### FeedbackCollector()
 
-All static metadata for the app that is not dependant on the actual feedback component can be included in the FeedbackCollector upon initialisation. Here's an example of how you can use it with the [DataContext](./data_context.md), allowing you to harmonise the data assets between your training / validation runs and your ML apps:
+All static metadata for the app that is not dependant on the actual feedback component can be included in the FeedbackCollector upon initialisation. This allows you to track what model was deployed (optional) and what datasets the user is viewing in your ML apps:
 
 ```py
-from trubrics.context import DataContext
 from trubrics.example import get_titanic_data_and_model
 from trubrics.integrations.streamlit import FeedbackCollector
 
+# reading in some data and an ML model
 _, test_df, model = get_titanic_data_and_model()
 
-# 1. Init DataContext
-data_context = DataContext(
-    testing_data=test_df,  # pandas dataframe that model was tested on
-    target="Survived",
-)
 
-# 2. Init FeedbackCollector
 collector = FeedbackCollector(
-    data_context=data_context,
-    model_name="titanic_rf",
-    model_version="v1",
-    trubrics_platform_auth=None
+    data="<link to cloud storage dataset>",
+    model="<link to cloud storage model>",
 )
 ```
 
@@ -76,33 +73,40 @@ collector = FeedbackCollector(
     For more information on authentication options and the `trubrics_platform_auth` attribute, see [st_trubrics_auth()](#st_trubrics_auth).
 
 ### .st_feedback()
-Once the FeedbackCollector created, the .st_feedback() method is used to actually add feedback visual components to your app and to transform these inputs into [data](#feedback-data):
+Once the FeedbackCollector created, the .st_feedback() method is used to actually add visual feedback components to your app and to transform these inputs into [data](#feedback-data):
 
 ```py
 from trubrics.integrations.streamlit import FeedbackCollector
 
 collector = FeedbackCollector()
-collector.st_feedback(type="faces")
+feedback = collector.st_feedback(feedback_type="faces")
+
+feedback.dict() if feedback else None
 ```
+
+The `st.feedback()` method returns a [pydantic](https://docs.pydantic.dev/) data object. Call `.dict()` on this variable to view the feedback in the app.
 
 !!!tip ".st_feedback() parameters"
     :::trubrics.integrations.streamlit.FeedbackCollector.st_feedback
 
 #### Feedback types
-- `type="issue"`:
-  The issue type provides a form with a title and description box for users to enter qualitative feedback.
+- `feedback_type="issue"`:
+  The `issue` feedback_type provides a form with a title and description box for users to enter qualitative feedback.
+
   ![](./assets/feedback-issue.png){: style="width:70%"}
 
-- `type="faces"`:
-  The faces type provides a choice of 5 emoji faces.
+- `feedback_type="faces"`:
+  The `faces` feedback_type provides a choice of 5 emoji faces. Add the parameter `open_feedback_label="An open text field"` to add an open text box for the user to optionally explain their choice.
+
   ![](./assets/feedback-faces.png){: style="width:50%"}
 
-- `type="thumbs"`:
-  The thumbs type provides a choice of 2 emoji thumbs.
+- `feedback_type="thumbs"`:
+  The `thumbs` feedback_type provides a choice of 2 emoji thumbs. Add the parameter `open_feedback_label="An open text field"` to add an open text box for the user to optionally explain their choice.
+
   ![](./assets/feedback-thumbs.png){: style="width:20%"}
 
-- `type="custom"`:
-  The custom type allows developers to create any custom Streamlit code (e.g in a form).
+- `feedback_type="custom"`:
+  The `custom` feedback_type allows developers to create any custom Streamlit code (e.g in an st.form() / a survey like style of open ended questions) and save it to a `Feedback` object with the `user_response={}` parameter.
   Here's an example:
   ```py
   from trubrics.integrations.streamlit import FeedbackCollector
@@ -110,14 +114,14 @@ collector.st_feedback(type="faces")
 
   collector = FeedbackCollector()
 
-  slider = st.slider("Custom feedback slider", max_value=10, value=5)
+  custom_question = "Custom feedback slider"
+  slider = st.slider(custom_question, max_value=10, value=5)
   submit = st.button("Save feedback")
 
   if submit and slider:
       collector.st_feedback(
           "custom",
-          title="my custom feedback",
-          description=str(slider),
+          user_response={custom_question: slider},
       )
   ```
   ![](./assets/feedback-custom.png){: style="width:80%"}
@@ -128,7 +132,7 @@ You can use the metadata argument to track specific data within your app, for ex
 ```py
 # save metadata of a specific component
 st.pyplot(test_df["Age"].hist(figsize=(20, 10)).figure)
-collector.st_feedback(type="issue", metadata={"age": test_df["Age"].to_list()})
+collector.st_feedback(feedback_type="issue", metadata={"age": test_df["Age"].to_list()})
 ```
 
 ![](./assets/feedback-metadata.png){: style="width:70%"}
@@ -168,7 +172,7 @@ You then have two options for saving feedback:
     with st.sidebar:
         collector.st_trubrics_auth()
 
-    collector.st_feedback(type="issue")
+    collector.st_feedback(feedback_type="issue")
     ```
 
     !!!Note

@@ -17,13 +17,10 @@ class Feedback(BaseModel):
     Dataclass for feedback given by a user from a UI component.
 
     Attributes:
-        type: feedback type ['issue', 'faces', 'thumbs', 'custom']
-        title: a title of the feedback
-        description: a description of the feedback
-        data_context_name: data context name (from DataContext)
-        data_context_version: data context version (from DataContext)
-        model_name: model name
-        model_version: model version
+        feedback_type: feedback type ['issue', 'faces', 'thumbs', 'custom']
+        user_response: dict of all feedback given by the user
+        data: a reference to the dataset used in the app
+        model: a reference to the model used in the app
         collaborators: users who have collaborated so far on the issue
         open: whether the feedback item is open or closed
         tags: list of tags for the feedback issue
@@ -35,13 +32,10 @@ class Feedback(BaseModel):
         metadata: free textual metadata field
     """
 
-    type: str
-    title: str
-    description: str
-    data_context_name: Optional[str]
-    data_context_version: Optional[str]
-    model_name: Optional[str] = None
-    model_version: Optional[str] = None
+    feedback_type: str
+    user_response: Dict[str, Union[float, int, str, bool]]
+    data: Optional[str]
+    model: Optional[str] = None
     collaborators: List[Optional[str]] = []
     open: bool = True
     tags: Optional[List[str]] = None
@@ -52,10 +46,10 @@ class Feedback(BaseModel):
     closed_by: Optional[str] = None
     metadata: Optional[Dict[str, Union[List[Any], float, int, str, dict]]] = None
 
-    @validator("type")
+    @validator("feedback_type")
     def target_column_must_be_in_data(cls, v):
         if v not in ["issue", "faces", "thumbs", "custom"]:
-            raise ValueError("type must be one of ['issue', 'faces', 'thumbs', 'custom'].")
+            raise ValueError("feedback_type must be one of ['issue', 'faces', 'thumbs', 'custom'].")
         return v
 
     def save_local(self, path: Optional[str] = None):

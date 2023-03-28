@@ -12,7 +12,6 @@ def collect_feedback(
     path: Optional[str] = None,
     data_context: Optional[DataContext] = None,
     model_name: Optional[str] = None,
-    model_version: Optional[str] = None,
     metadata: Optional[Dict[str, Any]] = None,
     tags: Optional[List[str]] = None,
     save_ui: bool = False,
@@ -71,13 +70,10 @@ def collect_feedback(
                 return config.FEEDBACK_NOT_SAVED, {"color": "Red"}, title, description
             else:
                 feedback = Feedback(
-                    type="issue",
-                    title=title,
-                    description=description,
-                    data_context_name=data_context.name if data_context else None,
-                    data_context_version=data_context.version if data_context else None,
-                    model_name=model_name,
-                    model_version=model_version,
+                    feedback_type="issue",
+                    user_response={title: description},
+                    data=data_context.name if data_context else None,
+                    model=model_name,
                     metadata=metadata,
                     tags=tags,
                 )
