@@ -68,7 +68,7 @@ class FeedbackCollector:
                     placeholder=config.USER_PASSWORD,
                     label_visibility="collapsed",
                     key="password",
-                    feedback_type="password",
+                    type="password",
                 )
                 submitted = st.form_submit_button("Sign In")
                 if submitted:
