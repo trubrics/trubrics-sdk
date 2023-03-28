@@ -17,7 +17,7 @@ class Feedback(BaseModel):
     Dataclass for feedback given by a user from a UI component.
 
     Attributes:
-        type: feedback type ['issue', 'faces', 'thumbs', 'custom']
+        feedback_type: feedback type ['issue', 'faces', 'thumbs', 'custom']
         user_response: dict of all feedback given by the user
         data: a reference to the dataset used in the app
         model: a reference to the model used in the app
@@ -32,7 +32,7 @@ class Feedback(BaseModel):
         metadata: free textual metadata field
     """
 
-    type: str
+    feedback_type: str
     user_response: Dict[str, Union[float, int, str, bool]]
     data: Optional[str]
     model: Optional[str] = None
@@ -46,10 +46,10 @@ class Feedback(BaseModel):
     closed_by: Optional[str] = None
     metadata: Optional[Dict[str, Union[List[Any], float, int, str, dict]]] = None
 
-    @validator("type")
+    @validator("feedback_type")
     def target_column_must_be_in_data(cls, v):
         if v not in ["issue", "faces", "thumbs", "custom"]:
-            raise ValueError("type must be one of ['issue', 'faces', 'thumbs', 'custom'].")
+            raise ValueError("feedback_type must be one of ['issue', 'faces', 'thumbs', 'custom'].")
         return v
 
     def save_local(self, path: Optional[str] = None):

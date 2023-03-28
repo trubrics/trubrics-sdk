@@ -33,22 +33,27 @@ def init_trubrics(trubrics_platform_auth):
     return model, data_context, collector
 
 
-def feedback_example(type, collector, metadata, open_feedback_label=None, user_response=None):
-    file_name = f"{type}_feedback.json"
+def feedback_example(feedback_type, collector, metadata, open_feedback_label=None, user_response=None):
+    file_name = f"{feedback_type}_feedback.json"
     if user_response:
-        feedback = collector.st_feedback(type=type, metadata=metadata, path=file_name, user_response=user_response)
+        feedback = collector.st_feedback(
+            feedback_type=feedback_type, metadata=metadata, path=file_name, user_response=user_response
+        )
     else:
         code_snippet = f"""
         from trubrics.integrations.streamlit import FeedbackCollector
 collector = FeedbackCollector()
-collector.st_feedback(type="{type}"{f', open_feedback="{open_feedback_label}"' if open_feedback_label else ''})
+collector.st_feedback(
+    feedback_type="{feedback_type}"{f', open_feedback="{open_feedback_label}"' if open_feedback_label else ''}
+)
         """
         feedback = collector.st_feedback(
-            type=type, metadata=metadata, path=file_name, open_feedback_label=open_feedback_label
+            feedback_type=feedback_type, metadata=metadata, path=file_name, open_feedback_label=open_feedback_label
         )
-        with st.expander(f"See code snippet for type='{type}'"):
+        with st.expander(f"See code snippet for feedback_type='{feedback_type}'"):
             st.code(code_snippet)
     if feedback:
+        st.write("Example of the FeedbackCollector's output:")
         st.write(feedback.dict())
         st.download_button("Download this example .json file", feedback.json(), mime="text/json", file_name=file_name)
         st.markdown(
@@ -93,13 +98,13 @@ def main(trubrics_platform_auth: Optional[str] = None):
 
     st.markdown("")
     st.markdown("")
-    st.markdown("## Feedback types")
+    st.markdown("## FeedbackCollector Examples")
     st.markdown(
         """
         Here are examples of how you could implement different types of feedback within your app. Each
         feedback component is:
         - Independent, and can be duplicated around your app
-        - Able to collect data from a specific part of your app
+        - Able to collect different data from a specific part of your app
         - Saved to your local filesystem, with a customisable path
         """
     )
@@ -163,7 +168,7 @@ if submit and slider:
         }
     )
         """
-    with st.expander("See code snippet for type='custom'"):
+    with st.expander("See code snippet for feedback_type='custom'"):
         st.code(code_snippet)
     if submit and slider:
         feedback_example(
