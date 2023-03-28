@@ -143,6 +143,22 @@ Using `.st_feedback(path="./your_path/filename.json")` you can configure the pat
 !!!tip "Feedback data object"
     :::trubrics.feedback.dataclass.Feedback
 
+#### Trubrics UI components
+All of the UI components that you can see here are also available as standalone visual components without the saving functionality. This allows you to use them as part of a custom feedback type:
+
+```py
+import streamlit as st
+from trubrics.integrations.streamlit import FeedbackCollector
+
+collector = FeedbackCollector()
+
+output = collector.st_faces_ui(disable_on_click=True)
+
+output
+st.session_state
+```
+
+The `disable_on_click=True` parameter disables other buttons that are not clicked. Users can re-click the button to reverse this behaviour.
 
 ### .st_trubrics_auth()
 To authenticate with the Trubrics platform, you must first run a [`trubrics init`](./trubrics_cli.md#2-connect-to-the-trubrics-platform-with-trubrics-init) before launching your app.
