@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Optional
 
 import typer
+from loguru import logger
 from rich import print as rprint
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
@@ -41,25 +42,39 @@ def main(
 def init(
     api_key: Optional[str] = None,
     project_id: Optional[str] = None,
-    is_trubrics_user: bool = typer.Option(False, prompt="Do you already have an account with Trubrics?"),
+    trubrics_user: bool = typer.Option(False, prompt="Do you already have an account with Trubrics?"),
+    project_name: Optional[str] = None,
 ):
-    """Initialises the environment and authenticates with a Trubrics platform account.
+    """
+    Initialises the environment and authenticates with a Trubrics platform account.
+    This command asks a user for their email and password, if they are not specified in
+    the environment variables TRUBRICS_CONFIG_EMAIL and TRUBRICS_CONFIG_PASSWORD.
 
     Args:
         api_key: optional firebase api key
         project_id: optional firebase project ID
-        is_trubrics_user: boolean of whether the user has a Trubrics account
+        trubrics_user: boolean of whether the user has a Trubrics account
+        project_name: optional project name to initialise
     """
     if api_key or project_id:
-        if not api_key or not project_id:
-            raise Exception("API key and project_id are both required to change project.")
-        defaults = TrubricsDefaults(firebase_api_key=api_key, firebase_project_id=project_id)
+        if api_key and project_id:
+            defaults = TrubricsDefaults(firebase_api_key=api_key, firebase_project_id=project_id)
+        else:
+            raise ValueError("Both API key and project_id are required to change project.")
     else:
         defaults = TrubricsDefaults()
 
-    if is_trubrics_user:
-        email = typer.prompt("Enter your user email")
-        password = typer.prompt("Enter your user password", hide_input=True)
+    if trubrics_user:
+        email = os.environ.get("TRUBRICS_CONFIG_EMAIL")
+        password = os.environ.get("TRUBRICS_CONFIG_PASSWORD")
+        if email or password:
+            if not email or not password:
+                logger.warning(
+                    f"{'TRUBRICS_CONFIG_EMAIL' if not email else 'TRUBRICS_CONFIG_PASSWORD'} environment variable is"
+                    " not set, asking user for a prompt."
+                )
+        email = email or typer.prompt("Enter your user email")
+        password = password or typer.prompt("Enter your user password", hide_input=True)
 
         with Progress(
             SpinnerColumn(),
@@ -79,40 +94,46 @@ def init(
 
             rprint(f"\n[bold yellow]Welcome {auth['displayName']}[bold yellow] :sunglasses:\n")
 
-        if len(projects) > 0:
-            for index, project in enumerate(projects):
-                rprint(f"[bold green][{index}][/bold green] [green]{project}[/green]")
-            project_num = typer.prompt("Select your project (e.g. 0)")
+        if project_name:
+            if project_name not in projects:
+                raise ValueError(
+                    f"Project '{project_name}' not found in organisation '{firestore_api_url.split('/')[-1]}'."
+                )
+        else:
+            if len(projects) > 0:
+                for index, project in enumerate(projects):
+                    rprint(f"[bold green][{index}][/bold green] [green]{project}[/green]")
+                project_num = typer.prompt("Select your project (e.g. 0)")
 
-            project_int = int(project_num)
-            if project_int not in list(range(len(projects))):
+                project_int = int(project_num)
+                if project_int not in list(range(len(projects))):
+                    message = typer.style(
+                        f"Project [{project_num}] not recognised."
+                        "Please indicate an integer referring to one of the project names"
+                        " above.",
+                        fg=typer.colors.RED,
+                        bold=True,
+                    )
+                    typer.echo(message)
+                    raise typer.Abort()
+                else:
+                    project_name = projects[project_int]
+            else:
                 message = typer.style(
-                    f"Project [{project_num}] not recognised."
-                    "Please indicate an integer referring to one of the project names"
-                    " above.",
+                    f"Organisation '{firestore_api_url.split('/')[-1]}' has no projects created."
+                    " Navigate to the Trubrics UI to add a project.",
                     fg=typer.colors.RED,
                     bold=True,
                 )
                 typer.echo(message)
                 raise typer.Abort()
-            else:
-                project_name = projects[project_int]
-        else:
-            message = typer.style(
-                f"Organisation '{firestore_api_url.split('/')[-1]}' has no projects created."
-                " Navigate to the Trubrics UI to add a project.",
-                fg=typer.colors.RED,
-                bold=True,
-            )
-            typer.echo(message)
-            raise typer.Abort()
 
         trubrics_config = TrubricsConfig(
             firebase_auth_api_url=firebase_auth_api_url,
             firestore_api_url=firestore_api_url,
             username=auth["displayName"],
             email=email,
-            password=password,
+            password=password,  # type: ignore
             project=project_name,  # type: ignore
         )
         trubrics_config.save()
