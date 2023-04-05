@@ -4,7 +4,7 @@ Once you have built a trubric of validations, you will want to test different da
 This will help you to ensure safe deployment of newly trained models directly from CI/CD/CT pipelines.
 
 !!!tip "Trubrics platform access"
-This will allow you and your team to track all trubric runs in projects, and to close feedback issues by linking to specific runs. Don't hesitate to get in touch with us [here](https://trubrics.com/demo/) to gain access to the Trubrics platform for you and your team.
+    This will allow you and your team to track all trubric runs in projects, and to close feedback issues by linking to specific runs. Don't hesitate to get in touch with us [here](https://trubrics.com/demo/) to gain access to the Trubrics platform for you and your team.
 
 Complete these three steps to run trubrics from the CLI tool:
 
@@ -26,11 +26,9 @@ Create a python file `<trubric_run_file>.py` that loads datasets / models to val
     ```
 
     ## TrubricRun Object
-    :::trubrics.validations.run.TrubricRun
+    ::: trubrics.validations.run.TrubricRun
 
 ## 2. Connect to the Trubrics platform with `trubrics init`
-
-Initialise a run config in the terminal to save a `~/.trubrics_config.json` file to your user's root directory. This config file holds credentials and connectivity for logging any data to the Trubrics platform. Be guided by the CLI prompts by running:
 
 <p align="center"><img src="../assets/trubrics-init.gif"/></p>
 

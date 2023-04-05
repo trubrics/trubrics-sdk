@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.3] - 2023-04-05
+### Fixed
+- Users can now trubrics init with environment variables
+- Clearer trubrics init documentation
+
 ## [1.3.1.2] - 2023-03-31
 
 ### Fixed
