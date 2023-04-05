@@ -40,27 +40,38 @@ def main(
 
 @app.command()
 def init(
-    api_key: Optional[str] = None,
-    project_id: Optional[str] = None,
+    firebase_api_key: Optional[str] = None,
+    firebase_project_id: Optional[str] = None,
     trubrics_user: bool = typer.Option(False, prompt="Do you already have an account with Trubrics?"),
     project_name: Optional[str] = None,
 ):
     """
-    Initialises the environment and authenticates with a Trubrics platform account.
-    This command asks a user for their email and password, if they are not specified in
-    the environment variables TRUBRICS_CONFIG_EMAIL and TRUBRICS_CONFIG_PASSWORD.
+    `trubrics init` initialises an environment and authenticates with a Trubrics platform account.
+    It does this by storing a `~/.trubrics_config.json` file in the root directory.
+    Be guided through the process by answering the prompts, or feed these in programmatically with
+    the environment variables `TRUBRICS_CONFIG_EMAIL` and `TRUBRICS_CONFIG_PASSWORD`:
+
+    ```bash
+    export TRUBRICS_CONFIG_EMAIL=<your_trubrics_email>
+    ```
+    ```bash
+    export TRUBRICS_CONFIG_PASSWORD=<your_trubrics_password>
+    ```
+    ```bash
+    trubrics init --trubrics-user --project-name <your_project_name>
+    ```
 
     Args:
-        api_key: optional firebase api key
-        project_id: optional firebase project ID
+        firebase_api_key: optional firebase api key
+        firebase_project_id: optional firebase project ID
         trubrics_user: boolean of whether the user has a Trubrics account
         project_name: optional project name to initialise
     """
-    if api_key or project_id:
-        if api_key and project_id:
-            defaults = TrubricsDefaults(firebase_api_key=api_key, firebase_project_id=project_id)
+    if firebase_api_key or firebase_project_id:
+        if firebase_api_key and firebase_project_id:
+            defaults = TrubricsDefaults(firebase_api_key=firebase_api_key, firebase_project_id=firebase_project_id)
         else:
-            raise ValueError("Both API key and project_id are required to change project.")
+            raise ValueError("Both API key and firebase_project_id are required to change project.")
     else:
         defaults = TrubricsDefaults()
 
@@ -98,6 +109,7 @@ def init(
             if project_name not in projects:
                 raise ValueError(
                     f"Project '{project_name}' not found in organisation '{firestore_api_url.split('/')[-1]}'."
+                    f" Projects currently available: {projects}."
                 )
         else:
             if len(projects) > 0:
@@ -163,7 +175,7 @@ def example_app(
     framework: str = typer.Option("streamlit", callback=_framework_callback),
     trubrics_platform_auth: Optional[str] = None,
 ):
-    """Runs the example titanic user feedback collector app.
+    """Runs the example user feedback collector app.
 
     Args:
         framework: framework of streamlit, dash or gradio

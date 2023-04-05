@@ -30,8 +30,6 @@ Create a python file `<trubric_run_file>.py` that loads datasets / models to val
 
 ## 2. Connect to the Trubrics platform with `trubrics init`
 
-Initialise a run config in the terminal to save a `~/.trubrics_config.json` file to your user's root directory. This config file holds credentials and connectivity for logging any data to the Trubrics platform. Be guided by the CLI prompts by running:
-
 <p align="center"><img src="../assets/trubrics-init.gif"/></p>
 
 :::trubrics.cli.main.init
