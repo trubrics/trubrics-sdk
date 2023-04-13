@@ -105,8 +105,9 @@ demo.launch()
 
 ## Validate a model with the ModelValidator
 
-Dive straight in to our example: [![](./assets/colab-logo.png)](https://colab.research.google.com/github/trubrics/trubrics-sdk/blob/mrs_demo/examples/classification_titanic/classification_full_demo.ipynb)
+👇 **click here** to dive directly into iur example notebook on colab
 
+[![](./assets/colab-logo.png).ipynb](https://colab.research.google.com/github/trubrics/trubrics-sdk/blob/mrs_demo/examples/classification_titanic/classification_full_demo.ipynb)
 
 To close the loop on feedback issues and ensure they are not repeated, ML practitioners can build validations.
 There are three main steps to creating model validations with the trubrics-sdk:

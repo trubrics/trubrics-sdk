@@ -53,8 +53,7 @@ nav:
     - Out-of-the-box validations: validations.md
     - Custom validations: custom_validations.md
     - Save validations as a trubric: save_trubric.md
-    - Tutorials:
-      - Titanic classifier notebook: notebooks/titanic-full-demo.html
+    - Tutorials: tutorials.md
   - The Trubrics CLI: trubrics_cli.md
   - Integrations:
     - Streamlit: streamlit.md
