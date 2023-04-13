@@ -238,8 +238,8 @@ def run(
         else:
             typer.echo(
                 typer.style(
-                    "ERROR: You must authenticate with the trubrics manager by running `trubrics init` to remotely save"
-                    " trubrics runs.",
+                    "ERROR: You must authenticate with the Trubrics platform by running `trubrics init` to remotely"
+                    " save trubrics runs.",
                     fg=typer.colors.RED,
                 )
             )
