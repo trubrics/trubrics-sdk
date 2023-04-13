@@ -105,6 +105,9 @@ demo.launch()
 
 ## Validate a model with the ModelValidator
 
+Dive straight in to our example: [![](./assets/colab-logo.png)](https://colab.research.google.com/github/trubrics/trubrics-sdk/blob/mrs_demo/examples/classification_titanic/classification_full_demo.ipynb)
+
+
 To close the loop on feedback issues and ensure they are not repeated, ML practitioners can build validations.
 There are three main steps to creating model validations with the trubrics-sdk:
 
@@ -146,8 +149,6 @@ trubric.save_ui()  # or to the Trubrics platform
 ```
 
 The `Trubric` defines the gold standard of validations required for your project, and may be used to validate any combination of model and `DataContext`. Once saved as a .json, the trubric may be run directly from the [CLI](https://trubrics.github.io/trubrics-sdk/run_trubrics/).
-
-_See a full tutorial on the titanic dataset [here](https://trubrics.github.io/trubrics-sdk/notebooks/titanic-full-demo.html)_.
 
 
 ## Track all feedback and validations in Trubrics
