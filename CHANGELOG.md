@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Tutorials for classification and regression models added to docs, ready to run in google colab
+- Removed notebook run in the docs CI
+
+## [1.3.3] - 2023-04-05
+### Fixed
+- Users can now trubrics init with environment variables
+- Clearer trubrics init documentation
+
+## [1.3.1.2] - 2023-03-31
+
+### Fixed
+- Users can now trubrics init without manual prompts
 
 ## [1.3.2] - 2023-03-28
 

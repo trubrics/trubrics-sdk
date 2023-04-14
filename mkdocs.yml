@@ -45,17 +45,16 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
 nav:
   - Getting Started: index.md
-  - Tutorials:
-    - Titanic classifier notebook: notebooks/titanic-full-demo.html
-  - The DataContext: data_context.md
+  - The FeedbackCollector: feedback.md
   - The ModelValidator:
+    - DataContext: data_context.md
     - Compatible models: models.md
     - Metrics: metrics.md
     - Out-of-the-box validations: validations.md
     - Custom validations: custom_validations.md
     - Save validations as a trubric: save_trubric.md
+    - Tutorials: tutorials.md
   - The Trubrics CLI: trubrics_cli.md
-  - The FeedbackCollector: feedback.md
   - Integrations:
     - Streamlit: streamlit.md
     - Gradio: gradio.md

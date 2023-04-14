@@ -23,5 +23,10 @@ stream = pkg_resources.resource_stream(__name__, "my_first_trubric.json")
 trubric = Trubric.parse_obj(json.load(stream))
 
 RUN_CONTEXT = TrubricRun(
-    data_context=data_context, model_name="titanic_model", model=model, tags=["titanic-dev"], trubric=trubric
+    data_context=data_context,
+    model_name="titanic_model",
+    model_version="0.0.1",
+    model=model,
+    tags=["cli-demo"],
+    trubric=trubric,
 )

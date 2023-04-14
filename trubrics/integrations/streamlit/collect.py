@@ -16,7 +16,7 @@ class FeedbackCollector:
         trubrics_platform_auth: Optional[str] = None,
     ):
         """
-        The FeedbackCollector allows Data Scientists to collect feedback from with their app.
+        The FeedbackCollector allows Data Scientists to collect feedback from within their app.
 
         Args:
             data: a reference to the data that was used to collect the feedback (e.g. a link to a dataset)
@@ -99,8 +99,8 @@ class FeedbackCollector:
                 - issue: issue with a open text title and description fields
                 - thumbs: positive or negative feedback with thumbs emojis
                 - faces: a scale of 1 to 5 with face emojis
-                - custom: any custom title and description str
-            user_response: a dict of user responses to save with your feedback
+                - custom: a customisable feedback type that allows users to specify the user_response dict
+            user_response: a dict of user responses to save with your feedback for feedback_type='custom'
             path: path to save feedback local .json. Defaults to "./*timestamp*_feedback.json"
             metadata: data to save with your feedback
             tags: a list of tags for your feedback
