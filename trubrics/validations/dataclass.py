@@ -92,7 +92,6 @@ class Trubric(BaseModel):
     name: str
     data_context_name: str
     data_context_version: str
-    validations: List[Validation]
     model_name: Optional[str] = None
     model_version: Optional[str] = None
     tags: List[Optional[str]] = []
@@ -102,6 +101,7 @@ class Trubric(BaseModel):
     timestamp: Optional[int] = None
     total_passed: Optional[int] = None
     total_passed_percent: Optional[float] = None
+    validations: List[Validation]
 
     class Config:
         extra = "forbid"
