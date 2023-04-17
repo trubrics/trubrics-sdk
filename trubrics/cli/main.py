@@ -209,6 +209,7 @@ def run(
         "./my_new_trubric.json",
         prompt="Enter a local path to save your output trubric file. Press enter for default path",
     ),
+    raise_on_failure: bool = True,
 ):
     """Runs an example trubric (list of model validations) on the titanic dataset.
 
@@ -234,7 +235,7 @@ def run(
     if save_ui:
         trubrics_config = load_trubrics_config().dict()
         if trubrics_config["email"] is not None:
-            new_trubric.save_ui()
+            new_trubric.save_ui(raise_on_failure=raise_on_failure)
         else:
             typer.echo(
                 typer.style(
@@ -245,7 +246,7 @@ def run(
             )
     else:
         defaults = TrubricsDefaults()
-        new_trubric.save_local(trubric_output_file_path)
+        new_trubric.save_local(trubric_output_file_path, raise_on_failure=raise_on_failure)
         rprint(
             "\n[bold orange_red1]Be sure to check out our docs to see how you can leverage the Trubrics platform."
             f"\n\n{defaults.demo_sign_up_url}[bold orange_red1]\n"

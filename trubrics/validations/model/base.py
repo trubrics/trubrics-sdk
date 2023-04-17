@@ -385,8 +385,8 @@ class ModelValidator:
         train_score = self._score_data_context(metric, dataset="training_data", data_slice=data_slice)
         train_sample_size = self.data_slice_sizes[self._get_renamed_dataset("training_data", data_slice)]
 
-        outcome = test_score < train_score and test_score >= train_score - threshold
-        return outcome, {
+        passed = test_score < train_score and test_score >= train_score - threshold
+        return passed, {
             "train_performance": train_score,
             "test_performance": test_score,
             "train_sample_size": train_sample_size,

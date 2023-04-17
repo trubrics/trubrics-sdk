@@ -23,11 +23,10 @@ def validation_output(func: Callable) -> Callable:
             check_type("output", output, validation_output_type)
         except TypeError:
             raise ValidationOutputError(
-                f"Each validation should return an outcome and a result with type: {validation_output_type}"
+                f"Each validation should return a bool and a result with type: {validation_output_type}"
             )
 
-        outcome, result = output
-        outcome = _pass_or_fail(outcome)
+        passed, result = output
 
         if kwargs.get("severity"):
             severity = kwargs.pop("severity")
@@ -57,7 +56,7 @@ def validation_output(func: Callable) -> Callable:
             validation_type=func.__name__,
             validation_kwargs={"args": typed_args, "kwargs": typed_kwargs},
             explanation=stripped_docstring,
-            outcome=outcome,
+            passed=passed,
             severity=severity,
             result=typed_result,  # type: ignore
         )
@@ -89,7 +88,3 @@ def _is_jsonable(obj: Any, raise_error: bool = False) -> bool:
             raise e
         else:
             return False
-
-
-def _pass_or_fail(condition: bool) -> str:
-    return "pass" if condition else "fail"

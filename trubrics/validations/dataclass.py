@@ -7,6 +7,7 @@ from git.repo import Repo
 from loguru import logger
 from pydantic import BaseModel, validator
 
+from trubrics.exceptions import TrubricValidationError
 from trubrics.ui.auth import get_trubrics_auth_token
 from trubrics.ui.firestore import add_document_to_project_subcollection
 from trubrics.ui.trubrics_config import load_trubrics_config
@@ -17,7 +18,7 @@ def _validation_context_example():
         "example": {
             "validation_type": "validate_performance_against_threshold",
             "validation_kwargs": {"args": [], "kwargs": {"threshold": 0.8}},
-            "outcome": "fail",
+            "passed": True,
             "severity": "error",
             "result": {"performance": "0.79"},
         }
@@ -34,18 +35,18 @@ class Validation(BaseModel):
     Attributes:
         validation_type: method name of the validation.
         validation_kwargs: all args and kwargs that the validation had run with.
-        explanation: docstring explanation of the validation.
-        outcome: pass or fail output of the validation.
+        passed: pass or fail output of the validation.
         severity: severity of the validation, can be one of ["error", "warning", "experiment"], is "error" by default
         result: a dictionary of contextual elements calculated during the validation run
+        explanation: docstring explanation of the validation.
     """
 
     validation_type: str
     validation_kwargs: Dict[str, Optional[Any]]
-    explanation: str
-    outcome: str
+    passed: bool
     severity: str = "error"
     result: Optional[Dict[str, Optional[Any]]]
+    explanation: str
 
     class Config:
         extra = "forbid"
@@ -59,13 +60,6 @@ class Validation(BaseModel):
             raise KeyError(f"Severity must be set to: {severity_values}.")
         return v
 
-    @validator("outcome")
-    def outcome_must_be(cls, v: str):
-        outcome_values = ["pass", "fail"]
-        if v not in outcome_values:
-            raise KeyError(f"Outcome must be set to: {outcome_values}.")
-        return v
-
 
 class Trubric(BaseModel):
     """
@@ -75,21 +69,27 @@ class Trubric(BaseModel):
 
     Attributes:
         name: trubric name
+        passed: has trubric passed all validations (depends on the failing_severity)
+        total_passed: number of validations that passed (depends on the failing_severity)
+        total_passed_percent: percentage of passed validations (depends on the failing_severity)
+        failing_severity: minimum severity that the trubric fails on, can be one of ["error", "warning", "experiment"].
         data_context_name: data context name (from DataContext)
         data_context_version: data context version (from DataContext)
-        validations: list of validations (defined by Validation)
         model_name: model name
         model_version: model version
         tags: list of tags for the trubric
         run_by: who the trubric was run by
         git_commit: a git commit hash from the git repo where the trubric was run
-        metadata: free textual metadata field
         timestamp: timestamp at which the trubric was run
-        total_passed: number of validations that passed
-        total_passed_percent: percentage of passed validations
+        metadata: free textual metadata field
+        validations: list of validations (defined by Validation)
     """
 
     name: str
+    passed: Optional[bool] = None
+    total_passed: Optional[int] = None
+    total_passed_percent: Optional[float] = None
+    failing_severity: str = "error"
     data_context_name: str
     data_context_version: str
     model_name: Optional[str] = None
@@ -97,31 +97,39 @@ class Trubric(BaseModel):
     tags: List[Optional[str]] = []
     run_by: Optional[Dict[str, str]] = None
     git_commit: Optional[str] = None
-    metadata: Optional[Dict[str, str]] = None
     timestamp: Optional[int] = None
-    total_passed: Optional[int] = None
-    total_passed_percent: Optional[float] = None
+    metadata: Optional[Dict[str, str]] = None
     validations: List[Validation]
 
     class Config:
         extra = "forbid"
 
-    def save_local(self, path: Optional[str] = None):
-        self._set_fields_on_save()
+    @validator("failing_severity")
+    def failing_severity_must_be(cls, v: str):
+        severity_values = ["error", "warning", "experiment"]
+        if v not in severity_values:
+            raise KeyError(f"Failing severity must be set to: {severity_values}.")
+        return v
+
+    def save_local(self, path: Optional[str] = None, raise_on_failure: bool = False):
+        self.set_dynamic_fields()
         if path is None:
             path = f"./{self.name}.json"
         with open(Path(path).absolute(), "w") as file:
             file.write(self.json(indent=4))
             logger.info(f"Trubric saved to {path}.")
 
-    def save_ui(self):
+        if raise_on_failure:
+            self.raise_trubric_failure()
+
+    def save_ui(self, raise_on_failure: bool = False):
         trubrics_config = load_trubrics_config()
         auth = get_trubrics_auth_token(
             trubrics_config.firebase_auth_api_url, trubrics_config.email, trubrics_config.password.get_secret_value()
         )
 
         self.run_by = {"email": trubrics_config.email, "displayName": trubrics_config.username}
-        self._set_fields_on_save()
+        self.set_dynamic_fields()
 
         res = add_document_to_project_subcollection(
             auth,
@@ -138,9 +146,20 @@ class Trubric(BaseModel):
         else:
             logger.info("Trubric saved to the Trubrics UI.")
 
-    def _set_fields_on_save(self):
-        self.total_passed = len([a for a in self.validations if a.outcome == "pass"])
-        self.total_passed_percent = round(100 * self.total_passed / len(self.validations), 1)
+        if raise_on_failure:
+            self.raise_trubric_failure()
+
+    def set_dynamic_fields(self):
+        if self.failing_severity == "warning":
+            failing_severity = ["error", "warning"]
+        elif self.failing_severity == "experiment":
+            failing_severity = ["error", "warning", "experiment"]
+        else:
+            failing_severity = ["error"]
+        validations = [validation for validation in self.validations if validation.severity in failing_severity]
+        self.total_passed = len([a for a in validations if a.passed])
+        self.total_passed_percent = round(100 * self.total_passed / len(validations), 1)
+        self.passed = True if self.total_passed_percent == 100 else False
         self.timestamp = int(datetime.now().timestamp())
         try:
             self.git_commit = Repo(search_parent_directories=True).head.object.hexsha
@@ -149,4 +168,12 @@ class Trubric(BaseModel):
             logger.warning(
                 "Current directory is not a git repository. Run `trubrics run` inside a git repository to save the"
                 " commit hash."
+            )
+        return self
+
+    def raise_trubric_failure(self):
+        if not self.passed and self.total_passed_percent:
+            raise TrubricValidationError(
+                f"Trubric has failed on {100 - self.total_passed_percent}% validations with minimum"
+                f" severity='{self.failing_severity}'."
             )
