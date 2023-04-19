@@ -40,16 +40,18 @@ class TrubricRun(BaseModel):
 
     @validator("custom_validator")
     def custom_validator_inherits_validator(cls, val):
-        if issubclass(val, ModelValidator):
-            return val
-        raise TypeError("Wrong type for 'custom_validator', must be subclass of ModelValidator.")
+        if val:
+            if issubclass(val, ModelValidator):
+                return val
+            raise TypeError("Wrong type for 'custom_validator', must be subclass of ModelValidator.")
 
     @validator("custom_scorers")
     def custom_scorer_is_make_scorer(cls, val):
-        for scorer in val:
-            if not issubclass(type(val[scorer]), _BaseScorer):
-                raise TypeError("Each scorer must be subclass of scikit-learn's _BaseScorer.")
-        return val
+        if val:
+            for scorer in val:
+                if not issubclass(type(val[scorer]), _BaseScorer):
+                    raise TypeError("Each scorer must be subclass of scikit-learn's _BaseScorer.")
+            return val
 
     def generate_validations_from_trubric(self) -> Iterator[Validation]:
         if self.custom_validator is not None:

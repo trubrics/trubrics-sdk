@@ -71,7 +71,7 @@ class Trubric(BaseModel):
         name: trubric name
         passed: has trubric passed all validations (depends on the failing_severity)
         total_passed: number of validations that passed (depends on the failing_severity)
-        total_passed_percent: percentage of passed validations (depends on the failing_severity)
+        total_failed: number of validations that failed (depends on the failing_severity)
         failing_severity: minimum severity that the trubric fails on, can be one of ["error", "warning", "experiment"].
         data_context_name: data context name (from DataContext)
         data_context_version: data context version (from DataContext)
@@ -88,7 +88,7 @@ class Trubric(BaseModel):
     name: str
     passed: Optional[bool] = None
     total_passed: Optional[int] = None
-    total_passed_percent: Optional[float] = None
+    total_failed: Optional[int] = None
     failing_severity: str = "error"
     data_context_name: str
     data_context_version: str
@@ -158,8 +158,8 @@ class Trubric(BaseModel):
             failing_severity = ["error"]
         validations = [validation for validation in self.validations if validation.severity in failing_severity]
         self.total_passed = len([a for a in validations if a.passed])
-        self.total_passed_percent = round(100 * self.total_passed / len(validations), 1)
-        self.passed = True if self.total_passed_percent == 100 else False
+        self.total_failed = len(validations) - self.total_passed
+        self.passed = True if self.total_failed == 0 else False
         self.timestamp = int(datetime.now().timestamp())
         try:
             self.git_commit = Repo(search_parent_directories=True).head.object.hexsha
@@ -172,8 +172,9 @@ class Trubric(BaseModel):
         return self
 
     def raise_trubric_failure(self):
-        if not self.passed and self.total_passed_percent:
+        if not self.passed and self.total_failed:
             raise TrubricValidationError(
-                f"Trubric has failed on {100 - self.total_passed_percent}% validations with minimum"
+                "Trubric has failed on"
+                f" {self.total_failed} {'validations' if self.total_failed > 1 else 'validation'} with minimum"
                 f" severity='{self.failing_severity}'."
             )
