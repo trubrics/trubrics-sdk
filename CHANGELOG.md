@@ -6,7 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.3.4] - 2023-04-20
+### Added
+- Functionality to fail a Trubric run (cli or notebook) based on the severity of validations
+- New integration with MlFlow 🎉 - you can now:
+  - Validate an mlflow run with Trubrics with `mlflow.evaluate(evaluators="trubrics")`
+  - Save all validation results to the MLflow UI
+  - Write custom python functions to validate your data or models with MLflow
+
 ### Changed
+- Changed data model of `Trubric` object
 - Tutorials for classification and regression models added to docs, ready to run in google colab
 - Removed notebook run in the docs CI
 
