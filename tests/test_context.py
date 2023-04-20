@@ -1,4 +1,5 @@
 import pytest
+from pydantic import ValidationError
 
 from trubrics.context import DataContext
 from trubrics.exceptions import PandasSchemaError
@@ -42,10 +43,15 @@ def test_data_context_raises(dummy_testing_data, training_data_rename_cols, kwar
 @pytest.mark.parametrize(
     "kwargs,error_type",
     [
-        ({"outcome": "wrong_outcome", "severity": "experiment"}, KeyError),
-        ({"outcome": "pass", "severity": "wrong_severity"}, KeyError),
+        ({"passed": "wrong_outcome", "severity": "experiment"}, ValidationError),
+        ({"passed": True, "severity": "wrong_severity"}, KeyError),
     ],
 )
 def test_validation_context_raises(kwargs, error_type):
     with pytest.raises(error_type):
-        Validation(validation_type="validate_something", validation_kwargs={"a kwarg": None}, **kwargs)
+        Validation(
+            validation_type="validate_something",
+            validation_kwargs={"a kwarg": None},
+            explanation="some docstring",
+            **kwargs
+        )

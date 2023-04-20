@@ -1,0 +1,52 @@
+{
+    "name": "mlflow-demo",
+    "passed": true,
+    "total_passed": 1,
+    "total_failed": 1,
+    "failing_severity": "error",
+    "data_context_name": "my_dataset",
+    "data_context_version": "v0.0.1",
+    "model_name": null,
+    "model_version": null,
+    "tags": [],
+    "run_by": null,
+    "git_commit": "bbec00b0495d7ca22f185e7c06906b9b78309f79",
+    "timestamp": 1681912944,
+    "metadata": null,
+    "validations": [
+        {
+            "validation_type": "validate_performance_against_threshold",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "accuracy",
+                    "threshold": 0.8
+                }
+            },
+            "passed": true,
+            "severity": "error",
+            "result": {
+                "performance": 0.8689745021403313,
+                "sample_size": 10746
+            },
+            "explanation": "**Performance validation versus a fixed threshold value.**\n\nCompares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.\n\nExample:\n```py\nfrom trubrics.validations import ModelValidator\nmodel_validator = ModelValidator(data=data_context, model=model)\nmodel_validator.validate_performance_against_threshold(\nmetric=\"recall\",\nthreshold=0.8\n)\n```\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nthreshold: the performance threshold that the model must attain.\ndataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual model performance calculated.\n"
+        },
+        {
+            "validation_type": "validate_performance_against_threshold",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "recall",
+                    "threshold": 0.61
+                }
+            },
+            "passed": false,
+            "severity": "warning",
+            "result": {
+                "performance": 0.6062745098039216,
+                "sample_size": 10746
+            },
+            "explanation": "**Performance validation versus a fixed threshold value.**\n\nCompares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.\n\nExample:\n```py\nfrom trubrics.validations import ModelValidator\nmodel_validator = ModelValidator(data=data_context, model=model)\nmodel_validator.validate_performance_against_threshold(\nmetric=\"recall\",\nthreshold=0.8\n)\n```\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nthreshold: the performance threshold that the model must attain.\ndataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual model performance calculated.\n"
+        }
+    ]
+}

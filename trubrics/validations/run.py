@@ -36,19 +36,22 @@ class TrubricRun(BaseModel):
     custom_validator: Any = None
     custom_scorers: Optional[Dict[str, Any]] = None
     slicing_functions: Optional[Dict[str, Any]] = None
+    failing_severity: Optional[str] = None
 
     @validator("custom_validator")
     def custom_validator_inherits_validator(cls, val):
-        if issubclass(val, ModelValidator):
-            return val
-        raise TypeError("Wrong type for 'custom_validator', must be subclass of ModelValidator.")
+        if val:
+            if issubclass(val, ModelValidator):
+                return val
+            raise TypeError("Wrong type for 'custom_validator', must be subclass of ModelValidator.")
 
     @validator("custom_scorers")
     def custom_scorer_is_make_scorer(cls, val):
-        for scorer in val:
-            if not issubclass(type(val[scorer]), _BaseScorer):
-                raise TypeError("Each scorer must be subclass of scikit-learn's _BaseScorer.")
-        return val
+        if val:
+            for scorer in val:
+                if not issubclass(type(val[scorer]), _BaseScorer):
+                    raise TypeError("Each scorer must be subclass of scikit-learn's _BaseScorer.")
+            return val
 
     def generate_validations_from_trubric(self) -> Iterator[Validation]:
         if self.custom_validator is not None:
@@ -71,7 +74,7 @@ class TrubricRun(BaseModel):
             try:
                 validation_result = getattr(model_validator, validation.validation_type)(*args, **kwargs)
                 new_validation = validation.copy()
-                new_validation.outcome = validation_result.outcome
+                new_validation.passed = validation_result.passed
                 new_validation.result = validation_result.result
                 yield new_validation
             except AttributeError:
@@ -89,12 +92,14 @@ class TrubricRun(BaseModel):
             message_start = f"{validation_result.validation_type} [{validation_result.severity.upper()}]"
             completed_dots = f"[grey82]{(100 - len(message_start)) * '.'}[grey82]"
             message_end = (
-                f"[bold {'green' if validation_result.outcome == 'pass' else 'red'}]{validation_result.outcome.upper()}"
+                "[bold"
+                f" {'green' if validation_result.passed else 'red'}]{'PASS' if validation_result.passed else 'FAIL'}"
             )
             rprint(message_start + completed_dots + message_end)
 
         return Trubric(
             name=self.trubric.name,
+            failing_severity=self.failing_severity or self.trubric.failing_severity,
             model_name=self.model_name,
             model_version=self.model_version,
             data_context_name=self.data_context.name,
@@ -102,4 +107,4 @@ class TrubricRun(BaseModel):
             metadata=self.metadata,
             tags=self.tags,
             validations=validations,
-        )
+        ).set_dynamic_fields()

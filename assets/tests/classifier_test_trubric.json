@@ -1,5 +1,9 @@
 {
     "name": "my_first_trubric",
+    "passed": false,
+    "total_passed": 3,
+    "total_failed": 0,
+    "failing_severity": "error",
     "model_name": "my_model",
     "model_version": 0.1,
     "data_context_name": "my_first_dataset",
@@ -15,7 +19,7 @@
                 "kwargs": {}
             },
             "explanation": "some docstring",
-            "outcome": "fail",
+            "passed": true,
             "severity": "error",
             "result": {
                 "errors_df": {
@@ -72,7 +76,7 @@
                 }
             },
             "explanation": "some docstring",
-            "outcome": "pass",
+            "passed": true,
             "severity": "experiment",
             "result": {
                 "performance": -0.6931471805599453
@@ -87,7 +91,7 @@
                 }
             },
             "explanation": "some docstring",
-            "outcome": "pass",
+            "passed": true,
             "severity": "warning",
             "result": {
                 "number_of_errors_by_fare_ratio": "1.308"

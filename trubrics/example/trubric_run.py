@@ -29,4 +29,5 @@ RUN_CONTEXT = TrubricRun(
     model=model,
     tags=["cli-demo"],
     trubric=trubric,
+    failing_severity="warning",
 )
