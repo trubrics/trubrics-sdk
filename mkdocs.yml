@@ -59,5 +59,6 @@ nav:
     - Streamlit: streamlit.md
     - Gradio: gradio.md
     - Dash: dash.md
+    - Mlflow: mlflow.md
 
 copyright: Copyright © 2022 Trubrics Ltd. All rights reserved. Trubrics and the Trubrics logo are trademarks of Trubrics Ltd.
