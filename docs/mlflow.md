@@ -8,10 +8,12 @@ Trubrics has an official plugin with Mlflow's [`mlflow.evaluate()`](https://www.
 ![](./assets/mlflow_run.png)
 
 ## Install plugin
+```
 (venv)$ pip install "trubrics[mlflow]"
+```
 
 ## Example notebook
-To dive straight in, clone the repo and run the [example notebook](). This example shows both a basic validation and a slightly more advanced set of validations within an Mlflow run.
+To dive straight in, clone the repo and run the [example notebook](https://github.com/trubrics/trubrics-sdk/blob/main/examples/mlflow/mlflow-trubrics.ipynb). This example shows both a basic validation and a slightly more advanced set of validations within an Mlflow run.
 
 ## Plugin parameters
 To get started with Trubrics & Mlflow, you must first [build some validations](./index.md#validate-a-model-with-the-modelvalidator). Once you have built some validations and saved them as a .json file, you are ready to insert this snippet and start validating directly in your Mlflow run:
