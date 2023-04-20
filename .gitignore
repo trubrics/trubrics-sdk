@@ -33,4 +33,4 @@ docs/models
 examples/timeseries_store_sales/store-sales-time-series-forecasting
 
 # mlruns
-trubrics/integrations/mlflow/mlruns/
+examples/mlflow/mlruns/
