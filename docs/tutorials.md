@@ -17,8 +17,8 @@ For regression models, we are using Kaggle's [house prices prediction](https://w
 1. **Regression validations demo**: [.ipynb](https://github.com/trubrics/trubrics-sdk/blob/main/examples/regression_house_prices/house_prices_demo.ipynb)
 
 
-## Mlflow
+## MLflow
 
-Clone the repo to run the notebook. Read more about our Mlflow plugin [here](./mlflow.md).
+Clone the repo to run the notebook. Read more about our MLflow plugin [here](./mlflow.md).
 
-1. **Validate data or models within Mlflow**: [.ipynb](https://github.com/trubrics/trubrics-sdk/blob/main/examples/mlflow/mlflow-trubrics.ipynb)
+1. **Validate data or models within MLflow**: [.ipynb](https://github.com/trubrics/trubrics-sdk/blob/main/examples/mlflow/mlflow-trubrics.ipynb)

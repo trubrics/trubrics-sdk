@@ -1,4 +1,4 @@
-Trubrics has an official plugin with Mlflow's [`mlflow.evaluate()`](https://www.mlflow.org/docs/latest/python_api/mlflow.html#mlflow.evaluate) API. This allows users to validate models within an Mlflow run, saving all validation results. This plugin expands on the existing validation functionality within Mlflow's API:
+Trubrics has an official plugin with MLflow's [`mlflow.evaluate()`](https://www.mlflow.org/docs/latest/python_api/mlflow.html#mlflow.evaluate) API. This allows users to validate models within an MLflow run, saving all validation results. This plugin expands on the existing validation functionality within MLflow's API:
 
 - all model validation results can be viewed in a .json file, for diagnosis of why a run could have failed
 - a large number of [out-of-the-box](./validations.md) validations 
@@ -13,10 +13,10 @@ Trubrics has an official plugin with Mlflow's [`mlflow.evaluate()`](https://www.
 ```
 
 ## Example notebook
-To dive straight in, clone the repo and run the [example notebook](https://github.com/trubrics/trubrics-sdk/blob/main/examples/mlflow/mlflow-trubrics.ipynb). This example shows both a basic validation and a slightly more advanced set of validations within an Mlflow run.
+To dive straight in, clone the repo and run the [example notebook](https://github.com/trubrics/trubrics-sdk/blob/main/examples/mlflow/mlflow-trubrics.ipynb). This example shows both a basic validation and a slightly more advanced set of validations within an MLflow run.
 
 ## Plugin parameters
-To get started with Trubrics & Mlflow, you must first [build some validations](./index.md#validate-a-model-with-the-modelvalidator). Once you have built some validations and saved them as a .json file, you are ready to insert this snippet and start validating directly in your Mlflow run:
+To get started with Trubrics & MLflow, you must first [build some validations](./index.md#validate-a-model-with-the-modelvalidator). Once you have built some validations and saved them as a .json file, you are ready to insert this snippet and start validating directly in your MLflow run:
 
 ```py
 model = <your_model>
