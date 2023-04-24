@@ -11,6 +11,7 @@ train_df, test_df, model = get_titanic_data_and_model()
 
 data_context = DataContext(
     name="titanic_dataset",
+    version="0.0.1",
     testing_data=test_df,
     minimum_functionality_data=test_df.iloc[:5],
     training_data=train_df,
