@@ -203,12 +203,9 @@ def example_app(
 def run(
     save_ui: bool = typer.Option(False, prompt="Would you like to save your trubric to the UI?"),
     run_context_path: str = typer.Option(
-        default="titanic-example-trubric", prompt="Enter the path to your trubric run .py file. Press enter for example"
+        default="example", prompt="Enter the path to your trubric run .py file. Press enter for an"
     ),
-    trubric_output_file_path: str = typer.Option(
-        "./my_new_trubric.json",
-        prompt="Enter a local path to save your output trubric file. Press enter for default path",
-    ),
+    trubric_output_file_path: str = "./my_new_trubric.json",
     raise_on_failure: bool = True,
 ):
     """Runs an example trubric (list of model validations) on the titanic dataset.
@@ -217,9 +214,10 @@ def run(
         save_ui: whether to save validations to the UI with in app user authentication
         run_context_path: path to the trubrics run context
         trubric_output_file_path: path to save your output trubric file
+        raise_on_failure: raise an exception on failure of trubric
     """
     trubric_run_path = None
-    if run_context_path != "titanic-example-trubric":
+    if run_context_path != "example":
         trubric_run_path = Path(run_context_path).absolute()
         if not trubric_run_path.exists():
             rprint(f"[red]Path '{trubric_run_path}' not found.[red]")
