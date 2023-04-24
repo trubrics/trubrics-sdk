@@ -1,105 +1,58 @@
 {
-  "name": "my_second_trubric",
-  "model_name": "my_model",
-  "model_version": "0.0.1",
-  "data_context_name": "my_first_dataset",
-  "data_context_version": "0.1",
-  "validations": [
-    {
-      "validation_type": "validate_performance_against_threshold",
-      "validation_kwargs": {
-        "args": [],
-        "kwargs": {
-          "metric": "recall",
-          "threshold": 0.8
+    "name": "classification_trubric",
+    "passed": true,
+    "total_passed": 1,
+    "total_failed": 0,
+    "failing_severity": "error",
+    "data_context_name": "my_first_dataset",
+    "data_context_version": "0.0.1",
+    "model_name": "my_model",
+    "model_version": "0.0.1",
+    "tags": [
+        "nb-demo"
+    ],
+    "run_by": null,
+    "git_commit": "5fdb7fdb0d1b70bbab2e1ecab5e3287dd54deb69",
+    "timestamp": 1682326757,
+    "metadata": null,
+    "validations": [
+        {
+            "validation_type": "validate_performance_against_threshold",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "recall",
+                    "threshold": 0.8
+                }
+            },
+            "passed": false,
+            "severity": "experiment",
+            "result": {
+                "performance": 0.7184466019417476,
+                "sample_size": 295
+            },
+            "explanation": "**Performance validation versus a fixed threshold value.**\n\nCompares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.\n\nExample:\n```py\nfrom trubrics.validations import ModelValidator\nmodel_validator = ModelValidator(data=data_context, model=model)\nmodel_validator.validate_performance_against_threshold(\nmetric=\"recall\",\nthreshold=0.8\n)\n```\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nthreshold: the performance threshold that the model must attain.\ndataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual model performance calculated.\n"
+        },
+        {
+            "validation_type": "validate_test_performance_against_dummy",
+            "validation_kwargs": {
+                "args": [],
+                "kwargs": {
+                    "metric": "accuracy",
+                    "strategy": "constant",
+                    "dummy_kwargs": {
+                        "constant": 0
+                    }
+                }
+            },
+            "passed": true,
+            "severity": "error",
+            "result": {
+                "dummy_performance": 0.6508474576271186,
+                "test_performance": 0.7966101694915254,
+                "sample_size": 295
+            },
+            "explanation": "**Performance validation of testing data versus a dummy baseline model.**\n\nTrains a DummyClassifier / DummyRegressor from [sklearn](https://scikit-learn.org/stable/modules/classes.html?highlight=dummy#module-sklearn.dummy) and compares performance against the model on the test set.\n\nExample:\n```py\nfrom trubrics.validations import ModelValidator\nmodel_validator = ModelValidator(data=data_context, model=model)\nmodel_validator.validate_test_performance_against_dummy(\nmetric=\"accuracy\",\nstrategy=\"stratified\"\n)\n```\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nstrategy: strategy of scikit-learns dummy model.\ndummy_kwargs: kwargs to be passed to dummy model.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either ['error', 'warning', 'experiment']. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the model's actual performance on the test set and the dummy model's performance.\n"
         }
-      },
-      "explanation": "**Performance validation versus a fixed threshold value.**\n\nCompares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.\n\nExample:\n```py\nfrom trubrics.validations import ModelValidator\nmodel_validator = ModelValidator(data=data_context, model=model)\nmodel_validator.validate_performance_against_threshold(\nmetric=\"recall\",\nthreshold=0.8\n)\n```\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nthreshold: the performance threshold that the model must attain.\ndataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual model performance calculated.\n",
-      "passed": false,
-      "severity": "warning",
-      "result": {
-        "performance": 0.7184466019417476,
-        "sample_size": 295
-      }
-    },
-    {
-      "validation_type": "validate_performance_against_threshold",
-      "validation_kwargs": {
-        "args": [],
-        "kwargs": {
-          "metric": "precision",
-          "threshold": 0.7
-        }
-      },
-      "explanation": "**Performance validation versus a fixed threshold value.**\n\nCompares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.\n\nExample:\n```py\nfrom trubrics.validations import ModelValidator\nmodel_validator = ModelValidator(data=data_context, model=model)\nmodel_validator.validate_performance_against_threshold(\nmetric=\"recall\",\nthreshold=0.8\n)\n```\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nthreshold: the performance threshold that the model must attain.\ndataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual model performance calculated.\n",
-      "passed": true,
-      "severity": "error",
-      "result": {
-        "performance": 0.7047619047619048,
-        "sample_size": 295
-      }
-    },
-    {
-      "validation_type": "validate_performance_against_threshold",
-      "validation_kwargs": {
-        "args": [],
-        "kwargs": {
-          "metric": "f1",
-          "threshold": 0.7
-        }
-      },
-      "explanation": "**Performance validation versus a fixed threshold value.**\n\nCompares performance of a model on any of the datasets in the DataContext to a hard coded threshold value.\n\nExample:\n```py\nfrom trubrics.validations import ModelValidator\nmodel_validator = ModelValidator(data=data_context, model=model)\nmodel_validator.validate_performance_against_threshold(\nmetric=\"recall\",\nthreshold=0.8\n)\n```\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nthreshold: the performance threshold that the model must attain.\ndataset: the name of a dataset from the DataContext {'testing_data', 'training_data'}.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either {'error', 'warning', 'experiment'}. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the actual model performance calculated.\n",
-      "passed": true,
-      "severity": "experiment",
-      "result": {
-        "performance": 0.7115384615384616,
-        "sample_size": 295
-      }
-    },
-    {
-      "validation_type": "validate_test_performance_against_dummy",
-      "validation_kwargs": {
-        "args": [],
-        "kwargs": {
-          "metric": "accuracy"
-        }
-      },
-      "explanation": "**Performance validation of testing data versus a dummy baseline model.**\n\nTrains a DummyClassifier / DummyRegressor from [sklearn](https://scikit-learn.org/stable/modules/classes.html?highlight=dummy#module-sklearn.dummy) and compares performance against the model on the test set.\n\nExample:\n```py\nfrom trubrics.validations import ModelValidator\nmodel_validator = ModelValidator(data=data_context, model=model)\nmodel_validator.validate_test_performance_against_dummy(\nmetric=\"accuracy\",\nstrategy=\"stratified\"\n)\n```\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nstrategy: strategy of scikit-learns dummy model.\ndummy_kwargs: kwargs to be passed to dummy model.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either ['error', 'warning', 'experiment']. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the model's actual performance on the test set and the dummy model's performance.\n",
-      "passed": true,
-      "severity": "error",
-      "result": {
-        "dummy_performance": 0.6508474576271186,
-        "test_performance": 0.7966101694915254,
-        "sample_size": 295
-      }
-    },
-    {
-      "validation_type": "validate_test_performance_against_dummy",
-      "validation_kwargs": {
-        "args": [],
-        "kwargs": {
-          "metric": "accuracy",
-          "strategy": "constant",
-          "dummy_kwargs": {
-            "constant": 0
-          }
-        }
-      },
-      "explanation": "**Performance validation of testing data versus a dummy baseline model.**\n\nTrains a DummyClassifier / DummyRegressor from [sklearn](https://scikit-learn.org/stable/modules/classes.html?highlight=dummy#module-sklearn.dummy) and compares performance against the model on the test set.\n\nExample:\n```py\nfrom trubrics.validations import ModelValidator\nmodel_validator = ModelValidator(data=data_context, model=model)\nmodel_validator.validate_test_performance_against_dummy(\nmetric=\"accuracy\",\nstrategy=\"stratified\"\n)\n```\n\nArgs:\nmetric: performance metric name defined in sklearn (sklearn.metrics.SCORERS) or in a custom scorer fed in when initialising the ModelValidator object.\nstrategy: strategy of scikit-learns dummy model.\ndummy_kwargs: kwargs to be passed to dummy model.\ndata_slice: the name of the data slice, specified in the slicing_functions parameter of ModelValidator.\nseverity: severity of the validation. Can be either ['error', 'warning', 'experiment']. If None, defaults to 'error'.\n\nReturns:\nTrue for success, false otherwise. With a results dictionary giving the model's actual performance on the test set and the dummy model's performance.\n",
-      "passed": true,
-      "severity": "error",
-      "result": {
-        "dummy_performance": 0.6508474576271186,
-        "test_performance": 0.7966101694915254,
-        "sample_size": 295
-      }
-    }
-  ],
-  "tags": ["master"],
-  "run_by": null,
-  "git_commit": "2d02d904d75b675e65dcfdf64c340b2d16d4406c",
-  "metadata": null,
-  "timestamp": 1676366706,
-  "total_passed": 4,
-  "total_passed_percent": 80.0
+    ]
 }
