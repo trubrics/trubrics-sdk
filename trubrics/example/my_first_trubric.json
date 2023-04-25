@@ -9,7 +9,7 @@
     "model_name": "my_model",
     "model_version": "0.0.1",
     "tags": [
-        "nb-demo"
+        "cli-demo"
     ],
     "run_by": null,
     "git_commit": "5fdb7fdb0d1b70bbab2e1ecab5e3287dd54deb69",
