@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.5] - 2023-04-25
+### Fixed
+- Fixed `trubrics run` with new .json file corresponding to new `Trubric` data model
+
 ## [1.3.4] - 2023-04-20
 ### Added
 - Functionality to fail a Trubric run (cli or notebook) based on the severity of validations
