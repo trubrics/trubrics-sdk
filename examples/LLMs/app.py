@@ -18,15 +18,19 @@ st.title("LLM User Feedback with Trubrics")
 
 col1, col2 = st.columns(2)
 with col1:
-    models = ("text-davinci-003",)
-    model = st.selectbox("Choose your OpenAI model", models)
+    models = ("text-davinci-003", "text-davinci-002")
+    model = st.selectbox(
+        "Choose your GPT-3.5 LLM",
+        models,
+        help="Consult https://platform.openai.com/docs/models/gpt-3-5 for model info.",
+    )
 with col2:
     openai.api_key = st.text_input("Enter your OpenAI API Key", type="password")
 
 prompt = st.text_area(label="Prompt", label_visibility="collapsed", placeholder="What would you like to know?")
 button = st.button(f"Ask {model}")
 if button:
-    st.session_state["response"] = openai.Completion.create(model=model, prompt=prompt, temperature=0, max_tokens=40)
+    st.session_state["response"] = openai.Completion.create(model=model, prompt=prompt, temperature=0.5, max_tokens=200)
 
 if st.session_state["response"]:
     response = st.session_state["response"]
