@@ -34,3 +34,6 @@ examples/timeseries_store_sales/store-sales-time-series-forecasting
 
 # mlruns
 examples/mlflow/mlruns/
+
+# env variables
+.env
