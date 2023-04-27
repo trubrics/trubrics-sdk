@@ -1,4 +1,5 @@
 import json
+import time
 from functools import lru_cache
 from typing import Dict
 
@@ -9,8 +10,14 @@ def get_trubrics_firebase_auth_api_url(firebase_api_key):
     return f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={firebase_api_key}"
 
 
+def expire_after_n_seconds(seconds=600):
+    """Return the same value within `seconds` time period."""
+    return round(time.time() / seconds)
+
+
 @lru_cache(maxsize=32)
-def get_trubrics_auth_token(firebase_auth_api_url, email, password) -> Dict[str, str]:
+def get_trubrics_auth_token(firebase_auth_api_url, email, password, rerun=None) -> Dict[str, str]:
+    del rerun  # this variable just refreshes cash every n seconds
     try:
         r = requests.post(
             firebase_auth_api_url,

@@ -7,7 +7,7 @@ from git.repo import Repo
 from loguru import logger
 from pydantic import BaseModel, validator
 
-from trubrics.ui.auth import get_trubrics_auth_token
+from trubrics.ui.auth import expire_after_n_seconds, get_trubrics_auth_token
 from trubrics.ui.firestore import add_document_to_project_subcollection
 from trubrics.ui.trubrics_config import load_trubrics_config
 
@@ -68,7 +68,9 @@ class Feedback(BaseModel):
             email = trubrics_config.email
             password = trubrics_config.password.get_secret_value()
 
-        auth = get_trubrics_auth_token(trubrics_config.firebase_auth_api_url, email, password)
+        auth = get_trubrics_auth_token(
+            trubrics_config.firebase_auth_api_url, email, password, rerun=expire_after_n_seconds()
+        )
         if "error" in auth:
             error_msg = f"Error in pushing feedback issue with email '{email}' to the Trubrics UI: {auth['error']}"
             logger.error(error_msg)
