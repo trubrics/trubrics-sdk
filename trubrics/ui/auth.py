@@ -17,7 +17,7 @@ def expire_after_n_seconds(seconds=600):
 
 @lru_cache(maxsize=32)
 def get_trubrics_auth_token(firebase_auth_api_url, email, password, rerun=None) -> Dict[str, str]:
-    del rerun  # this variable just refreshes cash every n seconds
+    del rerun  # this variable is just used to force a refresh of lru_cache
     try:
         r = requests.post(
             firebase_auth_api_url,
