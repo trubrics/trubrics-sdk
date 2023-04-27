@@ -46,4 +46,6 @@ if st.session_state["response"]:
         metadata={"model_type": response.object, "prompt": prompt, "model_response": response.choices[0].text},
         tags=["llm-demo"],
     )
-    feedback.dict() if feedback else None
+    if feedback:
+        st.markdown(":green[View your feedback here: https://ea.trubrics.com]")
+        st.session_state["response"] = ""
