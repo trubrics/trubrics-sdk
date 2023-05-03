@@ -18,7 +18,7 @@ cli = typer.Typer()
 @st.cache(allow_output_mutation=True)
 def init_trubrics(trubrics_platform_auth):
     with st.spinner("Connecting to the Trubrics platform..."):
-        init(project_name="LLM demo")
+        init(project_name="titanic example")
         _, test_df, model = get_titanic_data_and_model()
 
     data_context = DataContext(
