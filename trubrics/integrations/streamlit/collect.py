@@ -4,7 +4,7 @@ import streamlit as st
 
 from trubrics.feedback import config
 from trubrics.feedback.dataclass import Feedback
-from trubrics.ui.auth import get_trubrics_auth_token
+from trubrics.ui.auth import expire_after_n_seconds, get_trubrics_auth_token
 from trubrics.ui.trubrics_config import load_trubrics_config
 
 
@@ -73,7 +73,9 @@ class FeedbackCollector:
                 submitted = st.form_submit_button("Sign In")
                 if submitted:
                     # check auth
-                    auth = get_trubrics_auth_token(trubrics_config.firebase_auth_api_url, self.email, self.password)
+                    auth = get_trubrics_auth_token(
+                        trubrics_config.firebase_auth_api_url, self.email, self.password, rerun=expire_after_n_seconds()
+                    )
                     if "error" in auth:
                         st.error(f"Error authenticating user {self.email}. Try again or contact your admin team.")
                     else:
