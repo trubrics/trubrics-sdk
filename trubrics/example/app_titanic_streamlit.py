@@ -3,6 +3,7 @@ from typing import Optional
 import streamlit as st
 import typer
 
+from trubrics.cli.main import init
 from trubrics.context import DataContext
 from trubrics.example import get_titanic_data_and_model
 from trubrics.example import titanic_config as tc
@@ -16,7 +17,9 @@ cli = typer.Typer()
 
 @st.cache(allow_output_mutation=True)
 def init_trubrics(trubrics_platform_auth):
-    _, test_df, model = get_titanic_data_and_model()
+    with st.spinner("Connecting to the Trubrics platform..."):
+        init(project_name="LLM demo")
+        _, test_df, model = get_titanic_data_and_model()
 
     data_context = DataContext(
         testing_data=test_df,
@@ -67,6 +70,14 @@ collector.st_feedback(
 
 @cli.command()
 def main(trubrics_platform_auth: Optional[str] = None):
+    with st.sidebar:
+        if trubrics_platform_auth is None:
+            trubrics_platform_auth = st.selectbox(
+                label="Select whether to save user feedback locally or to the Trubrics platform: ",
+                options=("local", "single_user", "multiple_users"),
+            )
+            if trubrics_platform_auth == "local":
+                trubrics_platform_auth = None
     model, data_context, collector = init_trubrics(trubrics_platform_auth)
 
     st.title("Titanic Demo App")
