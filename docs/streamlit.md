@@ -179,7 +179,7 @@ You then have two options for saving feedback:
     import streamlit as st
     from trubrics.integrations.streamlit import FeedbackCollector
 
-    @st.cache
+    @st.cache_resource
     def trubrics_init():
         return FeedbackCollector(trubrics_platform_auth="multiple_users")
 

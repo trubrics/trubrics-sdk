@@ -5,7 +5,7 @@ from trubrics.cli.main import init
 from trubrics.integrations.streamlit import FeedbackCollector
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache_resource
 def init_trubrics():
     with st.spinner("Connecting to the Trubrics platform..."):
         init(project_name="LLM demo")
