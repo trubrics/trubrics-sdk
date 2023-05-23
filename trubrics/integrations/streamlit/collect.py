@@ -236,7 +236,6 @@ class FeedbackCollector:
                     user_response=user_response, feedback_type=feedback_type, metadata=metadata, path=path, tags=tags
                 )
         if st.session_state[f"{key}_save_button"]:
-            user_response = {title: ui_state}
             return self._save_feedback(
                 user_response=st.session_state[f"previous_{key}_state"],
                 feedback_type=feedback_type,
