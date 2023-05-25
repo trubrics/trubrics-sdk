@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Feedback Form</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <script>
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                alert('{{ message }}');
+            {% endfor %}
+        {% endwith %}
+    </script>
+</head>
+<body>
+    <h1>Trubrics feedback components</h1>
+    <form name="thumbs" action="/submit_feedback" method="post">
+        <p>feedback_type="thumbs"</p>
+        <br>
+        <div id="thumbs-buttons">
+            <button name="thumbs" value="👍" type="submit" class="emoji-button">👍</button>
+            <button name="thumbs" value="👎" type="submit" class="emoji-button">👎</button>
+        </div>
+        <br>
+    </form>
+    <form id="faces" action="/submit_feedback" method="post">
+        <p>feedback_type="faces"</p>
+        <br>
+        <div id="faces-buttons">
+            <button name="faces" value="😞" type="submit" class="emoji-button">😞</button>
+            <button name="faces" value="🙁" type="submit" class="emoji-button">🙁</button>
+            <button name="faces" value="😐" type="submit" class="emoji-button">😐</button>
+            <button name="faces" value="🙂" type="submit" class="emoji-button">🙂</button>
+            <button name="faces" value="😀" type="submit" class="emoji-button">😀</button>
+        </div>
+        <br>
+    </form>
+    <form id="text" action="/submit_feedback_text" method="post">
+        <p>feedback_type="text"</p>
+        <br>
+        <div id="text-buttons">
+            <input type="text" class="text-box" name="text" placeholder="Enter your feedback"><br><br>
+            <input type="submit" value="Save feedback" class="submit-button">
+        </div>
+        <br>
+    </form>
+</body>
+</html>
