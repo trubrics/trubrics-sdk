@@ -17,6 +17,9 @@ export TRUBRICS_CONFIG_EMAIL=<your_trubrics_email>
 export TRUBRICS_CONFIG_PASSWORD=<your_trubrics_password>
 ```
 
+!!!tip "Trubrics platform access"
+    To gain access for you and your team, get in touch with us [here](https://trubrics.com/demo/).
+
 To directly run the application, clone the [trubrics-sdk](https://github.com/trubrics/trubrics-sdk) and run the following command from the root directory:
 
 ```
