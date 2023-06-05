@@ -21,6 +21,12 @@ from trubrics.ui.firestore import (
 from trubrics.ui.trubrics_config import TrubricsDefaults
 
 
+class Response(BaseModel):
+    type: str
+    score: Optional[str]
+    text: Optional[str]
+
+
 class Feedback(BaseModel):
     """
     Dataclass for feedback given by a user from a UI component.
@@ -30,8 +36,7 @@ class Feedback(BaseModel):
     """
 
     component_name: str
-    feedback_score: str
-    feedback_text: str
+    response: Response
     model: Optional[str] = None
     datasets: Optional[List[str]] = None
     model_input: Optional[Any] = None

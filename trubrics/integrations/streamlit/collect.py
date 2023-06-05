@@ -11,6 +11,7 @@ from trubrics.ui.trubrics_config import load_trubrics_config
 class FeedbackCollector:
     def __init__(
         self,
+        component_name: str,
         data: Optional[str] = None,
         model: Optional[str] = None,
         trubrics_platform_auth: Optional[str] = None,
@@ -19,6 +20,7 @@ class FeedbackCollector:
         The FeedbackCollector allows Data Scientists to collect feedback from within their app.
 
         Args:
+            component_name: component name
             data: a reference to the data that was used to collect the feedback (e.g. a link to a dataset)
             model: a reference to the model that was used to collect the feedback (e.g. a link to a model)
             trubrics_platform_auth: option to save the feedback to the trubrics platform
@@ -28,6 +30,7 @@ class FeedbackCollector:
                     using auth credentials of the app owner
                 - *multiple_users*: save feedback directly to the Trubrics platform, with full user auth
         """
+        self.component_name = component_name
         self.data = data
         self.model = model
         if trubrics_platform_auth in [None, "single_user", "multiple_users"]:
@@ -114,15 +117,15 @@ class FeedbackCollector:
         if feedback_type == "issue":
             if user_response or open_feedback_label:
                 raise ValueError("For feedback_type='issue', title, description and open_feedback_label must be None.")
-            issue_data = self.st_issue_ui(key)
-            if issue_data:
-                return self._save_feedback(
-                    feedback_type=feedback_type,
-                    path=path,
-                    metadata=metadata,
-                    user_response={issue_data[0]: issue_data[1]},
-                    tags=tags,
-                )
+            # issue_data = self.st_issue_ui(key)
+            # if issue_data:
+            #     return self._save_feedback(
+            #         feedback_type=feedback_type,
+            #         path=path,
+            #         metadata=metadata,
+            #         user_response={issue_data[0]: issue_data[1]},
+            #         tags=tags,
+            #     )
         elif feedback_type in ("thumbs", "faces"):
             if user_response:
                 raise ValueError(
@@ -136,33 +139,32 @@ class FeedbackCollector:
                 key=key,
                 open_feedback_label=open_feedback_label,
             )
-        elif feedback_type == "custom":
-            if user_response:
-                return self._save_feedback(
-                    feedback_type=feedback_type,
-                    user_response=user_response,
-                    path=path,
-                    metadata=metadata,
-                    tags=tags,
-                )
-            else:
-                raise ValueError("For feedback_type='custom', title and description parameters must be specified.")
+        # elif feedback_type == "custom":
+        #     if user_response:
+        #         return self._save_feedback(
+        #             feedback_type=feedback_type,
+        #             user_response=user_response,
+        #             path=path,
+        #             metadata=metadata,
+        #             tags=tags,
+        #         )
+        #     else:
+        #         raise ValueError("For feedback_type='custom', title and description parameters must be specified.")
         else:
             raise ValueError("feedback_type must be one of ['issue', 'faces', 'thumbs', 'custom'].")
         return None
 
     def _save_feedback(
         self,
-        feedback_type: str,
-        user_response: Dict[str, Union[float, int, str, bool]],
+        user_response,
         path: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
         tags: Optional[List[str]] = None,
     ) -> Optional[Feedback]:
         feedback = Feedback(
-            feedback_type=feedback_type,
-            user_response=user_response,
-            data=self.data,
+            component_name=self.component_name,
+            response=user_response,
+            # datasets=[self.data],
             model=self.model,
             metadata=metadata,
             tags=tags,
@@ -177,7 +179,7 @@ class FeedbackCollector:
             else:
                 st.error("User is not authenticated. Please try again or contact your admin.")
         elif self.trubrics_platform_auth == "single_user":
-            feedback.save_ui(None, None)
+            feedback.save_ui("AIzaSyB6WPIVzMaRCnlL1ZmRosrQsbQYYagZARQ", "trubrics-streamlit")
             st.success(config.PLATFORM_SAVE)
         else:
             raise ValueError(
@@ -202,12 +204,11 @@ class FeedbackCollector:
         if f"previous_{key}_state" not in st.session_state:
             st.session_state[f"previous_{key}_state"] = ""
 
-        title = f"User satisfaction: {feedback_type}"
-
-        def feedback_handler(open_feedback_label):
+        def feedback_handler():
             user_response = {
-                title: st.session_state[f"{key}_state"],
-                open_feedback_label: st.session_state[f"{feedback_type}_open_feedback"].rstrip(),
+                "type": feedback_type,
+                "score": st.session_state[f"{key}_state"],
+                "text": st.session_state[f"{feedback_type}_open_feedback"].rstrip(),
             }
             st.session_state[f"previous_{key}_state"] = user_response
             st.session_state[f"{key}_state"] = ""
@@ -226,19 +227,19 @@ class FeedbackCollector:
                 st.button(
                     config.FEEDBACK_SAVE_BUTTON,
                     on_click=feedback_handler,
-                    args=(open_feedback_label,),
                     key=f"{key}_save_button",
                 )
         else:
             if ui_state:
-                user_response = {title: ui_state}
-                return self._save_feedback(
-                    user_response=user_response, feedback_type=feedback_type, metadata=metadata, path=path, tags=tags
-                )
+                user_response = {
+                    "type": feedback_type,
+                    "score": ui_state,
+                    "text": None,
+                }
+                return self._save_feedback(user_response=user_response, metadata=metadata, path=path, tags=tags)
         if st.session_state[f"{key}_save_button"]:
             return self._save_feedback(
                 user_response=st.session_state[f"previous_{key}_state"],
-                feedback_type=feedback_type,
                 metadata=metadata,
                 path=path,
                 tags=tags,
