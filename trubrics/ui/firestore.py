@@ -67,24 +67,24 @@ def get_trubrics_firestore_api_url(auth, project_id):
     return f"https://firestore.googleapis.com/v1/{organisation_route}"
 
 
-def list_projects_in_organisation(firestore_api_url, auth):
+def list_components_in_organisation(firestore_api_url, auth):
     r = requests.get(
-        firestore_api_url + "/projects" + "?pageSize=50",
+        firestore_api_url + "/feedback" + "?pageSize=50",
         headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
     )
     r.raise_for_status()
-    projects_res = json.loads(r.text)
+    components_res = json.loads(r.text)
 
-    all_projects = []
-    if len(projects_res) != 0:
-        for project in projects_res["documents"]:
-            if project.get("fields", {}).get("archived", {}).get("booleanValue", {}) is False:
-                all_projects.append(project["name"].split("/")[-1])
-    return all_projects
+    all_components = []
+    if len(components_res) != 0:
+        for component in components_res["documents"]:
+            if component.get("fields", {}).get("archived", {}).get("booleanValue", {}) is False:
+                all_components.append(component["name"].split("/")[-1])
+    return all_components
 
 
-def add_document_to_project_subcollection(auth, firestore_api_url, project, subcollection, document_id, document_json):
-    url = firestore_api_url + f"/projects/{project}/{subcollection}/?documentId={document_id}"
+def record_feedback(auth, firestore_api_url, component, document_json):
+    url = firestore_api_url + f"/feedback/{component}/responses"
     res = json.loads(
         requests.post(
             url,

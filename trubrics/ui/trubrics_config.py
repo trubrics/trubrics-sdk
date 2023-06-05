@@ -17,7 +17,6 @@ class TrubricsConfig(BaseModel):
     username: str
     email: str
     password: SecretStr
-    project: str
 
     class Config:
         json_encoders = {SecretStr: lambda v: v.get_secret_value() if v else None}

@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
@@ -5,11 +6,19 @@ from typing import Any, Dict, List, Optional, Union
 from git import InvalidGitRepositoryError
 from git.repo import Repo
 from loguru import logger
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
-from trubrics.ui.auth import expire_after_n_seconds, get_trubrics_auth_token
-from trubrics.ui.firestore import add_document_to_project_subcollection
-from trubrics.ui.trubrics_config import load_trubrics_config
+from trubrics.ui.auth import (
+    expire_after_n_seconds,
+    get_trubrics_auth_token,
+    get_trubrics_firebase_auth_api_url,
+)
+from trubrics.ui.firestore import (
+    get_trubrics_firestore_api_url,
+    list_components_in_organisation,
+    record_feedback,
+)
+from trubrics.ui.trubrics_config import TrubricsDefaults
 
 
 class Feedback(BaseModel):
@@ -17,74 +26,78 @@ class Feedback(BaseModel):
     Dataclass for feedback given by a user from a UI component.
 
     Attributes:
-        feedback_type: feedback type ['issue', 'faces', 'thumbs', 'custom']
-        user_response: dict of all feedback given by the user
-        data: a reference to the dataset used in the app
-        model: a reference to the model used in the app
-        collaborators: users who have collaborated so far on the issue
-        open: whether the feedback item is open or closed
-        tags: list of tags for the feedback issue
-        git_commit: a git commit hash from the git repo where the app was run to collect feedback
-        timestamp: timestamp at which the feedback was recorded
-        created_by: who the feedback was run by
-        closed_on: timestamp when the feedback was closed
-        closed_by: who the feedback was run by
-        metadata: free textual metadata field
+        TODO
     """
 
-    feedback_type: str
-    user_response: Dict[str, Union[float, int, str, bool]]
-    data: Optional[str]
+    component_name: str
+    feedback_score: str
+    feedback_text: str
     model: Optional[str] = None
-    collaborators: List[Optional[str]] = []
-    open: bool = True
+    datasets: Optional[List[str]] = None
+    model_input: Optional[Any] = None
+    model_output: Optional[Any] = None
     tags: Optional[List[str]] = None
     git_commit: Optional[str] = None
-    timestamp: Optional[int] = None
     created_by: Optional[Dict[str, Optional[str]]] = None
-    closed_on: Optional[str] = None
-    closed_by: Optional[str] = None
+    created_on: Optional[datetime] = None
     metadata: Optional[Dict[str, Union[List[Any], float, int, str, dict]]] = None
 
-    @validator("feedback_type")
-    def target_column_must_be_in_data(cls, v):
-        if v not in ["issue", "faces", "thumbs", "custom"]:
-            raise ValueError("feedback_type must be one of ['issue', 'faces', 'thumbs', 'custom'].")
-        return v
-
     def save_local(self, path: Optional[str] = None):
-        self._set_fields_on_save()
         if path is None:
-            path = f"./{self.timestamp}_feedback.json"
+            path = f"./{self.component_name}_feedback.json"
         with open(Path(path).absolute(), "w") as file:
             file.write(self.json(indent=4))
             logger.info(f"Feedback saved to {path}.")
 
-    def save_ui(self, email: Optional[str], password: Optional[str]):
-        trubrics_config = load_trubrics_config()
-        self._set_fields_on_save()
+    def save_ui(self, firebase_api_key: Optional[str] = None, firebase_project_id: Optional[str] = None):
+        """
+        1. read trubrics config
+        2. check component name exists
+        3. record feedback to component
+        """
+        if firebase_api_key or firebase_project_id:
+            if firebase_api_key and firebase_project_id:
+                defaults = TrubricsDefaults(firebase_api_key=firebase_api_key, firebase_project_id=firebase_project_id)
+            else:
+                raise ValueError("Both API key and firebase_project_id are required to change project.")
+        else:
+            defaults = TrubricsDefaults()
 
-        if email is None and password is None:
-            email = trubrics_config.email
-            password = trubrics_config.password.get_secret_value()
+        email = os.environ["TRUBRICS_CONFIG_EMAIL"]
+        password = os.environ["TRUBRICS_CONFIG_PASSWORD"]
+        firebase_auth_api_url = get_trubrics_firebase_auth_api_url(defaults.firebase_api_key)
+        auth = get_trubrics_auth_token(firebase_auth_api_url, email, password, rerun=expire_after_n_seconds())
+        if "error" in auth:
+            raise Exception(f"Error in login email '{email}' to the Trubrics UI: {auth['error']}")
+        else:
+            firestore_api_url = get_trubrics_firestore_api_url(auth, defaults.firebase_project_id)
 
-        auth = get_trubrics_auth_token(
-            trubrics_config.firebase_auth_api_url, email, password, rerun=expire_after_n_seconds()
-        )
+        components = list_components_in_organisation(firestore_api_url=firestore_api_url, auth=auth)
+        if self.component_name not in components:
+            raise ValueError(
+                f"Component '{self.component_name}' not found in organisation '{firestore_api_url.split('/')[-1]}'."
+                f" Components currently available: {components}."
+            )
+
         if "error" in auth:
             error_msg = f"Error in pushing feedback issue with email '{email}' to the Trubrics UI: {auth['error']}"
             logger.error(error_msg)
             raise Exception(error_msg)
         else:
-            self.created_by = {"email": auth["email"], "displayName": auth["displayName"]}
-            self.collaborators.append(auth["displayName"])
+            self.created_by = {"email": auth["email"], "name": auth["displayName"]}
+            self.created_on = datetime.now()
+            try:
+                self.git_commit = Repo(search_parent_directories=True).head.object.hexsha
+            except InvalidGitRepositoryError:
+                logger.warning(
+                    "Current directory is not a git repository. Run `trubrics run` inside a git repository to save the"
+                    " commit hash."
+                )
 
-            res = add_document_to_project_subcollection(
+            res = record_feedback(
                 auth,
-                firestore_api_url=trubrics_config.firestore_api_url,
-                project=trubrics_config.project,
-                subcollection="feedback",
-                document_id=self.timestamp,
+                firestore_api_url=firestore_api_url,
+                component=self.component_name,
                 document_json=self.json(),
             )
             if "error" in res:
@@ -92,14 +105,4 @@ class Feedback(BaseModel):
                 logger.error(error_msg)
                 raise Exception(error_msg)
             else:
-                logger.info("Feedback issue saved to the Trubrics UI.")
-
-    def _set_fields_on_save(self):
-        self.timestamp = int(datetime.now().timestamp())
-        try:
-            self.git_commit = Repo(search_parent_directories=True).head.object.hexsha
-        except InvalidGitRepositoryError:
-            logger.warning(
-                "Current directory is not a git repository. Run `trubrics run` inside a git repository to save the"
-                " commit hash."
-            )
+                logger.info("Feedback saved to the Trubrics UI.")
