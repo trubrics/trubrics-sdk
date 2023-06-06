@@ -38,7 +38,7 @@ class Feedback(BaseModel):
     component_name: str
     response: Response
     model: Optional[str] = None
-    datasets: Optional[List[str]] = None
+    datasets: List[Optional[str]] = [None]
     model_input: Optional[Any] = None
     model_output: Optional[Any] = None
     tags: Optional[List[str]] = None

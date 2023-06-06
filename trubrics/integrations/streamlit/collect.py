@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Union
 
 import streamlit as st
 
@@ -12,7 +12,7 @@ class FeedbackCollector:
     def __init__(
         self,
         component_name: str,
-        data: Optional[str] = None,
+        data: List[Optional[str]] = [None],
         model: Optional[str] = None,
         trubrics_platform_auth: Optional[str] = None,
     ):
@@ -21,7 +21,7 @@ class FeedbackCollector:
 
         Args:
             component_name: component name
-            data: a reference to the data that was used to collect the feedback (e.g. a link to a dataset)
+            data: a reference to any datasets that were used to collect the feedback (e.g. a link to a dataset)
             model: a reference to the model that was used to collect the feedback (e.g. a link to a model)
             trubrics_platform_auth: option to save the feedback to the trubrics platform
 
@@ -87,7 +87,7 @@ class FeedbackCollector:
 
     def st_feedback(
         self,
-        feedback_type: str = "issue",
+        feedback_type: str = "textbox",
         user_response: Optional[Dict[str, Union[float, int, str, bool]]] = None,
         path: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
@@ -101,7 +101,7 @@ class FeedbackCollector:
         Args:
             feedback_type: type of feedback to be collected
 
-                - issue: issue with a open text title and description fields
+                - textbox: open textbox feedback
                 - thumbs: positive or negative feedback with thumbs emojis
                 - faces: a scale of 1 to 5 with face emojis
                 - custom: a customisable feedback type that allows users to specify the user_response dict
@@ -114,18 +114,18 @@ class FeedbackCollector:
         """
         if key is None:
             key = feedback_type
-        if feedback_type == "issue":
-            if user_response or open_feedback_label:
-                raise ValueError("For feedback_type='issue', title, description and open_feedback_label must be None.")
-            # issue_data = self.st_issue_ui(key)
-            # if issue_data:
-            #     return self._save_feedback(
-            #         feedback_type=feedback_type,
-            #         path=path,
-            #         metadata=metadata,
-            #         user_response={issue_data[0]: issue_data[1]},
-            #         tags=tags,
-            #     )
+        if feedback_type == "textbox":
+            if user_response:
+                raise ValueError("For feedback_type='textbox', user_response must be None.")
+            text = self.st_textbox_ui(key, label=open_feedback_label)
+            if text:
+                user_response = {"type": feedback_type, "score": "None", "text": text}
+                return self._save_feedback(
+                    path=path,
+                    metadata=metadata,
+                    user_response=user_response,
+                    tags=tags,
+                )
         elif feedback_type in ("thumbs", "faces"):
             if user_response:
                 raise ValueError(
@@ -151,7 +151,7 @@ class FeedbackCollector:
         #     else:
         #         raise ValueError("For feedback_type='custom', title and description parameters must be specified.")
         else:
-            raise ValueError("feedback_type must be one of ['issue', 'faces', 'thumbs', 'custom'].")
+            raise ValueError("feedback_type must be one of ['textbox', 'faces', 'thumbs', 'custom'].")
         return None
 
     def _save_feedback(
@@ -164,7 +164,7 @@ class FeedbackCollector:
         feedback = Feedback(
             component_name=self.component_name,
             response=user_response,
-            # datasets=[self.data],
+            datasets=self.data,
             model=self.model,
             metadata=metadata,
             tags=tags,
@@ -247,9 +247,9 @@ class FeedbackCollector:
         return None
 
     @staticmethod
-    def st_issue_ui(key: Optional[str] = None) -> Optional[Tuple[str, str]]:
+    def st_textbox_ui(key: Optional[str] = None, label: Optional[str] = None) -> Optional[str]:
         if key is None:
-            key = "issue"
+            key = "textbox"
 
         if f"{key}_save_button" not in st.session_state:
             st.session_state[f"{key}_save_button"] = False
@@ -258,25 +258,14 @@ class FeedbackCollector:
             st.session_state[f"previous_{key}_state"] = ""
 
         def clear_session_state():
-            st.session_state[f"previous_{key}_state"] = (
-                st.session_state[f"{key}_title"],
-                st.session_state[f"{key}_description"],
-            )
+            st.session_state[f"previous_{key}_state"] = st.session_state[f"{key}_title"]
             st.session_state[f"{key}_title"] = ""
-            st.session_state[f"{key}_description"] = ""
 
         title = st.text_input(
-            label=config.TITLE,
-            help=config.TITLE_EXPLAIN,
+            label=label or "Provide some feedback",
             key=f"{key}_title",
         )
-        description = st.text_input(
-            label=config.DESCRIPTION,
-            help=config.DESCRIPTION_EXPLAIN,
-            key=f"{key}_description",
-        )
-        enabled = title and description
-        if enabled:
+        if title:
             st.button(config.FEEDBACK_SAVE_BUTTON, on_click=clear_session_state, key=f"{key}_save_button")
         if st.session_state[f"{key}_save_button"]:
             return st.session_state[f"previous_{key}_state"]
