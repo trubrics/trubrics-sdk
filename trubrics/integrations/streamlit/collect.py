@@ -92,6 +92,8 @@ class FeedbackCollector:
         path: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
         tags: Optional[List[str]] = None,
+        model_input: Optional[Any] = None,
+        model_output: Optional[Any] = None,
         key: Optional[str] = None,
         open_feedback_label: Optional[str] = None,
     ) -> Optional[Feedback]:
@@ -125,6 +127,8 @@ class FeedbackCollector:
                     metadata=metadata,
                     user_response=user_response,
                     tags=tags,
+                    model_input=model_input,
+                    model_output=model_output,
                 )
         elif feedback_type in ("thumbs", "faces"):
             if user_response:
@@ -136,6 +140,8 @@ class FeedbackCollector:
                 path=path,
                 metadata=metadata,
                 tags=tags,
+                model_input=model_input,
+                model_output=model_output,
                 key=key,
                 open_feedback_label=open_feedback_label,
             )
@@ -160,6 +166,8 @@ class FeedbackCollector:
         path: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
         tags: Optional[List[str]] = None,
+        model_input: Optional[Any] = None,
+        model_output: Optional[Any] = None,
     ) -> Optional[Feedback]:
         feedback = Feedback(
             component_name=self.component_name,
@@ -168,6 +176,8 @@ class FeedbackCollector:
             model=self.model,
             metadata=metadata,
             tags=tags,
+            model_input=model_input,
+            model_output=model_output,
         )
         if self.trubrics_platform_auth is None:
             feedback.save_local(path=path)
@@ -196,6 +206,8 @@ class FeedbackCollector:
         path: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
         tags: Optional[List[str]] = None,
+        model_input: Optional[Any] = None,
+        model_output: Optional[Any] = None,
     ) -> Optional[Feedback]:
         if f"{key}_state" not in st.session_state:
             st.session_state[f"{key}_state"] = ""
@@ -236,13 +248,22 @@ class FeedbackCollector:
                     "score": ui_state,
                     "text": None,
                 }
-                return self._save_feedback(user_response=user_response, metadata=metadata, path=path, tags=tags)
+                return self._save_feedback(
+                    user_response=user_response,
+                    metadata=metadata,
+                    path=path,
+                    tags=tags,
+                    model_input=model_input,
+                    model_output=model_output,
+                )
         if st.session_state[f"{key}_save_button"]:
             return self._save_feedback(
                 user_response=st.session_state[f"previous_{key}_state"],
                 metadata=metadata,
                 path=path,
                 tags=tags,
+                model_input=model_input,
+                model_output=model_output,
             )
         return None
 

@@ -34,7 +34,7 @@ def init_trubrics(trubrics_platform_auth):
 
     collector = FeedbackCollector(
         component_name="test",
-        data="trubrics data_context",
+        data=["trubrics data_context"],
         model="rf_model",
         trubrics_platform_auth=trubrics_platform_auth,
     )

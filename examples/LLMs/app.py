@@ -1,21 +1,14 @@
+import os
+
+import dotenv
 import openai
 import streamlit as st
 
-from trubrics.cli.main import init
-from trubrics.integrations.streamlit import FeedbackCollector
-
-
-@st.cache_resource
-def init_trubrics():
-    with st.spinner("Connecting to the Trubrics platform..."):
-        init(project_name="LLM demo")
-    return FeedbackCollector(trubrics_platform_auth="single_user")
-
+dotenv.load_dotenv(".env")
 
 if "response" not in st.session_state:
     st.session_state["response"] = ""
 
-collector = init_trubrics()
 
 st.title("LLM User Feedback with Trubrics")
 
@@ -28,7 +21,9 @@ with col1:
         help="Consult https://platform.openai.com/docs/models/gpt-3-5 for model info.",
     )
 with col2:
-    openai.api_key = st.text_input("Enter your OpenAI API Key", type="password")
+    openai.api_key = st.text_input(
+        "Enter your OpenAI API Key", type="password", value=os.environ["TRUBRICS_OPENAI_API_KEY"]
+    )
 
 prompt = st.text_area(label="Prompt", label_visibility="collapsed", placeholder="What would you like to know?")
 button = st.button(f"Ask {model}")
@@ -39,13 +34,19 @@ if st.session_state["response"]:
     response = st.session_state["response"]
     response_text = response.choices[0].text.replace("\n", "")
     st.markdown(f"#### :violet[{response_text}]")
-    collector.model = response.model
+
+    from trubrics.integrations.streamlit import FeedbackCollector
+
+    collector = FeedbackCollector(component_name="llm-demo", trubrics_platform_auth="single_user", model=response.model)
+
     feedback = collector.st_feedback(
-        "thumbs",
-        open_feedback_label="Optionally provide some detail on how the LLM responded:",
-        metadata={"model_type": response.object, "prompt": prompt, "model_response": response.choices[0].text},
-        tags=["llm-demo"],
+        feedback_type="thumbs",
+        open_feedback_label="Optionally please provide more detailed feedback",
+        metadata={"model_type": response.object},
+        model_input=prompt,
+        model_output=response_text,
     )
+
     if feedback:
-        st.markdown(":green[View your feedback here: https://ea.trubrics.com]")
+        st.markdown(":green[View your feedback here: https://trubrics-streamlit.com]")
         st.session_state["response"] = ""
