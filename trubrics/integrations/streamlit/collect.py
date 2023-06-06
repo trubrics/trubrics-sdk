@@ -208,7 +208,7 @@ class FeedbackCollector:
             user_response = {
                 "type": feedback_type,
                 "score": st.session_state[f"{key}_state"],
-                "text": st.session_state[f"{feedback_type}_open_feedback"].rstrip(),
+                "text": st.session_state[f"{feedback_type}_open_feedback_{key}"].rstrip(),
             }
             st.session_state[f"previous_{key}_state"] = user_response
             st.session_state[f"{key}_state"] = ""
@@ -223,7 +223,7 @@ class FeedbackCollector:
 
         if open_feedback_label:
             if st.session_state.get(f"{key}_state_clicked", "") != "":
-                st.text_input(open_feedback_label, key=f"{feedback_type}_open_feedback")
+                st.text_input(open_feedback_label, key=f"{feedback_type}_open_feedback_{key}")
                 st.button(
                     config.FEEDBACK_SAVE_BUTTON,
                     on_click=feedback_handler,
@@ -295,9 +295,9 @@ class FeedbackCollector:
             down = self._emoji_button("👎", key, disable_on_click, button_states, 2)
 
         if up:
-            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 1, "thumbs up")
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 1, "👍")
         elif down:
-            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 2, "thumbs down")
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 2, "👎")
         else:
             return None
 
@@ -319,27 +319,27 @@ class FeedbackCollector:
             five = self._emoji_button("😀", key, disable_on_click, button_states, 5)
 
         if one:
-            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 1, "very negative")
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 1, "😞")
         elif two:
-            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 2, "negative")
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 2, "🙁")
         elif three:
-            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 3, "neutral")
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 3, "😐")
         elif four:
-            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 4, "positive")
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 4, "🙂")
         elif five:
-            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 5, "very positive")
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 5, "😀")
         else:
             return None
 
     @staticmethod
-    def _return_quantitative_ui_button(ui_type, disable_on_click, button_states, index, output_str):
+    def _return_quantitative_ui_button(ui_type, disable_on_click, button_states, index, output):
         if disable_on_click:
             if st.session_state[f"{ui_type}_state_clicked"] == button_states[index - 1]:
-                return f":{index} - {output_str}:"
+                return output
             else:
                 return None
         else:
-            return f":{index} - {output_str}:"
+            return output
 
     def _emoji_button(self, emoji, key, disable_on_click, button_states, index):
         return st.button(
