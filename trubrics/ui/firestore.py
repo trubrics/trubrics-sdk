@@ -7,8 +7,7 @@ from datetime import datetime
 import requests  # type: ignore
 
 
-def json_to_firestore_document(json_object):
-    python_dict = json.loads(json_object)
+def dict_to_firestore_document(python_dict):
     firestore_compatible = {"fields": {}}
     for key, value in python_dict.items():
         if isinstance(value, str):
@@ -22,7 +21,7 @@ def json_to_firestore_document(json_object):
         elif isinstance(value, datetime):
             firestore_compatible["fields"][key] = {"timestampValue": value.isoformat() + "Z"}
         elif isinstance(value, dict):
-            firestore_compatible["fields"][key] = {"mapValue": json_to_firestore_document(json.dumps(value))}
+            firestore_compatible["fields"][key] = {"mapValue": dict_to_firestore_document(value)}
         elif isinstance(value, list):
             array_values = []
             for item in value:
@@ -37,7 +36,7 @@ def json_to_firestore_document(json_object):
                 elif isinstance(item, datetime):
                     array_values.append({"timestampValue": item.isoformat() + "Z"})
                 elif isinstance(item, dict):
-                    array_values.append({"mapValue": json_to_firestore_document(json.dumps(item))})
+                    array_values.append({"mapValue": dict_to_firestore_document(item)})
             firestore_compatible["fields"][key] = {"arrayValue": {"values": array_values}}
     return firestore_compatible
 
@@ -89,7 +88,7 @@ def record_feedback(auth, firestore_api_url, component, document_json):
         requests.post(
             url,
             headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
-            data=json.dumps(json_to_firestore_document(document_json)),
+            data=json.dumps(dict_to_firestore_document(document_json)),
         ).text
     )
     return res
@@ -101,7 +100,7 @@ def add_document_to_project_subcollection(auth, firestore_api_url, project, subc
         requests.post(
             url,
             headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
-            data=json.dumps(json_to_firestore_document(document_json)),
+            data=json.dumps(dict_to_firestore_document(document_json)),
         ).text
     )
     return res

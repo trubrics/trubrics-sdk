@@ -103,7 +103,7 @@ class Feedback(BaseModel):
                 auth,
                 firestore_api_url=firestore_api_url,
                 component=self.component_name,
-                document_json=self.json(),
+                document_json=self.dict(),
             )
             if "error" in res:
                 error_msg = f"Error in pushing feedback issue to the Trubrics UI: {res}"
