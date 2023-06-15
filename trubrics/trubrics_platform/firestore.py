@@ -82,25 +82,25 @@ def list_components_in_organisation(firestore_api_url, auth):
     return all_components
 
 
-def record_feedback(auth, firestore_api_url, component, document_json):
+def record_feedback(auth, firestore_api_url, component, document_dict):
     url = firestore_api_url + f"/feedback/{component}/responses"
     res = json.loads(
         requests.post(
             url,
             headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
-            data=json.dumps(dict_to_firestore_document(document_json)),
+            data=json.dumps(dict_to_firestore_document(document_dict)),
         ).text
     )
     return res
 
 
-def add_document_to_project_subcollection(auth, firestore_api_url, project, subcollection, document_id, document_json):
+def add_document_to_project_subcollection(auth, firestore_api_url, project, subcollection, document_id, document_dict):
     url = firestore_api_url + f"/projects/{project}/{subcollection}/?documentId={document_id}"
     res = json.loads(
         requests.post(
             url,
             headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
-            data=json.dumps(dict_to_firestore_document(document_json)),
+            data=json.dumps(dict_to_firestore_document(document_dict)),
         ).text
     )
     return res

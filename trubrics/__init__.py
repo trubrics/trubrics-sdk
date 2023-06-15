@@ -1,4 +1,5 @@
 from trubrics.feedback import Feedback
+from trubrics.integrations import FeedbackCollector
 
 try:
     from importlib.metadata import version  # type: ignore
@@ -8,4 +9,4 @@ except ImportError:
 
 __version__ = version("trubrics")
 
-__all__ = ["Feedback"]
+__all__ = ["Feedback", "FeedbackCollector"]

@@ -37,3 +37,6 @@ examples/mlflow/mlruns/
 
 # env variables
 .env
+
+# streamlit secrets
+.streamlit

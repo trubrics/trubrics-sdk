@@ -9,12 +9,15 @@ from rich import print as rprint
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from trubrics.cli.run import validate_trubric_run_context
-from trubrics.ui.auth import get_trubrics_auth_token, get_trubrics_firebase_auth_api_url
-from trubrics.ui.firestore import (
+from trubrics.firebase.auth import (
+    get_trubrics_auth_token,
+    get_trubrics_firebase_auth_api_url,
+)
+from trubrics.firebase.firestore import (
     get_trubrics_firestore_api_url,
     list_projects_in_organisation,
 )
-from trubrics.ui.trubrics_config import (
+from trubrics.firebase.trubrics_config import (
     TrubricsConfig,
     TrubricsDefaults,
     load_trubrics_config,

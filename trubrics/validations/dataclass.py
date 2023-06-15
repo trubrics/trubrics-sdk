@@ -8,9 +8,9 @@ from loguru import logger
 from pydantic import BaseModel, validator
 
 from trubrics.exceptions import TrubricValidationError
-from trubrics.ui.auth import expire_after_n_seconds, get_trubrics_auth_token
-from trubrics.ui.firestore import add_document_to_project_subcollection
-from trubrics.ui.trubrics_config import load_trubrics_config
+from trubrics.firebase.auth import expire_after_n_seconds, get_trubrics_auth_token
+from trubrics.firebase.firestore import add_document_to_project_subcollection
+from trubrics.firebase.trubrics_config import load_trubrics_config
 
 
 def _validation_context_example():

@@ -1,114 +1,68 @@
-from typing import Any, Dict, List, Optional, Union
+from datetime import datetime
+from typing import Optional
 
 import streamlit as st
+from loguru import logger
 
 from trubrics.feedback import config
-from trubrics.feedback.dataclass import Feedback
-from trubrics.ui.auth import expire_after_n_seconds, get_trubrics_auth_token
-from trubrics.ui.trubrics_config import load_trubrics_config
+from trubrics.feedback.dataclass import Feedback, Response
+from trubrics.trubrics_platform.auth import (
+    expire_after_n_seconds,
+    get_trubrics_auth_token,
+    init_platform,
+)
+from trubrics.trubrics_platform.firestore import record_feedback
 
 
 class FeedbackCollector:
     def __init__(
         self,
         component_name: str,
-        data: List[Optional[str]] = [None],
-        model: Optional[str] = None,
-        trubrics_platform_auth: Optional[str] = None,
+        email: Optional[str],
+        password: Optional[str],
+        firebase_api_key: Optional[str] = None,
+        firebase_project_id: Optional[str] = None,
     ):
         """
         The FeedbackCollector allows Data Scientists to collect feedback from within their app.
 
         Args:
-            component_name: component name
-            data: a reference to any datasets that were used to collect the feedback (e.g. a link to a dataset)
-            model: a reference to the model that was used to collect the feedback (e.g. a link to a model)
-            trubrics_platform_auth: option to save the feedback to the trubrics platform
-
-                - *None*: save feedback locally to .json
-                - *single_user*: save feedback directly to the Trubrics platform,
-                    using auth credentials of the app owner
-                - *multiple_users*: save feedback directly to the Trubrics platform, with full user auth
+            TODO
         """
         self.component_name = component_name
-        self.data = data
-        self.model = model
-        if trubrics_platform_auth in [None, "single_user", "multiple_users"]:
-            self.trubrics_platform_auth = trubrics_platform_auth
-        else:
-            raise ValueError(
-                f"trubrics_platform_auth={trubrics_platform_auth} not recognised. Must be one of [None, 'single_user',"
-                " 'multiple_users']."
+        if email and password:
+            self.trubrics_init = init_platform(
+                component_name=component_name,
+                email=email,
+                password=password,
+                firebase_api_key=firebase_api_key,
+                firebase_project_id=firebase_project_id,
             )
-
-        self.email = ""
-        self.password = ""
-        self.authenticated = False
-
-    def st_trubrics_auth(self):
-        if self.trubrics_platform_auth is None:
-            raise ValueError(
-                "The `.st_trubrics_auth()` method is reserved for usage with the Trubrics platform. See the"
-                " 'trubrics_platform_auth' argument for authentication options."
-            )
-
-        trubrics_config = load_trubrics_config()
-        if self.authenticated:
-            st.write(self.email + " signed in.")
-            if st.button("Sign out"):
-                self.authenticated = False
-                self.st_trubrics_auth()
-        else:
-            with st.form("auth form"):
-                self.email = st.text_input(
-                    label=config.USER_EMAIL,
-                    placeholder=config.USER_EMAIL,
-                    label_visibility="collapsed",
-                    key="email",
-                )
-                self.password = st.text_input(
-                    label=config.USER_PASSWORD,
-                    placeholder=config.USER_PASSWORD,
-                    label_visibility="collapsed",
-                    key="password",
-                    type="password",
-                )
-                submitted = st.form_submit_button("Sign In")
-                if submitted:
-                    # check auth
-                    auth = get_trubrics_auth_token(
-                        trubrics_config.firebase_auth_api_url, self.email, self.password, rerun=expire_after_n_seconds()
-                    )
-                    if "error" in auth:
-                        st.error(f"Error authenticating user {self.email}. Try again or contact your admin team.")
-                    else:
-                        st.success(f"{self.email} successfully signed in.")
-                        self.authenticated = True
 
     def st_feedback(
         self,
-        feedback_type: str = "textbox",
-        user_response: Optional[Dict[str, Union[float, int, str, bool]]] = None,
-        path: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-        tags: Optional[List[str]] = None,
-        model_input: Optional[Any] = None,
-        model_output: Optional[Any] = None,
+        feedback_type: str,
+        model: str,
+        tags: list = [],
+        metadata: dict = {},
+        response: Optional[Response] = None,
+        user_id: Optional[str] = None,
         key: Optional[str] = None,
         open_feedback_label: Optional[str] = None,
+        save_to_trubrics: bool = True,
     ) -> Optional[Feedback]:
         """
         Collect user feedback within a Streamlit web application.
 
         Args:
+            TODO
             feedback_type: type of feedback to be collected
 
                 - textbox: open textbox feedback
                 - thumbs: positive or negative feedback with thumbs emojis
                 - faces: a scale of 1 to 5 with face emojis
                 - custom: a customisable feedback type that allows users to specify the user_response dict
-            user_response: a dict of user responses to save with your feedback for feedback_type='custom'
-            path: path to save feedback local .json. Defaults to "./*timestamp*_feedback.json"
+            response: a dict of user responses to save with your feedback for feedback_type='custom'
             metadata: data to save with your feedback
             tags: a list of tags for your feedback
             key: a key for each streamlit component
@@ -117,33 +71,33 @@ class FeedbackCollector:
         if key is None:
             key = feedback_type
         if feedback_type == "textbox":
-            if user_response:
+            if response:
                 raise ValueError("For feedback_type='textbox', user_response must be None.")
             text = self.st_textbox_ui(key, label=open_feedback_label)
             if text:
-                user_response = {"type": feedback_type, "score": "None", "text": text}
+                response = Response(type=feedback_type, score=None, text=text)
                 return self._save_feedback(
-                    path=path,
-                    metadata=metadata,
-                    user_response=user_response,
+                    model=model,
+                    response=response,
+                    user_id=user_id,
                     tags=tags,
-                    model_input=model_input,
-                    model_output=model_output,
+                    metadata=metadata,
+                    save_to_trubrics=save_to_trubrics,
                 )
         elif feedback_type in ("thumbs", "faces"):
-            if user_response:
+            if response:
                 raise ValueError(
-                    f"For feedback_type='{feedback_type}', user_response is set inside the component (must be None)."
+                    f"For feedback_type='{feedback_type}', response is set inside the component (must be None)."
                 )
             return self._save_quantitative_feedback(
+                model=model,
                 feedback_type=feedback_type,
-                path=path,
+                user_id=user_id,
                 metadata=metadata,
                 tags=tags,
-                model_input=model_input,
-                model_output=model_output,
                 key=key,
                 open_feedback_label=open_feedback_label,
+                save_to_trubrics=save_to_trubrics,
             )
         # elif feedback_type == "custom":
         #     if user_response:
@@ -162,52 +116,54 @@ class FeedbackCollector:
 
     def _save_feedback(
         self,
-        user_response,
-        path: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-        tags: Optional[List[str]] = None,
-        model_input: Optional[Any] = None,
-        model_output: Optional[Any] = None,
+        model: str,
+        response: Response,
+        user_id: Optional[str] = None,
+        tags: list = [],
+        metadata: dict = {},
+        save_to_trubrics: bool = True,
     ) -> Optional[Feedback]:
         feedback = Feedback(
             component_name=self.component_name,
-            response=user_response,
-            datasets=self.data,
-            model=self.model,
+            response=response,
+            model=model,
             metadata=metadata,
             tags=tags,
-            model_input=model_input,
-            model_output=model_output,
+            user_id=user_id,
+            created_on=datetime.now(),
         )
-        if self.trubrics_platform_auth is None:
-            feedback.save_local(path=path)
-            st.success(config.LOCAL_SAVE)
-        elif self.trubrics_platform_auth == "multiple_users":
-            if self.authenticated:
-                feedback.save_ui(self.email, self.password)
-                st.success(config.PLATFORM_SAVE)
-            else:
-                st.error("User is not authenticated. Please try again or contact your admin.")
-        elif self.trubrics_platform_auth == "single_user":
-            feedback.save_ui("AIzaSyB6WPIVzMaRCnlL1ZmRosrQsbQYYagZARQ", "trubrics-streamlit")
-            st.success(config.PLATFORM_SAVE)
-        else:
-            raise ValueError(
-                f"trubrics_platform_auth={self.trubrics_platform_auth} not recognised. Must be one of [None,"
-                " 'single_user', 'multiple_users']."
+        if save_to_trubrics:
+            auth = get_trubrics_auth_token(
+                self.trubrics_init.firebase_auth_api_url,
+                self.trubrics_init.email,
+                self.trubrics_init.password.get_secret_value(),
+                rerun=expire_after_n_seconds(),
             )
-        return feedback
+            res = record_feedback(
+                auth,
+                firestore_api_url=self.trubrics_init.firestore_api_url,
+                component=self.component_name,
+                document_dict=feedback.dict(),
+            )
+            if "error" in res:
+                error_msg = f"Error in pushing feedback issue to Trubrics: {res}"
+                st.error(error_msg)
+                logger.error(error_msg)
+            else:
+                st.success(config.PLATFORM_SAVE)
+                logger.info("Feedback saved to Trubrics.")
+        return feedback.dict()
 
     def _save_quantitative_feedback(
         self,
-        feedback_type,
-        key,
+        feedback_type: str,
+        key: str,
         open_feedback_label: Optional[str],
-        path: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-        tags: Optional[List[str]] = None,
-        model_input: Optional[Any] = None,
-        model_output: Optional[Any] = None,
+        model: str,
+        user_id: Optional[str] = None,
+        tags: list = [],
+        metadata: dict = {},
+        save_to_trubrics: bool = True,
     ) -> Optional[Feedback]:
         if f"{key}_state" not in st.session_state:
             st.session_state[f"{key}_state"] = ""
@@ -217,12 +173,12 @@ class FeedbackCollector:
             st.session_state[f"previous_{key}_state"] = ""
 
         def feedback_handler():
-            user_response = {
-                "type": feedback_type,
-                "score": st.session_state[f"{key}_state"],
-                "text": st.session_state[f"{feedback_type}_open_feedback_{key}"].rstrip(),
-            }
-            st.session_state[f"previous_{key}_state"] = user_response
+            response = Response(
+                type=feedback_type,
+                score=st.session_state[f"{key}_state"],
+                text=st.session_state[f"{feedback_type}_open_feedback_{key}"].rstrip(),
+            )
+            st.session_state[f"previous_{key}_state"] = response
             st.session_state[f"{key}_state"] = ""
 
             self._enable_all_buttons(feedback_type=feedback_type)
@@ -243,27 +199,27 @@ class FeedbackCollector:
                 )
         else:
             if ui_state:
-                user_response = {
-                    "type": feedback_type,
-                    "score": ui_state,
-                    "text": None,
-                }
+                response = Response(
+                    type=feedback_type,
+                    score=ui_state,
+                    text=None,
+                )
                 return self._save_feedback(
-                    user_response=user_response,
-                    metadata=metadata,
-                    path=path,
+                    model=model,
+                    response=response,
+                    user_id=user_id,
                     tags=tags,
-                    model_input=model_input,
-                    model_output=model_output,
+                    metadata=metadata,
+                    save_to_trubrics=save_to_trubrics,
                 )
         if st.session_state[f"{key}_save_button"]:
             return self._save_feedback(
-                user_response=st.session_state[f"previous_{key}_state"],
-                metadata=metadata,
-                path=path,
+                model=model,
+                response=st.session_state[f"previous_{key}_state"],
+                user_id=user_id,
                 tags=tags,
-                model_input=model_input,
-                model_output=model_output,
+                metadata=metadata,
+                save_to_trubrics=save_to_trubrics,
             )
         return None
 
