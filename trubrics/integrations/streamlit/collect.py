@@ -50,7 +50,7 @@ class FeedbackCollector:
         key: Optional[str] = None,
         open_feedback_label: Optional[str] = None,
         save_to_trubrics: bool = True,
-    ) -> Optional[Feedback]:
+    ) -> Optional[dict]:
         """
         Collect user feedback within a Streamlit web application.
 
@@ -122,7 +122,7 @@ class FeedbackCollector:
         tags: list = [],
         metadata: dict = {},
         save_to_trubrics: bool = True,
-    ) -> Optional[Feedback]:
+    ) -> Optional[dict]:
         feedback = Feedback(
             component_name=self.component_name,
             response=response,
@@ -164,7 +164,7 @@ class FeedbackCollector:
         tags: list = [],
         metadata: dict = {},
         save_to_trubrics: bool = True,
-    ) -> Optional[Feedback]:
+    ) -> Optional[dict]:
         if f"{key}_state" not in st.session_state:
             st.session_state[f"{key}_state"] = ""
         if f"{key}_save_button" not in st.session_state:
