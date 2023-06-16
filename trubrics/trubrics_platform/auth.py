@@ -6,10 +6,7 @@ from typing import Dict, Optional
 import requests  # type: ignore
 from loguru import logger
 
-from trubrics.trubrics_platform.firestore import (
-    get_trubrics_firestore_api_url,
-    list_components_in_organisation,
-)
+from trubrics.trubrics_platform.firestore import get_trubrics_firestore_api_url
 from trubrics.trubrics_platform.trubrics_config import TrubricsConfig, TrubricsDefaults
 
 
@@ -45,13 +42,12 @@ def get_trubrics_auth_token(firebase_auth_api_url, email, password, rerun=None) 
         return {"error": str(err)}
 
 
-def init_platform(
-    component_name: str,
+def init(
     email: str,
     password: str,
     firebase_api_key: Optional[str] = None,
     firebase_project_id: Optional[str] = None,
-):
+) -> TrubricsConfig:
     if firebase_api_key or firebase_project_id:
         if firebase_api_key and firebase_project_id:
             defaults = TrubricsDefaults(firebase_api_key=firebase_api_key, firebase_project_id=firebase_project_id)
@@ -66,13 +62,6 @@ def init_platform(
         raise Exception(f"Error in login email '{email}' to the Trubrics UI: {auth['error']}")
     else:
         firestore_api_url = get_trubrics_firestore_api_url(auth, defaults.firebase_project_id)
-
-    components = list_components_in_organisation(firestore_api_url=firestore_api_url, auth=auth)
-    if component_name not in components:
-        raise ValueError(
-            f"Component '{component_name}' not found in organisation '{firestore_api_url.split('/')[-1]}'."
-            f" Components currently available: {components}."
-        )
 
     if "error" in auth:
         error_msg = f"Error in pushing feedback issue with email '{email}' to the Trubrics UI: {auth['error']}"

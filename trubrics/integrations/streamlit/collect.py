@@ -2,16 +2,11 @@ from datetime import datetime
 from typing import Optional
 
 import streamlit as st
-from loguru import logger
 
 from trubrics.feedback import config
 from trubrics.feedback.dataclass import Feedback, Response
-from trubrics.trubrics_platform.auth import (
-    expire_after_n_seconds,
-    get_trubrics_auth_token,
-    init_platform,
-)
-from trubrics.trubrics_platform.firestore import record_feedback
+from trubrics.feedback.save_to_trubrics import save_to_trubrics as save
+from trubrics.trubrics_platform.auth import init
 
 
 class FeedbackCollector:
@@ -31,8 +26,7 @@ class FeedbackCollector:
         """
         self.component_name = component_name
         if email and password:
-            self.trubrics_init = init_platform(
-                component_name=component_name,
+            self.trubrics_config = init(
                 email=email,
                 password=password,
                 firebase_api_key=firebase_api_key,
@@ -133,25 +127,12 @@ class FeedbackCollector:
             created_on=datetime.now(),
         )
         if save_to_trubrics:
-            auth = get_trubrics_auth_token(
-                self.trubrics_init.firebase_auth_api_url,
-                self.trubrics_init.email,
-                self.trubrics_init.password.get_secret_value(),
-                rerun=expire_after_n_seconds(),
-            )
-            res = record_feedback(
-                auth,
-                firestore_api_url=self.trubrics_init.firestore_api_url,
-                component=self.component_name,
-                document_dict=feedback.dict(),
-            )
+            res = save(trubrics_config=self.trubrics_config, feedback=feedback)
             if "error" in res:
                 error_msg = f"Error in pushing feedback issue to Trubrics: {res}"
                 st.error(error_msg)
-                logger.error(error_msg)
             else:
                 st.success(config.PLATFORM_SAVE)
-                logger.info("Feedback saved to Trubrics.")
         return feedback.dict()
 
     def _save_quantitative_feedback(

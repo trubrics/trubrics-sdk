@@ -13,7 +13,6 @@ The CLI tool allows users to:
 
 <p align="center"><img src="../assets/trubrics-init.gif"/></p>
 
-:::trubrics.cli.main.init
 
 ## 2. `trubrics run`
 

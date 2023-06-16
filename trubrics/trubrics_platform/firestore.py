@@ -10,7 +10,9 @@ import requests  # type: ignore
 def dict_to_firestore_document(python_dict):
     firestore_compatible = {"fields": {}}
     for key, value in python_dict.items():
-        if isinstance(value, str):
+        if value is None:
+            firestore_compatible["fields"][key] = {"nullValue": value}
+        elif isinstance(value, str):
             firestore_compatible["fields"][key] = {"stringValue": value}
         elif isinstance(value, bool):
             firestore_compatible["fields"][key] = {"booleanValue": value}
@@ -25,7 +27,9 @@ def dict_to_firestore_document(python_dict):
         elif isinstance(value, list):
             array_values = []
             for item in value:
-                if isinstance(item, str):
+                if value is None:
+                    array_values.append({"nullValue": item})
+                elif isinstance(item, str):
                     array_values.append({"stringValue": item})
                 elif isinstance(item, bool):
                     array_values.append({"booleanValue": item})
@@ -82,8 +86,9 @@ def list_components_in_organisation(firestore_api_url, auth):
     return all_components
 
 
-def record_feedback(auth, firestore_api_url, component, document_dict):
-    url = firestore_api_url + f"/feedback/{component}/responses"
+def record_feedback(auth, firestore_api_url, document_dict):
+    print(document_dict)
+    url = firestore_api_url + f"/feedback/{document_dict['component_name']}/responses"
     res = json.loads(
         requests.post(
             url,

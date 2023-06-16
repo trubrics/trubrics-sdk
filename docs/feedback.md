@@ -24,23 +24,5 @@ See our python examples:
 To save feedback to the Trubrics platform:
 
 ```python
-from trubrics.cli.main import init
-from trubrics.feedback.dataclass import Feedback
-
-# init the trubrics platform connection with a project
-init(project_name="<project_name>")
-
-# save feedback
-trubrics_feedback = Feedback(
-    feedback_type="thumbs",
-    user_response={"User satisfaction: thumbs": "👎"},
-    data=None,
-    model="model_reference",
-    tags=["example"],
-)
-# set email and password to None to use your default connection from init
-trubrics_feedback.save_ui(email=None, password=None)
-
-# save feedback to a local .json file
-trubrics_feedback.save_local("./example_feedback.json")
+---8<-- "examples/feedback_apps/python_sdk.py"
 ```
