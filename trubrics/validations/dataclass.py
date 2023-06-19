@@ -128,7 +128,7 @@ class Trubric(BaseModel):
     def save_ui(self, raise_on_failure: bool = False):
         trubrics_config = load_trubrics_config()
         auth = get_trubrics_auth_token(
-            trubrics_config.firebase_auth_api_url,
+            trubrics_config.firebase_api_key,
             trubrics_config.email,
             trubrics_config.password.get_secret_value(),
             rerun=expire_after_n_seconds(),

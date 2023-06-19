@@ -8,6 +8,9 @@ dist/
 # mac stuff
 .DS_Store
 
+# venv
+venv
+
 # notebook stuff
 .ipynb_checkpoints
 

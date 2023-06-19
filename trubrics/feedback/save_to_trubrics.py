@@ -14,7 +14,7 @@ from trubrics.trubrics_platform.firestore import (
 
 def save_to_trubrics(trubrics_config: TrubricsConfig, feedback: Feedback) -> dict:
     auth = get_trubrics_auth_token(
-        trubrics_config.firebase_auth_api_url,
+        trubrics_config.firebase_api_key,
         trubrics_config.email,
         trubrics_config.password.get_secret_value(),
         rerun=expire_after_n_seconds(),

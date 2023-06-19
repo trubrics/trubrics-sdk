@@ -15,7 +15,7 @@ class TrubricsConfig(BaseModel):
     email: str
     password: SecretStr
     username: str
-    firebase_auth_api_url: str
+    firebase_api_key: str
     firestore_api_url: str
 
     class Config:
