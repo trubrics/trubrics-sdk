@@ -10,5 +10,4 @@ feedback = trubrics.Feedback(
     response={"type": "faces", "score": "🙁", "text": "A comment observation from the user."},
 )
 
-if __name__ == "__main__":
-    trubrics.save(config, feedback)
+trubrics.save(config, feedback)
