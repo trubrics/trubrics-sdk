@@ -16,7 +16,12 @@ with col1:
         help="Consult https://platform.openai.com/docs/models/gpt-3-5 for model info.",
     )
 with col2:
-    openai.api_key = st.text_input("Enter your OpenAI API Key", type="password", value=st.secrets["OPENAI_API_KEY"])
+    openai.api_key = st.text_input(
+        "Enter your OpenAI API Key",
+        type="password",
+        value=st.secrets.get("OPENAI_API_KEY"),
+        help="We are not storing your API key.",
+    )
 
 prompt = st.text_area(label="Prompt", label_visibility="collapsed", placeholder="What would you like to know?")
 button = st.button(f"Ask {model}")

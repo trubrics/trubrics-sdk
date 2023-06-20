@@ -45,21 +45,25 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
 nav:
   - Getting Started: index.md
-  - The FeedbackCollector: feedback.md
-  - The ModelValidator:
-    - DataContext: data_context.md
-    - Compatible models: models.md
-    - Metrics: metrics.md
-    - Out-of-the-box validations: validations.md
-    - Custom validations: custom_validations.md
-    - Save validations as a trubric: save_trubric.md
-    - Tutorials: tutorials.md
-  - The Trubrics CLI: trubrics_cli.md
+  - Trubrics platform:
+    - Account setup: trubrics_platform/account_setup.md
+    - Feedback components: trubrics_platform/feedback_components.md
+    - User insights: trubrics_platform/insights.md
+    - AI issues: trubrics_platform/issues.md
   - Integrations:
-    - Streamlit: streamlit.md
-    - Gradio: gradio.md
-    - Dash: dash.md
-    - Flask: flask_example.md
-    - MLflow: mlflow.md
+    - Streamlit: integrations/streamlit.md
+    - Gradio: integrations/gradio.md
+    - Dash: integrations/dash.md
+    - Flask: integrations/flask_example.md
+    - MLflow: integrations/mlflow.md
+  - ML Validations:
+    - DataContext: validations/data_context.md
+    - Compatible models: validations/models.md
+    - Metrics: validations/metrics.md
+    - Out-of-the-box validations: validations/validations.md
+    - Custom validations: validations/custom_validations.md
+    - Save validations as a trubric: validations/save_trubric.md
+    - Run validations from CLI: validations/trubrics_cli.md
+    - Tutorials: validations/tutorials.md
 
 copyright: Copyright © 2022 Trubrics Ltd. All rights reserved. Trubrics and the Trubrics logo are trademarks of Trubrics Ltd.

@@ -7,12 +7,45 @@ Trubrics enables AI teams to collect, analyse and manage user feedback on their 
 ## Install (Python 3.7+)
 
 ```console
-(venv)$ pip install trubrics
+pip install trubrics
 ```
 
 ## Create an account for free
 
-Navigate to [**Trubrics**](https://trubrics.streamlit.app/) to create an account and start collecting user feedback from your AI applications:
+Navigate to [Trubrics](https://trubrics.streamlit.app/) to create an account and start collecting user feedback from your AI applications.
+
+## Collect user feedback from a Streamlit app
+
+👇 **click here** to view our demo LLM app
+
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://trubrics-llm-example.streamlit.app/)
+
+To start collecting feedback from your [Streamlit](https://streamlit.io/) app, install the additional dependency:
+
+```console
+pip install "trubrics[streamlit]"
+```
+
+and add this code snippet directly to your streamlit app:
+
+```python
+import streamlit as st
+from trubrics import FeedbackCollector
+
+collector = FeedbackCollector(
+    component_name="default",
+    email=st.secrets["TRUBRICS_EMAIL"], # Store your Trubrics credentials in st.secrets:
+    password=st.secrets["TRUBRICS_PASSWORD"], # https://blog.streamlit.io/secrets-in-sharing-apps/
+)
+
+collector.st_feedback(
+    feedback_type="thumbs",
+    model="your_model_name",
+    open_feedback_label="[Optional] Provide additional feedback",
+)
+```
+
+## Collect user feedback with the Python SDK
 
 ```python
 import os
@@ -34,36 +67,6 @@ feedback = trubrics.Feedback(
 )
 
 trubrics.save(config, feedback)
-```
-
-## Streamlit integration
-
-👇 **click here** to view our demo app with interactive examples and code snippets
-
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://trubrics-titanic-example.streamlit.app)
-
-To start collecting feedback from your [Streamlit](https://streamlit.io/) app, install the additional dependency:
-
-```console
-(venv)$ pip install "trubrics[streamlit]"
-```
-
-and add this code snippet directly to your streamlit app:
-```python
-import streamlit as st
-from trubrics import FeedbackCollector
-
-collector = FeedbackCollector(
-    component_name="default",
-    email=st.secrets["TRUBRICS_EMAIL"], # Store your Trubrics credentials in st.secrets:
-    password=st.secrets["TRUBRICS_PASSWORD"], # https://blog.streamlit.io/secrets-in-sharing-apps/
-)
-
-collector.st_feedback(
-    feedback_type="thumbs",
-    model="your_model_name",
-    open_feedback_label="[Optional] Provide additional feedback",
-)
 ```
 
 See our [docs](trubrics.github.io/trubrics-sdk/) or [website](https://www.trubrics.com/home) for more information.
