@@ -1,16 +1,5 @@
 # Welcome to the trubrics-sdk
 
----
-
-<center>
-
-![logo-gradient](./assets/logo-gradient.png)
-
-[trubrics.com](https://www.trubrics.com/home)
-</center>
-
----
-
 Trubrics enables AI teams to collect, analyse and manage user feedback on their models.
 
 <img src="./assets/trubrics-example.png"  width="800">
@@ -76,3 +65,5 @@ collector.st_feedback(
     open_feedback_label="[Optional] Provide additional feedback",
 )
 ```
+
+See our [docs](trubrics.github.io/trubrics-sdk/) or [website](https://www.trubrics.com/home) for more information.
