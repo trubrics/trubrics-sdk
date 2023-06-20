@@ -11,13 +11,9 @@
 
 ---
 
-The trubrics-sdk allows ML practitioners to collect human feedback on datasets & ML models, and integrate this feedback into the ML workflow.
+Trubrics enables AI teams to collect, analyse and manage user feedback on their models.
 
-## Key Features
-
-- Feedback collection on ML models / data from users with the [FeedbackCollector](#collect-human-feedback-with-the-feedbackcollector)
-- Integration of feedback into ML workflows with the [ModelValidator](#validate-a-model-with-the-modelvalidator)
-- Tracking and management of user feedback in the [Trubrics platform](#track-all-feedback-and-validations-in-trubrics)
+<img src="./assets/trubrics-example.png"  width="800">
 
 ## Install (Python 3.7+)
 
@@ -36,8 +32,6 @@ Start collecting feedback directly from within your ML apps now with our various
 👇 **click here** to view our demo app with interactive examples and code snippets
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://trubrics-titanic-example.streamlit.app)
-
-<img src="./assets/streamlit-cloud-demo.png"  width="800">
 
 To start collecting feedback from your [Streamlit](https://streamlit.io/) app, install the additional dependency:
 

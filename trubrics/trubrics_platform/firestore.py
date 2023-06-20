@@ -87,7 +87,6 @@ def list_components_in_organisation(firestore_api_url, auth):
 
 
 def record_feedback(auth, firestore_api_url, document_dict):
-    print(document_dict)
     url = firestore_api_url + f"/feedback/{document_dict['component_name']}/responses"
     res = json.loads(
         requests.post(
