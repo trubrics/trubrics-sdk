@@ -28,7 +28,7 @@ flask --app examples/feedback_apps/flask/app.py --debug run
 ```
 
 Now open [http://127.0.0.1:5000](http://127.0.0.1:5000) to render the UI:
-![](./assets/flask_example_app.png)
+![](../../../assets/flask_example_app.png)
 
 You can now navigate to the [Trubrics platform](https://ea.trubrics.com) to manage the feedback that you have collected.
 
