@@ -12,7 +12,7 @@ To get started with [Streamlit](https://streamlit.io/), install the additional d
 (venv)$ pip install "trubrics[streamlit]"
 ```
 
-## 2. Launch our demo application from CLI
+## 2. Launch our demo application from the CLI
 - Run our demo Streamlit app without authentication:
     ```console
     (venv)$ trubrics example-app
@@ -161,7 +161,7 @@ st.session_state
 The `disable_on_click=True` parameter disables other buttons that are not clicked. Users can re-click the button to reverse this behaviour.
 
 ### .st_trubrics_auth()
-To authenticate with the Trubrics platform, you must first run a [`trubrics init`](./trubrics_cli.md#2-connect-to-the-trubrics-platform-with-trubrics-init) before launching your app.
+To authenticate with the Trubrics platform, you must first run a [`trubrics init`](./validations/trubrics_cli.md#2-connect-to-the-trubrics-platform-with-trubrics-init) before launching your app.
 
 You then have two options for saving feedback:
 
