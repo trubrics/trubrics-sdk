@@ -14,6 +14,30 @@ pip install trubrics
 
 Navigate to [Trubrics](https://trubrics.streamlit.app/) to create an account and start collecting user feedback from your AI applications.
 
+## Collect user feedback with the Python SDK
+
+```python
+import os
+import trubrics
+
+config = trubrics.init(
+    email=os.environ["TRUBRICS_EMAIL"],  # store your Trubrics secrets in environment variables
+    password=os.environ["TRUBRICS_PASSWORD"]
+)
+
+feedback = trubrics.Feedback(
+    component_name="default",
+    model="default_model",
+    response={
+        "type": "thumbs",
+        "score": "👎",
+        "text": "A comment / textual feedback from the user."
+    },
+)
+
+trubrics.save(config, feedback)
+```
+
 ## Collect user feedback from a Streamlit app
 
 👇 **click here** to view our demo LLM app
@@ -43,30 +67,6 @@ collector.st_feedback(
     model="your_model_name",
     open_feedback_label="[Optional] Provide additional feedback",
 )
-```
-
-## Collect user feedback with the Python SDK
-
-```python
-import os
-import trubrics
-
-config = trubrics.init(
-    email=os.environ["TRUBRICS_EMAIL"],
-    password=os.environ["TRUBRICS_PASSWORD"]
-)
-
-feedback = trubrics.Feedback(
-    component_name="default",
-    model="default_model",
-    response={
-        "type": "thumbs",
-        "score": "👎",
-        "text": "A comment / textual feedback from the user."
-    },
-)
-
-trubrics.save(config, feedback)
 ```
 
 See our [docs](trubrics.github.io/trubrics-sdk/) or [website](https://www.trubrics.com/home) for more information.
