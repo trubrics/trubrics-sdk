@@ -4,15 +4,15 @@ Trubrics enables AI teams to collect, analyse and manage user feedback on their 
 
 <img src="./assets/trubrics-example.png"  width="800">
 
+## Create an account for free
+
+Navigate to [Trubrics](https://trubrics.streamlit.app/) to create an account and start collecting user feedback from your AI applications.
+
 ## Install (Python 3.7+)
 
 ```console
 pip install trubrics
 ```
-
-## Create an account for free
-
-Navigate to [Trubrics](https://trubrics.streamlit.app/) to create an account and start collecting user feedback from your AI applications.
 
 ## Collect user feedback with the Python SDK
 
