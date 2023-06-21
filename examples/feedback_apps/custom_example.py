@@ -2,7 +2,7 @@ import streamlit as st
 
 from trubrics.integrations.streamlit import FeedbackCollector
 
-collector = FeedbackCollector()
+collector = FeedbackCollector(component_name="default", email="jeff", password="...")
 
 st.text_input("test 1", key="test 1")
 st.text_input("test 2", key="test 2")
@@ -20,14 +20,17 @@ if (
     if button:
         feedback = collector.st_feedback(
             "custom",
-            user_response={
-                "test 1": st.session_state["test 1"],
-                "test 2": st.session_state["test 2"],
+            model="model a",
+            response={  # type: ignore
+                "type": "custom",
+                "score": st.session_state["test 1"],
+                "text": st.session_state["test 2"],
+            },
+            metadata={
                 "test 3": st.session_state["test 3"],
                 "test 4": st.session_state["test 4"],
             },
-            path="./feedback.json",
         )
-        st.write(feedback.dict() if feedback else None)
+        st.write(feedback)
 
 st.session_state

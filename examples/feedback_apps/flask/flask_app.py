@@ -2,14 +2,12 @@ import os
 
 from flask import Flask, flash, redirect, render_template, request
 
-from trubrics.cli.main import init
 from trubrics.feedback.dataclass import Feedback
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "Trubrics Demo Flask App"
 
 project_name = os.environ["TRUBRICS_PROJECT_NAME"]
-init(project_name=project_name)
 
 
 @app.route("/", methods=["GET"])

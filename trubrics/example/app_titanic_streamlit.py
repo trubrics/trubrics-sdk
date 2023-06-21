@@ -4,7 +4,6 @@ from typing import Optional
 import streamlit as st
 import typer
 
-from trubrics.cli.main import init
 from trubrics.context import DataContext
 from trubrics.example import get_titanic_data_and_model
 from trubrics.example import titanic_config as tc
@@ -18,12 +17,12 @@ cli = typer.Typer()
 
 @st.cache_resource
 def init_trubrics(trubrics_platform_auth):
-    if trubrics_platform_auth:
-        with st.spinner("Connecting to the Trubrics platform..."):
-            project_name = os.environ.get("TRUBRICS_PROJECT_NAME")
-            if project_name is None:
-                raise KeyError("Environment variable TRUBRICS_PROJECT_NAME is not set.")
-            init(project_name=project_name)
+    # if trubrics_platform_auth:
+    #     with st.spinner("Connecting to the Trubrics platform..."):
+    #         project_name = os.environ.get("TRUBRICS_PROJECT_NAME")
+    #         if project_name is None:
+    #             raise KeyError("Environment variable TRUBRICS_PROJECT_NAME is not set.")
+    #         init(project_name=project_name)
     _, test_df, model = get_titanic_data_and_model()
 
     data_context = DataContext(
@@ -34,7 +33,8 @@ def init_trubrics(trubrics_platform_auth):
     )
 
     collector = FeedbackCollector(
-        data="trubrics data_context",
+        component_name="test",
+        data=["trubrics data_context"],
         model="rf_model",
         trubrics_platform_auth=trubrics_platform_auth,
     )

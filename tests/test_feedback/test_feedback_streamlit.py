@@ -1,17 +1,6 @@
 import pytest
 
-from trubrics.integrations.streamlit import FeedbackCollector
-
-
-def test_feedback_collector_raises():
-    with pytest.raises(ValueError):
-        FeedbackCollector(trubrics_platform_auth="something")
-
-
-def test_st_auth_raises():
-    collector = FeedbackCollector()
-    with pytest.raises(ValueError):
-        collector.st_trubrics_auth()
+from trubrics import FeedbackCollector
 
 
 @pytest.mark.parametrize(
@@ -19,13 +8,14 @@ def test_st_auth_raises():
     [
         ({"feedback_type": "custom"}),
         ({"feedback_type": "random"}),
-        ({"feedback_type": "issue", "user_response": {"test": "test"}}),
+        ({"feedback_type": "issue", "response": {"test": "test"}}),
         ({"feedback_type": "issue", "open_feedback_label": "test"}),
-        ({"feedback_type": "faces", "user_response": "desc"}),
-        ({"feedback_type": "thumbs", "user_response": "desc"}),
+        ({"feedback_type": "faces", "response": "desc"}),
+        ({"feedback_type": "thumbs", "response": "desc"}),
     ],
 )
 def test_st_feedback_raises(kwargs):
-    collector = FeedbackCollector()
+    collector = FeedbackCollector(component_name="random", email=None, password=None)
     with pytest.raises(ValueError):
+        kwargs["model"] = "a model"
         collector.st_feedback(**kwargs)

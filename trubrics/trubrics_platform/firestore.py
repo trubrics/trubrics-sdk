@@ -7,11 +7,12 @@ from datetime import datetime
 import requests  # type: ignore
 
 
-def json_to_firestore_document(json_object):
-    python_dict = json.loads(json_object)
+def dict_to_firestore_document(python_dict):
     firestore_compatible = {"fields": {}}
     for key, value in python_dict.items():
-        if isinstance(value, str):
+        if value is None:
+            firestore_compatible["fields"][key] = {"nullValue": value}
+        elif isinstance(value, str):
             firestore_compatible["fields"][key] = {"stringValue": value}
         elif isinstance(value, bool):
             firestore_compatible["fields"][key] = {"booleanValue": value}
@@ -22,11 +23,13 @@ def json_to_firestore_document(json_object):
         elif isinstance(value, datetime):
             firestore_compatible["fields"][key] = {"timestampValue": value.isoformat() + "Z"}
         elif isinstance(value, dict):
-            firestore_compatible["fields"][key] = {"mapValue": json_to_firestore_document(json.dumps(value))}
+            firestore_compatible["fields"][key] = {"mapValue": dict_to_firestore_document(value)}
         elif isinstance(value, list):
             array_values = []
             for item in value:
-                if isinstance(item, str):
+                if value is None:
+                    array_values.append({"nullValue": item})
+                elif isinstance(item, str):
                     array_values.append({"stringValue": item})
                 elif isinstance(item, bool):
                     array_values.append({"booleanValue": item})
@@ -37,7 +40,7 @@ def json_to_firestore_document(json_object):
                 elif isinstance(item, datetime):
                     array_values.append({"timestampValue": item.isoformat() + "Z"})
                 elif isinstance(item, dict):
-                    array_values.append({"mapValue": json_to_firestore_document(json.dumps(item))})
+                    array_values.append({"mapValue": dict_to_firestore_document(item)})
             firestore_compatible["fields"][key] = {"arrayValue": {"values": array_values}}
     return firestore_compatible
 
@@ -67,6 +70,46 @@ def get_trubrics_firestore_api_url(auth, project_id):
     return f"https://firestore.googleapis.com/v1/{organisation_route}"
 
 
+def list_components_in_organisation(firestore_api_url, auth):
+    r = requests.get(
+        firestore_api_url + "/feedback" + "?pageSize=50",
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
+    )
+    r.raise_for_status()
+    components_res = json.loads(r.text)
+
+    all_components = []
+    if len(components_res) != 0:
+        for component in components_res["documents"]:
+            if component.get("fields", {}).get("archived", {}).get("booleanValue", {}) is False:
+                all_components.append(component["name"].split("/")[-1])
+    return all_components
+
+
+def record_feedback(auth, firestore_api_url, document_dict):
+    url = firestore_api_url + f"/feedback/{document_dict['component_name']}/responses"
+    res = json.loads(
+        requests.post(
+            url,
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
+            data=json.dumps(dict_to_firestore_document(document_dict)),
+        ).text
+    )
+    return res
+
+
+def add_document_to_project_subcollection(auth, firestore_api_url, project, subcollection, document_id, document_dict):
+    url = firestore_api_url + f"/projects/{project}/{subcollection}/?documentId={document_id}"
+    res = json.loads(
+        requests.post(
+            url,
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
+            data=json.dumps(dict_to_firestore_document(document_dict)),
+        ).text
+    )
+    return res
+
+
 def list_projects_in_organisation(firestore_api_url, auth):
     r = requests.get(
         firestore_api_url + "/projects" + "?pageSize=50",
@@ -81,15 +124,3 @@ def list_projects_in_organisation(firestore_api_url, auth):
             if project.get("fields", {}).get("archived", {}).get("booleanValue", {}) is False:
                 all_projects.append(project["name"].split("/")[-1])
     return all_projects
-
-
-def add_document_to_project_subcollection(auth, firestore_api_url, project, subcollection, document_id, document_json):
-    url = firestore_api_url + f"/projects/{project}/{subcollection}/?documentId={document_id}"
-    res = json.loads(
-        requests.post(
-            url,
-            headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
-            data=json.dumps(json_to_firestore_document(document_json)),
-        ).text
-    )
-    return res

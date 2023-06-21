@@ -5,19 +5,18 @@ from pydantic import BaseModel, SecretStr
 
 class TrubricsDefaults(BaseModel):
     # no stress, this is not a secret api key
-    firebase_api_key: str = "AIzaSyAWGOaN7_sL98irVM2g5O2RULK4yj9Tdvs"
-    firebase_project_id: str = "trubrics-ea-prod"
-    trubrics_url: str = "https://ea.trubrics.com/"
-    demo_sign_up_url: str = "https://trubrics.com/demo/"
+    firebase_api_key: str = "AIzaSyB6WPIVzMaRCnlL1ZmRosrQsbQYYagZARQ"
+    firebase_project_id: str = "trubrics-streamlit"
+    trubrics_url: str = "https://trubrics.streamlit.com/"
+    demo_sign_up_url: str = "https://trubrics.com/sign-up/"
 
 
 class TrubricsConfig(BaseModel):
-    firebase_auth_api_url: str
-    firestore_api_url: str
-    username: str
     email: str
     password: SecretStr
-    project: str
+    username: str
+    firebase_api_key: str
+    firestore_api_url: str
 
     class Config:
         json_encoders = {SecretStr: lambda v: v.get_secret_value() if v else None}

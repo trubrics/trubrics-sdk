@@ -8,9 +8,12 @@ from loguru import logger
 from pydantic import BaseModel, validator
 
 from trubrics.exceptions import TrubricValidationError
-from trubrics.ui.auth import expire_after_n_seconds, get_trubrics_auth_token
-from trubrics.ui.firestore import add_document_to_project_subcollection
-from trubrics.ui.trubrics_config import load_trubrics_config
+from trubrics.trubrics_platform.auth import (
+    expire_after_n_seconds,
+    get_trubrics_auth_token,
+)
+from trubrics.trubrics_platform.firestore import add_document_to_project_subcollection
+from trubrics.trubrics_platform.trubrics_config import load_trubrics_config
 
 
 def _validation_context_example():
@@ -125,7 +128,7 @@ class Trubric(BaseModel):
     def save_ui(self, raise_on_failure: bool = False):
         trubrics_config = load_trubrics_config()
         auth = get_trubrics_auth_token(
-            trubrics_config.firebase_auth_api_url,
+            trubrics_config.firebase_api_key,
             trubrics_config.email,
             trubrics_config.password.get_secret_value(),
             rerun=expire_after_n_seconds(),
@@ -140,7 +143,7 @@ class Trubric(BaseModel):
             project=trubrics_config.project,
             subcollection="trubrics",
             document_id=self.timestamp,
-            document_json=self.json(),
+            document_dict=self.dict(),
         )
         if "error" in res:
             error_msg = f"Error in pushing trubric to the Trubrics UI: {res}"

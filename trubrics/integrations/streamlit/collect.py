@@ -1,109 +1,62 @@
-from typing import Any, Dict, List, Optional, Tuple, Union
+from datetime import datetime
+from typing import Optional
 
 import streamlit as st
 
 from trubrics.feedback import config
-from trubrics.feedback.dataclass import Feedback
-from trubrics.ui.auth import expire_after_n_seconds, get_trubrics_auth_token
-from trubrics.ui.trubrics_config import load_trubrics_config
+from trubrics.feedback.dataclass import Feedback, Response
+from trubrics.feedback.save_to_trubrics import save_to_trubrics as save
+from trubrics.trubrics_platform.auth import init
 
 
 class FeedbackCollector:
     def __init__(
         self,
-        data: Optional[str] = None,
-        model: Optional[str] = None,
-        trubrics_platform_auth: Optional[str] = None,
+        component_name: str,
+        email: Optional[str],
+        password: Optional[str],
+        firebase_api_key: Optional[str] = None,
+        firebase_project_id: Optional[str] = None,
     ):
         """
         The FeedbackCollector allows Data Scientists to collect feedback from within their app.
 
         Args:
-            data: a reference to the data that was used to collect the feedback (e.g. a link to a dataset)
-            model: a reference to the model that was used to collect the feedback (e.g. a link to a model)
-            trubrics_platform_auth: option to save the feedback to the trubrics platform
-
-                - *None*: save feedback locally to .json
-                - *single_user*: save feedback directly to the Trubrics platform,
-                    using auth credentials of the app owner
-                - *multiple_users*: save feedback directly to the Trubrics platform, with full user auth
+            TODO
         """
-        self.data = data
-        self.model = model
-        if trubrics_platform_auth in [None, "single_user", "multiple_users"]:
-            self.trubrics_platform_auth = trubrics_platform_auth
-        else:
-            raise ValueError(
-                f"trubrics_platform_auth={trubrics_platform_auth} not recognised. Must be one of [None, 'single_user',"
-                " 'multiple_users']."
+        self.component_name = component_name
+        if email and password:
+            self.trubrics_config = init(
+                email=email,
+                password=password,
+                firebase_api_key=firebase_api_key,
+                firebase_project_id=firebase_project_id,
             )
-
-        self.email = ""
-        self.password = ""
-        self.authenticated = False
-
-    def st_trubrics_auth(self):
-        if self.trubrics_platform_auth is None:
-            raise ValueError(
-                "The `.st_trubrics_auth()` method is reserved for usage with the Trubrics platform. See the"
-                " 'trubrics_platform_auth' argument for authentication options."
-            )
-
-        trubrics_config = load_trubrics_config()
-        if self.authenticated:
-            st.write(self.email + " signed in.")
-            if st.button("Sign out"):
-                self.authenticated = False
-                self.st_trubrics_auth()
-        else:
-            with st.form("auth form"):
-                self.email = st.text_input(
-                    label=config.USER_EMAIL,
-                    placeholder=config.USER_EMAIL,
-                    label_visibility="collapsed",
-                    key="email",
-                )
-                self.password = st.text_input(
-                    label=config.USER_PASSWORD,
-                    placeholder=config.USER_PASSWORD,
-                    label_visibility="collapsed",
-                    key="password",
-                    type="password",
-                )
-                submitted = st.form_submit_button("Sign In")
-                if submitted:
-                    # check auth
-                    auth = get_trubrics_auth_token(
-                        trubrics_config.firebase_auth_api_url, self.email, self.password, rerun=expire_after_n_seconds()
-                    )
-                    if "error" in auth:
-                        st.error(f"Error authenticating user {self.email}. Try again or contact your admin team.")
-                    else:
-                        st.success(f"{self.email} successfully signed in.")
-                        self.authenticated = True
 
     def st_feedback(
         self,
-        feedback_type: str = "issue",
-        user_response: Optional[Dict[str, Union[float, int, str, bool]]] = None,
-        path: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-        tags: Optional[List[str]] = None,
+        feedback_type: str,
+        model: str,
+        tags: list = [],
+        metadata: dict = {},
+        response: Optional[Response] = None,
+        user_id: Optional[str] = None,
         key: Optional[str] = None,
         open_feedback_label: Optional[str] = None,
-    ) -> Optional[Feedback]:
+        save_to_trubrics: bool = True,
+    ) -> Optional[dict]:
         """
         Collect user feedback within a Streamlit web application.
 
         Args:
+            TODO
             feedback_type: type of feedback to be collected
 
-                - issue: issue with a open text title and description fields
+                - textbox: open textbox feedback
                 - thumbs: positive or negative feedback with thumbs emojis
                 - faces: a scale of 1 to 5 with face emojis
                 - custom: a customisable feedback type that allows users to specify the user_response dict
-            user_response: a dict of user responses to save with your feedback for feedback_type='custom'
-            path: path to save feedback local .json. Defaults to "./*timestamp*_feedback.json"
+            response: a dict of user responses to save with your feedback for feedback_type='custom'
             metadata: data to save with your feedback
             tags: a list of tags for your feedback
             key: a key for each streamlit component
@@ -111,90 +64,88 @@ class FeedbackCollector:
         """
         if key is None:
             key = feedback_type
-        if feedback_type == "issue":
-            if user_response or open_feedback_label:
-                raise ValueError("For feedback_type='issue', title, description and open_feedback_label must be None.")
-            issue_data = self.st_issue_ui(key)
-            if issue_data:
+        if feedback_type == "textbox":
+            if response:
+                raise ValueError("For feedback_type='textbox', user_response must be None.")
+            text = self.st_textbox_ui(key, label=open_feedback_label)
+            if text:
+                response = Response(type=feedback_type, score=None, text=text)
                 return self._save_feedback(
-                    feedback_type=feedback_type,
-                    path=path,
-                    metadata=metadata,
-                    user_response={issue_data[0]: issue_data[1]},
+                    model=model,
+                    response=response,
+                    user_id=user_id,
                     tags=tags,
+                    metadata=metadata,
+                    save_to_trubrics=save_to_trubrics,
                 )
         elif feedback_type in ("thumbs", "faces"):
-            if user_response:
+            if response:
                 raise ValueError(
-                    f"For feedback_type='{feedback_type}', user_response is set inside the component (must be None)."
+                    f"For feedback_type='{feedback_type}', response is set inside the component (must be None)."
                 )
             return self._save_quantitative_feedback(
+                model=model,
                 feedback_type=feedback_type,
-                path=path,
+                user_id=user_id,
                 metadata=metadata,
                 tags=tags,
                 key=key,
                 open_feedback_label=open_feedback_label,
+                save_to_trubrics=save_to_trubrics,
             )
-        elif feedback_type == "custom":
-            if user_response:
-                return self._save_feedback(
-                    feedback_type=feedback_type,
-                    user_response=user_response,
-                    path=path,
-                    metadata=metadata,
-                    tags=tags,
-                )
-            else:
-                raise ValueError("For feedback_type='custom', title and description parameters must be specified.")
+        # elif feedback_type == "custom":
+        #     if user_response:
+        #         return self._save_feedback(
+        #             feedback_type=feedback_type,
+        #             user_response=user_response,
+        #             path=path,
+        #             metadata=metadata,
+        #             tags=tags,
+        #         )
+        #     else:
+        #         raise ValueError("For feedback_type='custom', title and description parameters must be specified.")
         else:
-            raise ValueError("feedback_type must be one of ['issue', 'faces', 'thumbs', 'custom'].")
+            raise ValueError("feedback_type must be one of ['textbox', 'faces', 'thumbs', 'custom'].")
         return None
 
     def _save_feedback(
         self,
-        feedback_type: str,
-        user_response: Dict[str, Union[float, int, str, bool]],
-        path: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-        tags: Optional[List[str]] = None,
-    ) -> Optional[Feedback]:
+        model: str,
+        response: Response,
+        user_id: Optional[str] = None,
+        tags: list = [],
+        metadata: dict = {},
+        save_to_trubrics: bool = True,
+    ) -> Optional[dict]:
         feedback = Feedback(
-            feedback_type=feedback_type,
-            user_response=user_response,
-            data=self.data,
-            model=self.model,
+            component_name=self.component_name,
+            response=response,
+            model=model,
             metadata=metadata,
             tags=tags,
+            user_id=user_id,
+            created_on=datetime.now(),
         )
-        if self.trubrics_platform_auth is None:
-            feedback.save_local(path=path)
-            st.success(config.LOCAL_SAVE)
-        elif self.trubrics_platform_auth == "multiple_users":
-            if self.authenticated:
-                feedback.save_ui(self.email, self.password)
-                st.success(config.PLATFORM_SAVE)
+        if save_to_trubrics:
+            res = save(trubrics_config=self.trubrics_config, feedback=feedback)
+            if "error" in res:
+                error_msg = f"Error in pushing feedback issue to Trubrics: {res}"
+                st.error(error_msg)
             else:
-                st.error("User is not authenticated. Please try again or contact your admin.")
-        elif self.trubrics_platform_auth == "single_user":
-            feedback.save_ui(None, None)
-            st.success(config.PLATFORM_SAVE)
-        else:
-            raise ValueError(
-                f"trubrics_platform_auth={self.trubrics_platform_auth} not recognised. Must be one of [None,"
-                " 'single_user', 'multiple_users']."
-            )
-        return feedback
+                st.success(config.PLATFORM_SAVE)
+        return feedback.dict()
 
     def _save_quantitative_feedback(
         self,
-        feedback_type,
-        key,
+        feedback_type: str,
+        key: str,
         open_feedback_label: Optional[str],
-        path: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-        tags: Optional[List[str]] = None,
-    ) -> Optional[Feedback]:
+        model: str,
+        user_id: Optional[str] = None,
+        tags: list = [],
+        metadata: dict = {},
+        save_to_trubrics: bool = True,
+    ) -> Optional[dict]:
         if f"{key}_state" not in st.session_state:
             st.session_state[f"{key}_state"] = ""
         if f"{key}_save_button" not in st.session_state:
@@ -202,14 +153,13 @@ class FeedbackCollector:
         if f"previous_{key}_state" not in st.session_state:
             st.session_state[f"previous_{key}_state"] = ""
 
-        title = f"User satisfaction: {feedback_type}"
-
-        def feedback_handler(open_feedback_label):
-            user_response = {
-                title: st.session_state[f"{key}_state"],
-                open_feedback_label: st.session_state[f"{feedback_type}_open_feedback"].rstrip(),
-            }
-            st.session_state[f"previous_{key}_state"] = user_response
+        def feedback_handler():
+            response = Response(
+                type=feedback_type,
+                score=st.session_state[f"{key}_state"],
+                text=st.session_state[f"{feedback_type}_open_feedback_{key}"].rstrip(),
+            )
+            st.session_state[f"previous_{key}_state"] = response
             st.session_state[f"{key}_state"] = ""
 
             self._enable_all_buttons(feedback_type=feedback_type)
@@ -222,33 +172,42 @@ class FeedbackCollector:
 
         if open_feedback_label:
             if st.session_state.get(f"{key}_state_clicked", "") != "":
-                st.text_input(open_feedback_label, key=f"{feedback_type}_open_feedback")
+                st.text_input(open_feedback_label, key=f"{feedback_type}_open_feedback_{key}")
                 st.button(
                     config.FEEDBACK_SAVE_BUTTON,
                     on_click=feedback_handler,
-                    args=(open_feedback_label,),
                     key=f"{key}_save_button",
                 )
         else:
             if ui_state:
-                user_response = {title: ui_state}
+                response = Response(
+                    type=feedback_type,
+                    score=ui_state,
+                    text=None,
+                )
                 return self._save_feedback(
-                    user_response=user_response, feedback_type=feedback_type, metadata=metadata, path=path, tags=tags
+                    model=model,
+                    response=response,
+                    user_id=user_id,
+                    tags=tags,
+                    metadata=metadata,
+                    save_to_trubrics=save_to_trubrics,
                 )
         if st.session_state[f"{key}_save_button"]:
             return self._save_feedback(
-                user_response=st.session_state[f"previous_{key}_state"],
-                feedback_type=feedback_type,
-                metadata=metadata,
-                path=path,
+                model=model,
+                response=st.session_state[f"previous_{key}_state"],
+                user_id=user_id,
                 tags=tags,
+                metadata=metadata,
+                save_to_trubrics=save_to_trubrics,
             )
         return None
 
     @staticmethod
-    def st_issue_ui(key: Optional[str] = None) -> Optional[Tuple[str, str]]:
+    def st_textbox_ui(key: Optional[str] = None, label: Optional[str] = None) -> Optional[str]:
         if key is None:
-            key = "issue"
+            key = "textbox"
 
         if f"{key}_save_button" not in st.session_state:
             st.session_state[f"{key}_save_button"] = False
@@ -257,25 +216,14 @@ class FeedbackCollector:
             st.session_state[f"previous_{key}_state"] = ""
 
         def clear_session_state():
-            st.session_state[f"previous_{key}_state"] = (
-                st.session_state[f"{key}_title"],
-                st.session_state[f"{key}_description"],
-            )
+            st.session_state[f"previous_{key}_state"] = st.session_state[f"{key}_title"]
             st.session_state[f"{key}_title"] = ""
-            st.session_state[f"{key}_description"] = ""
 
         title = st.text_input(
-            label=config.TITLE,
-            help=config.TITLE_EXPLAIN,
+            label=label or "Provide some feedback",
             key=f"{key}_title",
         )
-        description = st.text_input(
-            label=config.DESCRIPTION,
-            help=config.DESCRIPTION_EXPLAIN,
-            key=f"{key}_description",
-        )
-        enabled = title and description
-        if enabled:
+        if title:
             st.button(config.FEEDBACK_SAVE_BUTTON, on_click=clear_session_state, key=f"{key}_save_button")
         if st.session_state[f"{key}_save_button"]:
             return st.session_state[f"previous_{key}_state"]
@@ -294,9 +242,9 @@ class FeedbackCollector:
             down = self._emoji_button("👎", key, disable_on_click, button_states, 2)
 
         if up:
-            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 1, "thumbs up")
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 1, "👍")
         elif down:
-            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 2, "thumbs down")
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 2, "👎")
         else:
             return None
 
@@ -318,27 +266,27 @@ class FeedbackCollector:
             five = self._emoji_button("😀", key, disable_on_click, button_states, 5)
 
         if one:
-            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 1, "very negative")
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 1, "😞")
         elif two:
-            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 2, "negative")
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 2, "🙁")
         elif three:
-            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 3, "neutral")
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 3, "😐")
         elif four:
-            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 4, "positive")
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 4, "🙂")
         elif five:
-            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 5, "very positive")
+            return self._return_quantitative_ui_button(key, disable_on_click, button_states, 5, "😀")
         else:
             return None
 
     @staticmethod
-    def _return_quantitative_ui_button(ui_type, disable_on_click, button_states, index, output_str):
+    def _return_quantitative_ui_button(ui_type, disable_on_click, button_states, index, output):
         if disable_on_click:
             if st.session_state[f"{ui_type}_state_clicked"] == button_states[index - 1]:
-                return f":{index} - {output_str}:"
+                return output
             else:
                 return None
         else:
-            return f":{index} - {output_str}:"
+            return output
 
     def _emoji_button(self, emoji, key, disable_on_click, button_states, index):
         return st.button(

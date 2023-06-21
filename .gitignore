@@ -8,6 +8,9 @@ dist/
 # mac stuff
 .DS_Store
 
+# venv
+venv
+
 # notebook stuff
 .ipynb_checkpoints
 
@@ -37,3 +40,6 @@ examples/mlflow/mlruns/
 
 # env variables
 .env
+
+# streamlit secrets
+.streamlit

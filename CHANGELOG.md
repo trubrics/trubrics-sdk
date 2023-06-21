@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2023-06-21
+Refactor of Feedback collector to fit to new Trubrics user insights platform
+
 ## [1.3.7] - 2023-05-07
 ### Changed
 - Added trubrics_platform_auth into titanic example app

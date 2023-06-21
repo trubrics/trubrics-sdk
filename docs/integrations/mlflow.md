@@ -1,9 +1,9 @@
 Trubrics has an official plugin with MLflow's [`mlflow.evaluate()`](https://www.mlflow.org/docs/latest/python_api/mlflow.html#mlflow.evaluate) API. This allows users to validate models within an MLflow run, saving all validation results. This plugin expands on the existing validation functionality within MLflow's API:
 
 - all model validation results can be viewed in a .json file, for diagnosis of why a run could have failed
-- a large number of [out-of-the-box](./validations.md) validations 
-- ability to validate a run with your own [custom](./custom_validations.md) logic
-- ability to [customise the data](./data_context.md) to validate (with data validations, for example)
+- a large number of [out-of-the-box](../validations/validations.md) validations 
+- ability to validate a run with your own [custom](../validations/custom_validations.md) logic
+- ability to [customise the data](../validations/data_context.md) to validate (with data validations, for example)
 
 ![](./assets/mlflow_run.png)
 
@@ -48,7 +48,7 @@ There are two arguments in `mlflow.evaluate()` that control how you use Trubrics
 There are two required parameters in the `evaluator_config`:
 
 - `trubrics_path`: a Trubric .json file of validations
-- `model`: your ML model (see [compatible models](./models.md) with Trubrics)
+- `model`: your ML model (see [compatible models](../validations/models.md) with Trubrics)
 
 
 For a more advanced example of how you can customise the Trubrics evaluator, add more parameters into the `evaluator_config`:
@@ -56,6 +56,6 @@ For a more advanced example of how you can customise the Trubrics evaluator, add
 - `data_context`: specifying a `data_context` allows users to build validations on not just evaluation data, but also on your training data. This can be useful for validating if your model is overfitting, or if your training data and testing data follow similar distributions for example.
 - `failing_severity`: this allows you to change the severity that you would like the Trubric to fail on. Setting `failing_severity="warning"` means that any validation failure with a severity of "warning" or "error" will result in an overall failure of the Trubric and will raise an exception. The default behaviour is `failing_severity="error"`, meaning only validation failures with `severity="error"` will raise an exception.
 - `tags`: any tags that you want to save to your Trubric (separate from MLFlow tags).
-- `slicing_functions`: slicing functions in Trubrics allow you to validate your model performance on different data slices. See more [here](./metrics.md#3-data-slicing-functions).
+- `slicing_functions`: slicing functions in Trubrics allow you to validate your model performance on different data slices. See more [here](../validations/metrics.md#3-data-slicing-functions).
 
-To unlock the full power of Trubrics, you should look at building custom validations for your model. Read more about this [here](./custom_validations.md).
+To unlock the full power of Trubrics, you should look at building custom validations for your model. Read more about this [here](../validations/custom_validations.md).
