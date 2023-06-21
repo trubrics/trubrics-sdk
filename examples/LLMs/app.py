@@ -7,21 +7,34 @@ if "response" not in st.session_state:
 
 st.title("LLM User Feedback with Trubrics")
 
-col1, col2 = st.columns(2)
-with col1:
-    models = ("text-davinci-003", "text-davinci-002")
-    model = st.selectbox(
-        "Choose your GPT-3.5 LLM",
-        models,
-        help="Consult https://platform.openai.com/docs/models/gpt-3-5 for model info.",
+
+with st.sidebar:
+    st.subheader("Input your Trubrics credentials:")
+    email = st.text_input(
+        label="email",
+        placeholder="email",
+        label_visibility="collapsed",
     )
-with col2:
-    openai.api_key = st.text_input(
-        "Enter your OpenAI API Key",
+
+    password = st.text_input(
+        label="password",
+        placeholder="password",
+        label_visibility="collapsed",
         type="password",
-        value=st.secrets.get("OPENAI_API_KEY"),
-        help="We are not storing your API key.",
     )
+
+    st.write("Don't have an account yet? Create one [here](https://trubrics.streamlit.app/)!")
+
+models = ("text-davinci-003", "text-davinci-002")
+model = st.selectbox(
+    "Choose your GPT-3.5 LLM",
+    models,
+    help="Consult https://platform.openai.com/docs/models/gpt-3-5 for model info.",
+)
+
+openai.api_key = st.secrets.get("OPENAI_API_KEY")
+if openai.api_key is None:
+    raise ValueError("OpenAI key is missing. Set OPENAI_API_KEY in st.secrets")
 
 prompt = st.text_area(label="Prompt", label_visibility="collapsed", placeholder="What would you like to know?")
 button = st.button(f"Ask {model}")
@@ -35,18 +48,21 @@ if st.session_state["response"]:
 
     from trubrics import FeedbackCollector
 
-    collector = FeedbackCollector(
-        component_name="thumbs-example",
-        email=st.secrets["TRUBRICS_EMAIL"],
-        password=st.secrets["TRUBRICS_PASSWORD"],
-    )
+    if email and password:
+        collector = FeedbackCollector(
+            component_name="default",
+            email=email,
+            password=password,
+        )
 
-    feedback = collector.st_feedback(
-        feedback_type="thumbs",
-        model=model,
-        open_feedback_label="Please provide a comment",
-        metadata={"response": st.session_state["response"], "prompt": prompt},
-    )
+        feedback = collector.st_feedback(
+            feedback_type="thumbs",
+            model=model,
+            open_feedback_label="[Optional] Provide additional feedback",
+            metadata={"response": st.session_state["response"], "prompt": prompt},
+        )
 
-    if feedback:
-        st.markdown(":green[View your feedback here: https://trubrics-streamlit.com]")
+        if feedback:
+            st.markdown(":green[[View your feedback in Trubrics](https://trubrics.streamlit.app/)]")
+    else:
+        st.error("Please sign in to your Trubrics account in the sidebar.")
