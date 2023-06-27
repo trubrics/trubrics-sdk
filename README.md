@@ -25,7 +25,7 @@ config = trubrics.init(
     password=os.environ["TRUBRICS_PASSWORD"]
 )
 
-feedback = trubrics.Feedback(
+feedback = trubrics.collect(
     component_name="default",
     model="default_model",
     response={
