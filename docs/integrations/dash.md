@@ -3,7 +3,7 @@
 To get started with [Dash](https://dash.plotly.com/), install the additional dependency:
 
 ```console
-(venv)$ pip install "trubrics[dash]"
+pip install "trubrics[dash]"
 ```
 
 And add this to your Dash app:

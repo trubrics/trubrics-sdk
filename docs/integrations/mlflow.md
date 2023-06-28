@@ -9,7 +9,7 @@ Trubrics has an official plugin with MLflow's [`mlflow.evaluate()`](https://www.
 
 ## Install plugin
 ```
-(venv)$ pip install "trubrics[mlflow]"
+pip install "trubrics[mlflow]"
 ```
 
 ## Example notebook

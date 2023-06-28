@@ -52,10 +52,10 @@ nav:
     - AI issues: trubrics_platform/issues.md
   - Integrations:
     - Streamlit: integrations/streamlit.md
-    - Gradio: integrations/gradio.md
-    - Dash: integrations/dash.md
+    # - Gradio: integrations/gradio.md
+    # - Dash: integrations/dash.md
     - Flask: integrations/flask_example.md
-    - MLflow: integrations/mlflow.md
+    - MLflow (validations): integrations/mlflow.md
   - ML Validations:
     - DataContext: validations/data_context.md
     - Compatible models: validations/models.md

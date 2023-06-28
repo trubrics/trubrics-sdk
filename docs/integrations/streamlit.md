@@ -9,18 +9,18 @@ The FeedbackCollector takes user feedback from within an app and saves it as a l
 To get started with [Streamlit](https://streamlit.io/), install the additional dependency:
 
 ```console
-(venv)$ pip install "trubrics[streamlit]"
+pip install "trubrics[streamlit]"
 ```
 
 ## 2. Launch our demo application from the CLI
 - Run our demo Streamlit app without authentication:
     ```console
-    (venv)$ trubrics example-app
+    trubrics example-app
     ```
   
 - Run our demo Streamlit app with authentication to the Trubrics platform:
     ```console
-    (venv)$ trubrics example-app --trubrics-platform-auth multiple_users
+    trubrics example-app --trubrics-platform-auth multiple_users
     ```
 
     !!!tip "Trubrics platform access"
