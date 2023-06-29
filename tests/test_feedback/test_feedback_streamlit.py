@@ -1,6 +1,6 @@
 import pytest
 
-from trubrics import FeedbackCollector
+from trubrics.integrations.streamlit import FeedbackCollector
 
 
 @pytest.mark.parametrize(

@@ -58,7 +58,7 @@ pip install "trubrics[streamlit]"
 
 ```python
 import streamlit as st
-from trubrics import FeedbackCollector
+from trubrics.integrations.streamlit import FeedbackCollector
 
 collector = FeedbackCollector(
     component_name="default",

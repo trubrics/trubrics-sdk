@@ -16,6 +16,15 @@ pip install trubrics
 
 ## Collect user feedback with the Python SDK
 
+Set trubrics email and password as environment variables:
+
+```bash
+export TRUBRICS_EMAIL="trubrics_email"
+export TRUBRICS_PASSWORD="trubrics_password"
+```
+
+Push some feedback to the `default` feedback component:
+
 ```python
 import os
 import trubrics
@@ -38,11 +47,6 @@ feedback = trubrics.collect(
 trubrics.save(config, feedback)
 ```
 
-```bash
-# Set your environment variables
-export TRUBRICS_EMAIL="trubrics_email"
-export TRUBRICS_PASSWORD="trubrics_password"
-```
 ## Collect user feedback from a Streamlit app
 
 👇 **click here** to view our demo LLM app
@@ -59,7 +63,7 @@ and add this code snippet directly to your streamlit app:
 
 ```python
 import streamlit as st
-from trubrics import FeedbackCollector
+from trubrics.integrations.streamlit import FeedbackCollector
 
 collector = FeedbackCollector(
     component_name="default",

@@ -46,7 +46,7 @@ if st.session_state["response"]:
     response_text = st.session_state["response"].choices[0].text.replace("\n", "")
     st.markdown(f"#### :violet[{response_text}]")
 
-    from trubrics import FeedbackCollector
+    from trubrics.integrations.streamlit import FeedbackCollector
 
     if email and password:
         collector = FeedbackCollector(
