@@ -1,6 +1,5 @@
 from trubrics.feedback import Feedback as collect
 from trubrics.feedback import save_to_trubrics as save
-from trubrics.integrations import FeedbackCollector
 from trubrics.trubrics_platform import init
 
 try:
@@ -11,4 +10,4 @@ except ImportError:
 
 __version__ = version("trubrics")
 
-__all__ = ["FeedbackCollector", "collect", "init", "save"]
+__all__ = ["collect", "init", "save"]
