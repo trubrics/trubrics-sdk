@@ -1,4 +1,5 @@
-# Collect user feedback
+# ✏️ Feedback components
+
 The main purpose of the trubrics-sdk is to provide AI teams with UI widgets and an API to save user feedback from within their apps to [Trubrics](https://trubrics.streamlit.app/). All feedback is organised into [feedback components](#create-a-feedback-component), that are created from within the platform. Each component collects a unique type of user feedback.
 
 ## Create a feedback component
@@ -32,14 +33,14 @@ export TRUBRICS_EMAIL="trubrics_email"
 export TRUBRICS_PASSWORD="trubrics_password"
 ```
 
-Push some feedback to the `default` feedback component:
+and push some feedback to the `default` feedback component:
 
 ```python
 import os
 import trubrics
 
 config = trubrics.init(
-    email=os.environ["TRUBRICS_EMAIL"],  # store your Trubrics secrets in environment variables
+    email=os.environ["TRUBRICS_EMAIL"],  # read your Trubrics secrets from environment variables
     password=os.environ["TRUBRICS_PASSWORD"]
 )
 
