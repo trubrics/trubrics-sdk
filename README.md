@@ -1,12 +1,12 @@
 # Welcome to the trubrics-sdk
 
-Trubrics enables AI teams to collect, analyse and manage user feedback on their models.
+Trubrics enables AI teams to collect, analyse and manage user feedback on their models. Create your free account now:
+
+<center>
+    [<img src="./assets/sign_up.png"  width="200">](https://trubrics.streamlit.app/)
+</center>
 
 <img src="./assets/trubrics-example.png"  width="800">
-
-## Create an account for free
-
-Navigate to [Trubrics](https://trubrics.streamlit.app/) to create an account and start collecting user feedback from your AI applications.
 
 ## Install (Python 3.7+)
 
@@ -38,6 +38,11 @@ feedback = trubrics.collect(
 trubrics.save(config, feedback)
 ```
 
+```bash
+# Set your environment variables
+export TRUBRICS_EMAIL="trubrics_email"
+export TRUBRICS_PASSWORD="trubrics_password"
+```
 ## Collect user feedback from a Streamlit app
 
 👇 **click here** to view our demo LLM app

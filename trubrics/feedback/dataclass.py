@@ -18,7 +18,7 @@ class Feedback(BaseModel):
         ```py
         import trubrics
 
-        feedback = trubrics.Feedback(
+        feedback = trubrics.collect(
             component_name="default",
             model="default_model",
             response={
