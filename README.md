@@ -2,7 +2,7 @@
 
 Trubrics enables AI teams to **collect, analyse and manage user feedback** on their models.
 
-Create your free account now:
+👇 click to create your **free account**
 
 [<img src="./assets/sign_up.png"  width="200">](https://trubrics.streamlit.app/)
 
@@ -78,6 +78,17 @@ collector.st_feedback(
 )
 ```
 
-Sign in or create an account for free with [Trubrics](https://trubrics.streamlit.app/).
+## Why should you monitor usage of your models?
 
-See our [docs](trubrics.github.io/trubrics-sdk/) or [website](https://www.trubrics.com/home) for more information.
+- **🚨 Identify bugs** - users are constantly running inference on your models, and may be more likely to find bugs than your ML monitoring system
+- **🧑‍💻️ Fine tune** - users often hold domain knowledge that can be useful to fine tune models
+- **👥 Align** - identifying user preferences will help you to align models to your users
+
+## What's next?
+
+- If you haven't already, create a free account or sign in to [Trubrics](https://trubrics.streamlit.app/).
+- Get more technical information from our [docs](trubrics.github.io/trubrics-sdk/):
+    - **Collect** user feedback with ✏️ [Feedback components](https://trubrics.github.io/trubrics-sdk/trubrics_platform/feedback_components/)
+    - **Analyse** user feedback with 🪄 [Insights](https://trubrics.github.io/trubrics-sdk/trubrics_platform/insights/)
+    - **Manage** user feedback with ⚠️ [Issues](https://trubrics.github.io/trubrics-sdk/trubrics_platform/issues/)
+- Check out our [website](https://www.trubrics.com/home) for more information about Trubrics.
