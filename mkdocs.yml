@@ -46,7 +46,7 @@ markdown_extensions:
 nav:
   - Getting Started: index.md
   - Trubrics platform:
-    - Account setup: trubrics_platform/account_setup.md
+    - ⚙️ Account setup: trubrics_platform/account_setup.md
     - ✏️ Feedback components: trubrics_platform/feedback_components.md
     - 🪄 Insights: trubrics_platform/insights.md
     - ⚠️ Issues: trubrics_platform/issues.md

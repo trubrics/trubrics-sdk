@@ -1,13 +1,12 @@
 import os
+from datetime import datetime
 
 from flask import Flask, flash, redirect, render_template, request
 
-from trubrics.feedback.dataclass import Feedback
+import trubrics
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "Trubrics Demo Flask App"
-
-project_name = os.environ["TRUBRICS_PROJECT_NAME"]
 
 
 @app.route("/", methods=["GET"])
@@ -19,39 +18,35 @@ def feedback_form():
 def submit_feedback():
     faces_feedback = request.form.get("faces")
     thumbs_feedback = request.form.get("thumbs")
+    text_feedback = request.form.get("text")
     user_response = None
     if faces_feedback:
         feedback_type = "faces"
-        user_response = {f"User satisfaction: {feedback_type}": faces_feedback}
+        user_response = faces_feedback
     elif thumbs_feedback:
         feedback_type = "thumbs"
-        user_response = {f"User satisfaction: {feedback_type}": thumbs_feedback}
+        user_response = thumbs_feedback
+    elif text_feedback:
+        feedback_type = "textbox"
+        user_response = text_feedback
     else:
         raise ValueError()
 
     if feedback_type and user_response:
-        trubrics_feedback = Feedback(
-            feedback_type=feedback_type,
-            user_response=user_response,  # type: ignore
-            data=None,
-            tags=["Flask"],
+        config = trubrics.init(email=os.environ["TRUBRICS_EMAIL"], password=os.environ["TRUBRICS_PASSWORD"])
+
+        feedback = trubrics.collect(
+            component_name=os.environ["TRUBRICS_COMPONENT"],
+            model="your_model_name",
+            response={
+                "type": feedback_type,
+                "score": user_response,
+                "text": "A comment / textual feedback from the user.",
+            },
+            created_on=datetime.now(),
         )
-        trubrics_feedback.save_ui(email=None, password=None)
-        flash(f"{feedback_type} feedback saved to the Trubrics platform.")
-    return redirect("/")
-
-
-@app.route("/submit_feedback_text", methods=["POST"])
-def submit_feedback_text():
-    feedback = request.form.get("text")
-    trubrics_feedback = Feedback(
-        feedback_type="issue",
-        user_response={"text": feedback or ""},
-        data=None,
-        tags=["Flask"],
-    )
-    trubrics_feedback.save_ui(email=None, password=None)
-    flash("Text feedback saved to the Trubrics platform.")
+        trubrics.save(config, feedback)
+        flash(f"{feedback_type} feedback saved to Trubrics.")
     return redirect("/")
 
 

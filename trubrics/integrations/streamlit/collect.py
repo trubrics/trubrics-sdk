@@ -22,7 +22,7 @@ class FeedbackCollector:
         The FeedbackCollector allows Data Scientists to collect feedback from within their app.
 
         Args:
-            component_name: the component name that has been created in the Trubrics platform
+            component_name: the component name that has been created in Trubrics
             email: a Trubrics account email
             password: a Trubrics account password
         """
