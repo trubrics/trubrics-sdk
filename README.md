@@ -51,7 +51,7 @@ trubrics.save(config, feedback)
 
 👇 **click here** to view our demo LLM app
 
-[<img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg"  width="300">](https://trubrics-llm-example.streamlit.app/)
+[<img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg"  width="200">](https://trubrics-llm-example.streamlit.app/)
 
 To start collecting feedback from your [Streamlit](https://streamlit.io/) app, install the additional dependency:
 
