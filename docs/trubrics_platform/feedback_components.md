@@ -25,14 +25,21 @@ Upon creating a feedback component in [Trubrics](https://trubrics.streamlit.app/
 
 ### 1. With the Python SDK
 
-To save feedback to [Trubrics](https://trubrics.streamlit.app/), an account email and password are required, along with the name of a component to push the feedback to.
+Set [Trubrics](https://trubrics.streamlit.app/) `email` and `password` as environment variables:
+
+```bash
+export TRUBRICS_EMAIL="trubrics_email"
+export TRUBRICS_PASSWORD="trubrics_password"
+```
+
+Push some feedback to the `default` feedback component:
 
 ```python
 import os
 import trubrics
 
 config = trubrics.init(
-    email=os.environ["TRUBRICS_EMAIL"],
+    email=os.environ["TRUBRICS_EMAIL"],  # store your Trubrics secrets in environment variables
     password=os.environ["TRUBRICS_PASSWORD"]
 )
 
@@ -76,10 +83,6 @@ collector.st_feedback(
 Take a look at our [demo LLM app](https://trubrics-llm-example.streamlit.app/) for an example.
 
 
-### Other integrations
+### 3. With Flask
 
-See our integrations for various implementations of the FeedbackCollector:
-
-- [Gradio](../integrations/gradio.md)
-- [Dash](../integrations/dash.md)
-- [Flask example](../integrations/flask_example.md)
+[Here](../integrations/flask_example.md) is an example of how the python SDK can be used with a Flask app.
