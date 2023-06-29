@@ -1,10 +1,10 @@
 # Welcome to the trubrics-sdk
 
-Trubrics enables AI teams to collect, analyse and manage user feedback on their models. Create your free account now:
+Trubrics enables AI teams to **collect, analyse and manage user feedback** on their models.
 
-<center>
-    [<img src="./assets/sign_up.png"  width="200">](https://trubrics.streamlit.app/)
-</center>
+Create your free account now:
+
+[<img src="./assets/sign_up.png"  width="200">](https://trubrics.streamlit.app/)
 
 <img src="./assets/trubrics-example.png"  width="800">
 
