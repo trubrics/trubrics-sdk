@@ -7,13 +7,10 @@ if "response" not in st.session_state:
 
 st.title("LLM User Feedback with Trubrics")
 
-
 with st.sidebar:
     st.subheader("Input your Trubrics credentials:")
     email = st.text_input(
-        label="email",
-        placeholder="email",
-        label_visibility="collapsed",
+        label="email", placeholder="email", label_visibility="collapsed", value=st.secrets.get("TRUBRICS_EMAIL", "")
     )
 
     password = st.text_input(
@@ -21,6 +18,7 @@ with st.sidebar:
         placeholder="password",
         label_visibility="collapsed",
         type="password",
+        value=st.secrets.get("TRUBRICS_PASSWORD", ""),
     )
 
     st.write("Don't have an account yet? Create one [here](https://trubrics.streamlit.app/)!")

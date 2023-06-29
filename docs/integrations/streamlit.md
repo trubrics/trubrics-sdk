@@ -1,9 +1,7 @@
 # FeedbackCollector Streamlit Integration
-The FeedbackCollector takes user feedback from within an app and saves it as a local .json file, or directly to the Trubrics platform.
+The FeedbackCollector takes user feedback from within an app and saves it to the Trubrics platform.
 
-👇 **click here** to view our demo app with interactive examples and code snippets
-
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://trubrics-titanic-example.streamlit.app)
+For an example, consult our [getting started](../index.md) feedback collection with an LLM app.
 
 ## 1. Install the Streamlit integration
 To get started with [Streamlit](https://streamlit.io/), install the additional dependency:
