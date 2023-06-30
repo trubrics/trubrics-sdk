@@ -22,13 +22,15 @@ def submit_feedback():
     user_response = None
     if faces_feedback:
         feedback_type = "faces"
-        user_response = faces_feedback
+        # user_response = faces_feedback
+        flash(f"feedback_type={feedback_type} is not valid for `default` component.")
     elif thumbs_feedback:
         feedback_type = "thumbs"
         user_response = thumbs_feedback
     elif text_feedback:
         feedback_type = "textbox"
-        user_response = text_feedback
+        # user_response = text_feedback
+        flash(f"feedback_type={feedback_type} is not valid for `default` component.")
     else:
         raise ValueError()
 
@@ -36,7 +38,7 @@ def submit_feedback():
         config = trubrics.init(email=os.environ["TRUBRICS_EMAIL"], password=os.environ["TRUBRICS_PASSWORD"])
 
         feedback = trubrics.collect(
-            component_name=os.environ["TRUBRICS_COMPONENT"],
+            component_name="default",
             model="your_model_name",
             response={
                 "type": feedback_type,
