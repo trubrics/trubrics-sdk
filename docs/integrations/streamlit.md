@@ -19,13 +19,13 @@ The code for these apps can be viewed in the [trubrics-sdk](https://github.com/t
 === "LLM"
 
     ```console
-    streamlit run examples/feedback/llm/llm_streamlit_app.py
+    streamlit run examples/feedback/streamlit/llm_app.py
     ```
 
 === "Titanic"
 
     ```console
-    streamlit run examples/feedback/titanic/titanic_streamlit_app.py
+    streamlit run examples/feedback/streamlit/titanic_app.py
     ```
 
 ## Add the FeedbackCollector to your App
