@@ -1,4 +1,9 @@
 import streamlit as st
+from trubrics_utils import (
+    datetime_for_timezone,
+    trubrics_config,
+    trubrics_successful_feedback,
+)
 
 from trubrics.context import DataContext
 from trubrics.example import get_titanic_data_and_model
@@ -23,41 +28,15 @@ def init_trubrics():
     return model, data_context
 
 
-def trubrics_config():
-    st.subheader("Input your Trubrics credentials:")
-    email = st.text_input(
-        label="email", placeholder="email", label_visibility="collapsed", value=st.secrets.get("TRUBRICS_EMAIL", "")
-    )
-
-    password = st.text_input(
-        label="password",
-        placeholder="password",
-        label_visibility="collapsed",
-        type="password",
-        value=st.secrets.get("TRUBRICS_PASSWORD", ""),
-    )
-
-    feedback_component = st.text_input(
-        label="feedback_component",
-        placeholder="Feedback component name",
-        label_visibility="collapsed",
-    )
-
-    feedback_type = st.radio(
-        label="Select the component feedback type:", options=("faces", "thumbs", "textbox"), horizontal=True
-    )
-
-    st.write("Don't have an account yet? Create one [here](https://trubrics.streamlit.app/)!")
-    return email, password, feedback_component, feedback_type
-
-
 if "wi_prediction" not in st.session_state:
     st.session_state["wi_prediction"] = None
+
+timezone_in_hours = st.secrets.get("TIMEZONE_IN_HOURS")  # use to feed correct timezone in Streamlit cloud
 
 model, data_context = init_trubrics()
 st.title("Titanic Demo App")
 with st.sidebar:
-    email, password, feedback_component, feedback_type = trubrics_config()
+    email, password, feedback_component, feedback_type = trubrics_config(default_component=False)
     with st.form("form"):
         st.subheader("Test the model with different inputs")
         df = generate_what_if_streamlit(data_context=data_context)
@@ -88,11 +67,14 @@ if st.session_state["wi_prediction"] is not None:
             password=password,
         )
 
-        collector.st_feedback(
+        feedback = collector.st_feedback(
             feedback_type=feedback_type,
             model="your_model_name",
             open_feedback_label="[Optional] Provide additional feedback",
             metadata=metadata,
+            created_on=datetime_for_timezone(timezone_in_hours),
         )
+        if feedback:
+            trubrics_successful_feedback(feedback)
 else:
     st.warning("Click 'Predict' in the sidebar to generate predictions.")

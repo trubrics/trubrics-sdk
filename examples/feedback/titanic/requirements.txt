@@ -1,2 +1,0 @@
-trubrics
-streamlit>=1.18.0

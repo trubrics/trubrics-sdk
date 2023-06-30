@@ -1,7 +1,10 @@
-from datetime import datetime, timedelta, timezone
-
 import openai
 import streamlit as st
+from trubrics_utils import (
+    datetime_for_timezone,
+    trubrics_config,
+    trubrics_successful_feedback,
+)
 
 if "response" not in st.session_state:
     st.session_state["response"] = ""
@@ -9,23 +12,10 @@ if "response" not in st.session_state:
 
 st.title("LLM User Feedback with Trubrics")
 
-timezone_in_hours = st.secrets.get("TIMEZONE_IN_HOURS")
+timezone_in_hours = st.secrets.get("TIMEZONE_IN_HOURS")  # use to feed correct timezone in Streamlit cloud
 
 with st.sidebar:
-    st.subheader("Input your Trubrics credentials:")
-    email = st.text_input(
-        label="email", placeholder="email", label_visibility="collapsed", value=st.secrets.get("TRUBRICS_EMAIL", "")
-    )
-
-    password = st.text_input(
-        label="password",
-        placeholder="password",
-        label_visibility="collapsed",
-        type="password",
-        value=st.secrets.get("TRUBRICS_PASSWORD", ""),
-    )
-
-    st.write("Don't have an account yet? Create one [here](https://trubrics.streamlit.app/)!")
+    email, password = trubrics_config()
 
 models = ("text-davinci-003", "text-davinci-002")
 model = st.selectbox(
@@ -62,14 +52,11 @@ if st.session_state["response"]:
             model=model,
             open_feedback_label="[Optional] Provide additional feedback",
             metadata={"response": st.session_state["response"], "prompt": prompt},
-            created_on=datetime.now(tz=timezone(timedelta(hours=timezone_in_hours))).replace(tzinfo=None)
-            if timezone_in_hours is not None
-            else datetime.now(),
+            created_on=datetime_for_timezone(timezone_in_hours),
         )
 
         if feedback:
-            st.markdown(":green[View your feedback in] [Trubrics](https://trubrics.streamlit.app/).")
-            st.write(":green[Here is the raw feedback:]")
-            st.write(feedback)
+            trubrics_successful_feedback(feedback)
+
     else:
         st.warning("To save some feedback to Trubrics, add your account details in the sidebar.")
