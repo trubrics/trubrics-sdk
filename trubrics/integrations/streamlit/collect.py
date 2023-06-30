@@ -19,10 +19,10 @@ class FeedbackCollector:
         firebase_project_id: Optional[str] = None,
     ):
         """
-        The FeedbackCollector allows Data Scientists to collect feedback from within their app.
-
         Args:
-            TODO
+            component_name: the component name that has been created in Trubrics
+            email: a Trubrics account email
+            password: a Trubrics account password
         """
         self.component_name = component_name
         if email and password:
@@ -41,26 +41,28 @@ class FeedbackCollector:
         metadata: dict = {},
         response: Optional[Response] = None,
         user_id: Optional[str] = None,
+        created_on: datetime = datetime.now(),
         key: Optional[str] = None,
         open_feedback_label: Optional[str] = None,
         save_to_trubrics: bool = True,
     ) -> Optional[dict]:
         """
-        Collect user feedback within a Streamlit web application.
+        Collect ML model user feedback with UI components from a Streamlit app.
 
         Args:
-            TODO
             feedback_type: type of feedback to be collected
 
                 - textbox: open textbox feedback
-                - thumbs: positive or negative feedback with thumbs emojis
-                - faces: a scale of 1 to 5 with face emojis
-                - custom: a customisable feedback type that allows users to specify the user_response dict
-            response: a dict of user responses to save with your feedback for feedback_type='custom'
-            metadata: data to save with your feedback
-            tags: a list of tags for your feedback
-            key: a key for each streamlit component
+                - thumbs: 👍 / 👎 UI buttons
+                - faces: 😞 / 🙁 / 😐 / 🙂 / 😀 UI buttons
+            model: the model used - can be a model version, a link to the saved model artifact in cloud storage, etc
+            tags: a list of tags for the feedback
+            metadata: any data to save with the feedback
+            response: a dict of user responses to save with the feedback for feedback_type='custom'
+            user_id: an optional reference to a user, for example a username if there is a login, a cookie ID, etc
+            key: a key for the streamlit components (necessary if calling this method multiple times with the same type)
             open_feedback_label: label of optional text_input for "faces" or "thumbs" feedback_type
+            save_to_trubrics: whether to save the feedback to Trubrics, or just to return the feedback object
         """
         if key is None:
             key = feedback_type
@@ -76,6 +78,7 @@ class FeedbackCollector:
                     user_id=user_id,
                     tags=tags,
                     metadata=metadata,
+                    created_on=created_on,
                     save_to_trubrics=save_to_trubrics,
                 )
         elif feedback_type in ("thumbs", "faces"):
@@ -89,21 +92,19 @@ class FeedbackCollector:
                 user_id=user_id,
                 metadata=metadata,
                 tags=tags,
+                created_on=created_on,
                 key=key,
                 open_feedback_label=open_feedback_label,
                 save_to_trubrics=save_to_trubrics,
             )
-        # elif feedback_type == "custom":
-        #     if user_response:
-        #         return self._save_feedback(
-        #             feedback_type=feedback_type,
-        #             user_response=user_response,
-        #             path=path,
-        #             metadata=metadata,
-        #             tags=tags,
-        #         )
-        #     else:
-        #         raise ValueError("For feedback_type='custom', title and description parameters must be specified.")
+        elif feedback_type == "custom":
+            raise NotImplementedError(
+                "This is currently not implemented. Get in touch to understand how to save custom feedback."
+            )
+            # if response:
+            #     return self._save_feedback(...)
+            # else:
+            #     raise ValueError("For feedback_type='custom', title and description parameters must be specified.")
         else:
             raise ValueError("feedback_type must be one of ['textbox', 'faces', 'thumbs', 'custom'].")
         return None
@@ -115,6 +116,7 @@ class FeedbackCollector:
         user_id: Optional[str] = None,
         tags: list = [],
         metadata: dict = {},
+        created_on: datetime = datetime.now(),
         save_to_trubrics: bool = True,
     ) -> Optional[dict]:
         feedback = Feedback(
@@ -124,7 +126,7 @@ class FeedbackCollector:
             metadata=metadata,
             tags=tags,
             user_id=user_id,
-            created_on=datetime.now(),
+            created_on=created_on,
         )
         if save_to_trubrics:
             res = save(trubrics_config=self.trubrics_config, feedback=feedback)
@@ -144,6 +146,7 @@ class FeedbackCollector:
         user_id: Optional[str] = None,
         tags: list = [],
         metadata: dict = {},
+        created_on: datetime = datetime.now(),
         save_to_trubrics: bool = True,
     ) -> Optional[dict]:
         if f"{key}_state" not in st.session_state:
@@ -191,6 +194,7 @@ class FeedbackCollector:
                     user_id=user_id,
                     tags=tags,
                     metadata=metadata,
+                    created_on=created_on,
                     save_to_trubrics=save_to_trubrics,
                 )
         if st.session_state[f"{key}_save_button"]:
@@ -200,12 +204,20 @@ class FeedbackCollector:
                 user_id=user_id,
                 tags=tags,
                 metadata=metadata,
+                created_on=created_on,
                 save_to_trubrics=save_to_trubrics,
             )
         return None
 
     @staticmethod
     def st_textbox_ui(key: Optional[str] = None, label: Optional[str] = None) -> Optional[str]:
+        """
+        Trubrics 'textbox' UI component.
+
+        Args:
+            key: a key for the streamlit components (necessary if calling this method multiple times with the same type)
+            label: the textbox's streamlit label
+        """
         if key is None:
             key = "textbox"
 
@@ -231,6 +243,13 @@ class FeedbackCollector:
             return None
 
     def st_thumbs_ui(self, disable_on_click: bool = False, key: Optional[str] = None) -> Optional[str]:
+        """
+        Trubrics 'thumbs' UI component - two thumbs buttons.
+
+        Args:
+            disable_on_click: disable all other buttons when a button is clicked
+            key: a key for the streamlit components (necessary if calling this method multiple times with the same type)
+        """
         if key is None:
             key = "thumbs"
 
@@ -249,6 +268,13 @@ class FeedbackCollector:
             return None
 
     def st_faces_ui(self, disable_on_click: bool = False, key: Optional[str] = None) -> Optional[str]:
+        """
+        Trubrics 'faces' UI component - two thumbs buttons.
+
+        Args:
+            disable_on_click: disable all other buttons when a button is clicked
+            key: a key for the streamlit components (necessary if calling this method multiple times with the same type)
+        """
         if key is None:
             key = "faces"
 

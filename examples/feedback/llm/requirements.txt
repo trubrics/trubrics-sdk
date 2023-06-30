@@ -1,3 +1,3 @@
-trubrics==1.4.0
+trubrics
 streamlit>=1.18.0
 openai

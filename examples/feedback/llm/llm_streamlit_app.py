@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+
 import openai
 import streamlit as st
 
@@ -7,13 +9,12 @@ if "response" not in st.session_state:
 
 st.title("LLM User Feedback with Trubrics")
 
+timezone_in_hours = st.secrets.get("TIMEZONE_IN_HOURS")
 
 with st.sidebar:
     st.subheader("Input your Trubrics credentials:")
     email = st.text_input(
-        label="email",
-        placeholder="email",
-        label_visibility="collapsed",
+        label="email", placeholder="email", label_visibility="collapsed", value=st.secrets.get("TRUBRICS_EMAIL", "")
     )
 
     password = st.text_input(
@@ -21,6 +22,7 @@ with st.sidebar:
         placeholder="password",
         label_visibility="collapsed",
         type="password",
+        value=st.secrets.get("TRUBRICS_PASSWORD", ""),
     )
 
     st.write("Don't have an account yet? Create one [here](https://trubrics.streamlit.app/)!")
@@ -46,7 +48,7 @@ if st.session_state["response"]:
     response_text = st.session_state["response"].choices[0].text.replace("\n", "")
     st.markdown(f"#### :violet[{response_text}]")
 
-    from trubrics import FeedbackCollector
+    from trubrics.integrations.streamlit import FeedbackCollector
 
     if email and password:
         collector = FeedbackCollector(
@@ -60,9 +62,14 @@ if st.session_state["response"]:
             model=model,
             open_feedback_label="[Optional] Provide additional feedback",
             metadata={"response": st.session_state["response"], "prompt": prompt},
+            created_on=datetime.now(tz=timezone(timedelta(hours=timezone_in_hours))).replace(tzinfo=None)
+            if timezone_in_hours is not None
+            else datetime.now(),
         )
 
         if feedback:
-            st.markdown(":green[[View your feedback in Trubrics](https://trubrics.streamlit.app/)]")
+            st.markdown(":green[View your feedback in] [Trubrics](https://trubrics.streamlit.app/).")
+            st.write(":green[Here is the raw feedback:]")
+            st.write(feedback)
     else:
         st.warning("To save some feedback to Trubrics, add your account details in the sidebar.")

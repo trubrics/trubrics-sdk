@@ -10,27 +10,28 @@ def generate_what_if_streamlit(data_context: DataContext):
     """
     out_df = pd.DataFrame()
     wi_data = data_context.testing_data
-    for col in wi_data.columns:
-        series = wi_data[col]
-        if data_context.business_columns is not None and col in data_context.business_columns.keys():
-            renamed_col = data_context.business_columns[col]
-        else:
-            renamed_col = col
-        if data_context.categorical_columns is None:
-            raise ValueError(
-                "A list of categorical_columns must be specified in the DataContext for the what-if functionality."
-            )
-        if col in data_context.categorical_columns:
-            out_df[col] = [st.selectbox(label=renamed_col, options=tuple(series.dropna().unique()))]
-        else:
-            out_df[col] = [
-                st.slider(
-                    renamed_col,
-                    min_value=int(series.min()),
-                    max_value=int(series.max()),
-                    value=round(series.mean()),
+    if data_context.features:
+        for col in data_context.features:
+            series = wi_data[col]
+            if data_context.business_columns is not None and col in data_context.business_columns.keys():
+                renamed_col = data_context.business_columns[col]
+            else:
+                renamed_col = col
+            if data_context.categorical_columns is None:
+                raise ValueError(
+                    "A list of categorical_columns must be specified in the DataContext for the what-if functionality."
                 )
-            ]
+            if col in data_context.categorical_columns:
+                out_df[col] = [st.selectbox(label=renamed_col, options=tuple(series.dropna().unique()))]
+            else:
+                out_df[col] = [
+                    st.slider(
+                        renamed_col,
+                        min_value=int(series.min()),
+                        max_value=int(series.max()),
+                        value=round(series.mean()),
+                    )
+                ]
     return out_df
 
 

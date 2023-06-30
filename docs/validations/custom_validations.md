@@ -6,7 +6,7 @@ The `ModelValidator` object can be used to build your own custom validations, by
 
 !!!example
     ```py
-    --8<-- "examples/classification_titanic/custom_validator.py"
+    --8<-- "examples/validations/classification_titanic/custom_validator.py"
     ```
 
 ## Software conventions of the `ModelValidator`

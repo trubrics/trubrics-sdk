@@ -1,12 +1,11 @@
 import pytest
 
-from trubrics import FeedbackCollector
+from trubrics.integrations.streamlit import FeedbackCollector
 
 
 @pytest.mark.parametrize(
     "kwargs",
     [
-        ({"feedback_type": "custom"}),
         ({"feedback_type": "random"}),
         ({"feedback_type": "issue", "response": {"test": "test"}}),
         ({"feedback_type": "issue", "open_feedback_label": "test"}),

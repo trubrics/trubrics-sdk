@@ -1,4 +1,4 @@
-# Account setup
+# ⚙️ Account setup
 
 To initially start using [Trubrics](https://trubrics.streamlit.app/), navigate to the `Create an account` tab.
 

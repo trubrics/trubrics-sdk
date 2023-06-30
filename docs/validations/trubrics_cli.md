@@ -48,7 +48,7 @@ Be guided by the CLI prompts by running:
     You can test the `trubrics run` command with our titanic example model on 5 saved validations.
     Use `--save-ui` to save this example trubric to the Trubrics platform.
     ```console
-    (venv)$ trubrics run --no-save-ui \
+    trubrics run --no-save-ui \
     --run-context-path titanic-example-trubric \
     --trubric-output-file-path "my_trubric.json"
     ```

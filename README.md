@@ -1,31 +1,46 @@
 # Welcome to the trubrics-sdk
 
-Trubrics enables AI teams to collect, analyse and manage user feedback on their models.
+Trubrics enables AI teams to **collect, analyse and manage user feedback** on their models.
 
 <img src="./assets/trubrics-example.png"  width="800">
 
-## Create an account for free
+## Try our LLM demo
 
-Navigate to [Trubrics](https://trubrics.streamlit.app/) to create an account and start collecting user feedback from your AI applications.
+1. Create your **free account**:
 
-## Install (Python 3.7+)
+    [<img src="./assets/sign_up.png"  width="200">](https://trubrics.streamlit.app/)
+
+2. Save feedback to Trubrics from our **demo LLM app**:
+
+    [<img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg"  width="200">](https://trubrics-llm-example.streamlit.app/)
+
+## Collect user feedback with the Python SDK
+
+The python SDK allows you to collect user feedback from your ML apps from any python backend or web framework. Install it with:
 
 ```console
 pip install trubrics
 ```
 
-## Collect user feedback with the Python SDK
+Now set your [Trubrics](https://trubrics.streamlit.app/) `email` and `password` as environment variables:
+
+```bash
+export TRUBRICS_EMAIL="trubrics_email"
+export TRUBRICS_PASSWORD="trubrics_password"
+```
+
+and push some feedback to the `default` feedback component:
 
 ```python
 import os
 import trubrics
 
 config = trubrics.init(
-    email=os.environ["TRUBRICS_EMAIL"],  # store your Trubrics secrets in environment variables
+    email=os.environ["TRUBRICS_EMAIL"],  # read your Trubrics secrets from environment variables
     password=os.environ["TRUBRICS_PASSWORD"]
 )
 
-feedback = trubrics.Feedback(
+feedback = trubrics.collect(
     component_name="default",
     model="default_model",
     response={
@@ -40,10 +55,6 @@ trubrics.save(config, feedback)
 
 ## Collect user feedback from a Streamlit app
 
-👇 **click here** to view our demo LLM app
-
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://trubrics-llm-example.streamlit.app/)
-
 To start collecting feedback from your [Streamlit](https://streamlit.io/) app, install the additional dependency:
 
 ```console
@@ -54,7 +65,7 @@ and add this code snippet directly to your streamlit app:
 
 ```python
 import streamlit as st
-from trubrics import FeedbackCollector
+from trubrics.integrations.streamlit import FeedbackCollector
 
 collector = FeedbackCollector(
     component_name="default",
@@ -69,4 +80,17 @@ collector.st_feedback(
 )
 ```
 
-See our [docs](trubrics.github.io/trubrics-sdk/) or [website](https://www.trubrics.com/home) for more information.
+## Why should you monitor usage of your models?
+
+- **🚨 Identify bugs** - users are constantly running inference on your models, and may be more likely to find bugs than your ML monitoring system
+- **🧑‍💻️ Fine tune** - users often hold domain knowledge that can be useful to fine tune models
+- **👥 Align** - identifying user preferences will help you to align models to your users
+
+## What's next?
+
+- If you haven't already, create a free account or sign in to [Trubrics](https://trubrics.streamlit.app/).
+- Get more technical information from our [docs](trubrics.github.io/trubrics-sdk/):
+    - **Collect** user feedback with ✏️ [Feedback components](https://trubrics.github.io/trubrics-sdk/trubrics_platform/feedback_components/)
+    - **Analyse** user feedback with 🪄 [Insights](https://trubrics.github.io/trubrics-sdk/trubrics_platform/insights/)
+    - **Manage** user feedback with ⚠️ [Issues](https://trubrics.github.io/trubrics-sdk/trubrics_platform/issues/)
+- Check out our [website](https://www.trubrics.com/home) for more information about Trubrics.

@@ -38,6 +38,8 @@ markdown_extensions:
   - pymdownx.superfences
   - admonition
   - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -46,16 +48,16 @@ markdown_extensions:
 nav:
   - Getting Started: index.md
   - Trubrics platform:
-    - Account setup: trubrics_platform/account_setup.md
-    - Feedback components: trubrics_platform/feedback_components.md
-    - User insights: trubrics_platform/insights.md
-    - AI issues: trubrics_platform/issues.md
+    - ⚙️ Account setup: trubrics_platform/account_setup.md
+    - ✏️ Feedback components: trubrics_platform/feedback_components.md
+    - 🪄 Insights: trubrics_platform/insights.md
+    - ⚠️ Issues: trubrics_platform/issues.md
   - Integrations:
     - Streamlit: integrations/streamlit.md
-    - Gradio: integrations/gradio.md
-    - Dash: integrations/dash.md
+    # - Gradio: integrations/gradio.md
+    # - Dash: integrations/dash.md
     - Flask: integrations/flask_example.md
-    - MLflow: integrations/mlflow.md
+    - MLflow (validations): integrations/mlflow.md
   - ML Validations:
     - DataContext: validations/data_context.md
     - Compatible models: validations/models.md
