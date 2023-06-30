@@ -1,4 +1,5 @@
 import streamlit as st
+from trubrics_utils import trubrics_config
 
 from trubrics.context import DataContext
 from trubrics.example import get_titanic_data_and_model
@@ -23,41 +24,13 @@ def init_trubrics():
     return model, data_context
 
 
-def trubrics_config():
-    st.subheader("Input your Trubrics credentials:")
-    email = st.text_input(
-        label="email", placeholder="email", label_visibility="collapsed", value=st.secrets.get("TRUBRICS_EMAIL", "")
-    )
-
-    password = st.text_input(
-        label="password",
-        placeholder="password",
-        label_visibility="collapsed",
-        type="password",
-        value=st.secrets.get("TRUBRICS_PASSWORD", ""),
-    )
-
-    feedback_component = st.text_input(
-        label="feedback_component",
-        placeholder="Feedback component name",
-        label_visibility="collapsed",
-    )
-
-    feedback_type = st.radio(
-        label="Select the component feedback type:", options=("faces", "thumbs", "textbox"), horizontal=True
-    )
-
-    st.write("Don't have an account yet? Create one [here](https://trubrics.streamlit.app/)!")
-    return email, password, feedback_component, feedback_type
-
-
 if "wi_prediction" not in st.session_state:
     st.session_state["wi_prediction"] = None
 
 model, data_context = init_trubrics()
 st.title("Titanic Demo App")
 with st.sidebar:
-    email, password, feedback_component, feedback_type = trubrics_config()
+    email, password, feedback_component, feedback_type = trubrics_config(default_component=False)
     with st.form("form"):
         st.subheader("Test the model with different inputs")
         df = generate_what_if_streamlit(data_context=data_context)

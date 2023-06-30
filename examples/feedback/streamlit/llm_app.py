@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 import openai
 import streamlit as st
+from trubrics_utils import trubrics_config
 
 if "response" not in st.session_state:
     st.session_state["response"] = ""
@@ -12,20 +13,7 @@ st.title("LLM User Feedback with Trubrics")
 timezone_in_hours = st.secrets.get("TIMEZONE_IN_HOURS")
 
 with st.sidebar:
-    st.subheader("Input your Trubrics credentials:")
-    email = st.text_input(
-        label="email", placeholder="email", label_visibility="collapsed", value=st.secrets.get("TRUBRICS_EMAIL", "")
-    )
-
-    password = st.text_input(
-        label="password",
-        placeholder="password",
-        label_visibility="collapsed",
-        type="password",
-        value=st.secrets.get("TRUBRICS_PASSWORD", ""),
-    )
-
-    st.write("Don't have an account yet? Create one [here](https://trubrics.streamlit.app/)!")
+    email, password = trubrics_config()
 
 models = ("text-davinci-003", "text-davinci-002")
 model = st.selectbox(
