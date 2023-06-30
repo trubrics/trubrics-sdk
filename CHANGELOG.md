@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.1] - 2023-06-30
+### Changed
+- Refactored all feedback docs to fit new trubrics feedback API
+- Reorganised all examples
+
+### Fixed
+- Fixed flask example app
+- Fixed titanic example app
+- Fixed llm example app
+
 ## [1.4.0] - 2023-06-21
 Refactor of Feedback collector to fit to new Trubrics user insights platform
 
