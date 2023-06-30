@@ -68,6 +68,8 @@ if st.session_state["response"]:
         )
 
         if feedback:
-            st.markdown(":green[[View your feedback in Trubrics](https://trubrics.streamlit.app/)]")
+            st.markdown(":green[View your feedback in] [Trubrics](https://trubrics.streamlit.app/).")
+            st.write(":green[Here is the raw feedback:]")
+            st.write(feedback)
     else:
         st.warning("To save some feedback to Trubrics, add your account details in the sidebar.")

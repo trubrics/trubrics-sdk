@@ -19,8 +19,6 @@ class FeedbackCollector:
         firebase_project_id: Optional[str] = None,
     ):
         """
-        The FeedbackCollector allows Data Scientists to collect feedback from within their app.
-
         Args:
             component_name: the component name that has been created in Trubrics
             email: a Trubrics account email
@@ -49,15 +47,14 @@ class FeedbackCollector:
         save_to_trubrics: bool = True,
     ) -> Optional[dict]:
         """
-        Collect ML model user feedback within a Streamlit web application.
+        Collect ML model user feedback with UI components from a Streamlit app.
 
         Args:
             feedback_type: type of feedback to be collected
 
                 - textbox: open textbox feedback
-                - thumbs: positive or negative feedback with thumbs emojis
-                - faces: a scale of 1 to 5 with face emojis
-                - custom: a customisable feedback type that allows users to specify the user_response dict
+                - thumbs: 👍 / 👎 UI buttons
+                - faces: 😞 / 🙁 / 😐 / 🙂 / 😀 UI buttons
             model: the model used - can be a model version, a link to the saved model artifact in cloud storage, etc
             tags: a list of tags for the feedback
             metadata: any data to save with the feedback
