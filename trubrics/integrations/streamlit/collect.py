@@ -43,7 +43,7 @@ class FeedbackCollector:
         metadata: dict = {},
         response: Optional[Response] = None,
         user_id: Optional[str] = None,
-        created_on: Optional[datetime] = None,
+        created_on: datetime = datetime.now(),
         key: Optional[str] = None,
         open_feedback_label: Optional[str] = None,
         save_to_trubrics: bool = True,
@@ -119,7 +119,7 @@ class FeedbackCollector:
         user_id: Optional[str] = None,
         tags: list = [],
         metadata: dict = {},
-        created_on: Optional[datetime] = None,
+        created_on: datetime = datetime.now(),
         save_to_trubrics: bool = True,
     ) -> Optional[dict]:
         feedback = Feedback(
@@ -149,7 +149,7 @@ class FeedbackCollector:
         user_id: Optional[str] = None,
         tags: list = [],
         metadata: dict = {},
-        created_on: Optional[datetime] = None,
+        created_on: datetime = datetime.now(),
         save_to_trubrics: bool = True,
     ) -> Optional[dict]:
         if f"{key}_state" not in st.session_state:

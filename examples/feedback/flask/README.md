@@ -21,7 +21,7 @@ export TRUBRICS_COMPONENT="trubrics_component_name"
 To directly run the application, clone the [trubrics-sdk](https://github.com/trubrics/trubrics-sdk) and run the following command from the root directory:
 
 ```
-flask --app examples/feedback_apps/flask/flask_app.py --debug run
+flask --app examples/feedback/flask/flask_app.py --debug run
 ```
 
 Now open [http://127.0.0.1:5000](http://127.0.0.1:5000) to render the UI:

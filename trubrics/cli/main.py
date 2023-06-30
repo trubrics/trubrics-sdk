@@ -1,5 +1,3 @@
-import os
-import subprocess
 from pathlib import Path
 
 import typer
@@ -24,30 +22,6 @@ def main(
     version: bool = typer.Option(None, "--version", callback=version_callback, is_eager=True),
 ):
     return None
-
-
-def _framework_callback(value: str):
-    if value not in ["gradio", "streamlit", "dash"]:
-        raise typer.BadParameter("Only 'gradio', 'dash' or 'streamlit' frameworks are supported.")
-    return value
-
-
-@app.command()
-def example_app(
-    framework: str = typer.Option("streamlit", callback=_framework_callback),
-):
-    """Runs the example user feedback collector app.
-
-    Args:
-        framework: framework of streamlit, dash or gradio
-        trubrics_platform_auth: whether to save feedback to the Trubrics platform
-    """
-    dirname = os.path.dirname(__file__)
-    filename = Path(dirname) / f"../example/app_titanic_{framework}.py"
-    if framework == "streamlit":
-        subprocess.call(["streamlit", "run", filename])
-    elif framework in ["gradio", "dash"]:
-        subprocess.call(["python3", filename])
 
 
 @app.command()

@@ -30,7 +30,7 @@ To create your own scoring functions, scikit-learn provides a [make_scorer](http
     Here is an example of a custom scoring function being fed into the `ModelValidator` and used in a performance validation:
     ```py
     from trubrics.validations import ModelValidator
-    ---8<-- "examples/classification_titanic/custom_scorer.py"
+    ---8<-- "examples/validations/classification_titanic/custom_scorer.py"
     
     model_validator = ModelValidator(data=data_context, model=model, custom_scorers=custom_scorers)
     validations = [
@@ -45,7 +45,7 @@ It is often necessary to compute performance on specific splits of a dataset, in
     Here is an example of a series of data slicing functions being fed into the `ModelValidator` and used in a validation:
     ```py
     from trubrics.validations import ModelValidator
-    ---8<-- "examples/classification_titanic/slicing_functions.py"
+    ---8<-- "examples/validations/classification_titanic/slicing_functions.py"
     
     model_validator = ModelValidator(
         data=data_context, model=model, slicing_functions=slicing_functions

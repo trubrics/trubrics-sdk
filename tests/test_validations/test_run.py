@@ -1,7 +1,7 @@
 import pytest
 
-from examples.classification_titanic.custom_scorer import custom_scorers
-from examples.classification_titanic.custom_validator import CustomValidator
+from examples.validations.classification_titanic.custom_scorer import custom_scorers
+from examples.validations.classification_titanic.custom_validator import CustomValidator
 from trubrics.exceptions import UnknownValidationError
 from trubrics.validations import Trubric
 from trubrics.validations.run import TrubricRun

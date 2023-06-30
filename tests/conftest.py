@@ -2,8 +2,10 @@ import joblib
 import pandas as pd
 import pytest
 
-from examples.classification_titanic.custom_scorer import custom_scorers
-from examples.classification_titanic.slicing_functions import slicing_functions
+from examples.validations.classification_titanic.custom_scorer import custom_scorers
+from examples.validations.classification_titanic.slicing_functions import (
+    slicing_functions,
+)
 from trubrics.context import DataContext
 from trubrics.validations import ModelValidator, Trubric
 
