@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+
 import streamlit as st
 
 
@@ -30,3 +32,19 @@ def trubrics_config(default_component: bool = True):
     )
 
     return email, password, feedback_component, feedback_type
+
+
+def datetime_for_timezone(hours):
+    """Get the datetime.now() given a number of hours. E.g for hours=-2, get time now for UTC-2"""
+    if hours is not None:
+        return datetime.now(tz=timezone(timedelta(hours=hours))).replace(tzinfo=None)
+    else:
+        return datetime.now()
+
+
+def trubrics_successful_feedback(feedback):
+    st.write(
+        ":green[You can now view your feedback] [here](https://trubrics.streamlit.app/), :green[and see the raw"
+        " feedback response data here:]"
+    )
+    st.write(feedback)
