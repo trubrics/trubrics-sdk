@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+
 import openai
 import streamlit as st
 
@@ -6,6 +8,8 @@ if "response" not in st.session_state:
 
 
 st.title("LLM User Feedback with Trubrics")
+
+timezone_in_hours = st.secrets.get("TIMEZONE_IN_HOURS")
 
 with st.sidebar:
     st.subheader("Input your Trubrics credentials:")
@@ -58,6 +62,9 @@ if st.session_state["response"]:
             model=model,
             open_feedback_label="[Optional] Provide additional feedback",
             metadata={"response": st.session_state["response"], "prompt": prompt},
+            created_on=datetime.now(tz=timezone(timedelta(hours=timezone_in_hours))).replace(tzinfo=None)
+            if timezone_in_hours is not None
+            else datetime.now(),
         )
 
         if feedback:

@@ -43,6 +43,7 @@ class FeedbackCollector:
         metadata: dict = {},
         response: Optional[Response] = None,
         user_id: Optional[str] = None,
+        created_on: Optional[datetime] = None,
         key: Optional[str] = None,
         open_feedback_label: Optional[str] = None,
         save_to_trubrics: bool = True,
@@ -80,6 +81,7 @@ class FeedbackCollector:
                     user_id=user_id,
                     tags=tags,
                     metadata=metadata,
+                    created_on=created_on,
                     save_to_trubrics=save_to_trubrics,
                 )
         elif feedback_type in ("thumbs", "faces"):
@@ -93,6 +95,7 @@ class FeedbackCollector:
                 user_id=user_id,
                 metadata=metadata,
                 tags=tags,
+                created_on=created_on,
                 key=key,
                 open_feedback_label=open_feedback_label,
                 save_to_trubrics=save_to_trubrics,
@@ -102,13 +105,7 @@ class FeedbackCollector:
                 "This is currently not implemented. Get in touch to understand how to save custom feedback."
             )
             # if response:
-            #     return self._save_feedback(
-            #         feedback_type=feedback_type,
-            #         user_response=user_response,
-            #         path=path,
-            #         metadata=metadata,
-            #         tags=tags,
-            #     )
+            #     return self._save_feedback(...)
             # else:
             #     raise ValueError("For feedback_type='custom', title and description parameters must be specified.")
         else:
@@ -122,6 +119,7 @@ class FeedbackCollector:
         user_id: Optional[str] = None,
         tags: list = [],
         metadata: dict = {},
+        created_on: Optional[datetime] = None,
         save_to_trubrics: bool = True,
     ) -> Optional[dict]:
         feedback = Feedback(
@@ -131,7 +129,7 @@ class FeedbackCollector:
             metadata=metadata,
             tags=tags,
             user_id=user_id,
-            created_on=datetime.now(),
+            created_on=created_on,
         )
         if save_to_trubrics:
             res = save(trubrics_config=self.trubrics_config, feedback=feedback)
@@ -151,6 +149,7 @@ class FeedbackCollector:
         user_id: Optional[str] = None,
         tags: list = [],
         metadata: dict = {},
+        created_on: Optional[datetime] = None,
         save_to_trubrics: bool = True,
     ) -> Optional[dict]:
         if f"{key}_state" not in st.session_state:
@@ -198,6 +197,7 @@ class FeedbackCollector:
                     user_id=user_id,
                     tags=tags,
                     metadata=metadata,
+                    created_on=created_on,
                     save_to_trubrics=save_to_trubrics,
                 )
         if st.session_state[f"{key}_save_button"]:
@@ -207,6 +207,7 @@ class FeedbackCollector:
                 user_id=user_id,
                 tags=tags,
                 metadata=metadata,
+                created_on=created_on,
                 save_to_trubrics=save_to_trubrics,
             )
         return None
