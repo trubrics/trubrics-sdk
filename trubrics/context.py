@@ -76,7 +76,7 @@ class DataContext(BaseModel):
             raise TypeError("Business columns must be set to rename testing features.")
         return self.testing_data.rename(columns=self.business_columns)
 
-    @root_validator(skip_on_failure=True)
+    @root_validator
     def validate_features(cls, values) -> List[str]:
         """Features are here defined as all testing column names excluding the target feature.
 
