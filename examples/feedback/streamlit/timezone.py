@@ -2,6 +2,7 @@ import time
 from datetime import datetime
 
 import streamlit as st
+from streamlit_javascript import st_javascript
 
 local_now = datetime.now().astimezone()
 local_time = time.localtime()
@@ -47,3 +48,13 @@ st.text(f"time.tzname: {time.tzname}")
 st.text(f"local_time.tm_zone: {local_time.tm_zone}")
 st.text(f"local_time.tm_isdst: {local_time.tm_isdst}")
 st.markdown("""---""")
+
+st.markdown("### Using `streamlit-javascript` extension")
+timezone = st_javascript(
+    """await (async () => {
+            const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            console.log(userTimezone)
+            return userTimezone
+})().then(returnValue => returnValue)"""
+)
+st.write(timezone)
