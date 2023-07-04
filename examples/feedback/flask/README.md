@@ -1,6 +1,6 @@
 # Collect feedback from a Flask app
 
-The following example shows how you can integrate Trubrics feedback directly in to your Flask application. We will be using Flask templates to render a UI (with HTML & CSS) that displays some different feedback types that you can collect and save to Trubrics.
+The following example shows how you can integrate Trubrics feedback directly into your Flask application. We will be using Flask templates to render a UI (with HTML & CSS) that displays some different feedback types that you can collect and save to Trubrics.
 
 ## Install
 Install Trubrics & Flask to your virtual environment with

@@ -17,7 +17,15 @@ Once you have created an account with [Trubrics](https://trubrics.streamlit.app/
 The code for these apps can be viewed in the [trubrics-sdk](https://github.com/trubrics/trubrics-sdk/tree/main/examples), and may be run by cloning the repo and running:
 
 === "LLM"
+    !!!tip OpenAI
+        To run this app, you are required to have your own [OpenAI](https://platform.openai.com/overview) API key.
 
+    Install openai:
+    ```console
+    pip install openai
+    ```
+
+    Then save your OpenAI API key with `OPENAI_API_KEY='your_openai_key'` in [st.secrets](https://blog.streamlit.io/secrets-in-sharing-apps/), and run:
     ```console
     streamlit run examples/feedback/streamlit/llm_app.py
     ```
