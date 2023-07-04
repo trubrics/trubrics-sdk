@@ -2,6 +2,7 @@ import time
 from datetime import datetime
 
 import streamlit as st
+from pytz import timezone  # type: ignore
 from streamlit_javascript import st_javascript
 
 local_now = datetime.now().astimezone()
@@ -50,11 +51,22 @@ st.text(f"local_time.tm_isdst: {local_time.tm_isdst}")
 st.markdown("""---""")
 
 st.markdown("### Using `streamlit-javascript` extension")
-timezone = st_javascript(
+timezone_local = st_javascript(
     """await (async () => {
             const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             console.log(userTimezone)
             return userTimezone
 })().then(returnValue => returnValue)"""
 )
-st.write(timezone)
+st.write(":orange[Local timezone:] ", timezone_local)
+
+
+format = "%Y-%m-%d %H:%M:%S"
+
+# Current time in UTC
+now_utc = datetime.now(timezone("UTC"))
+st.write(":orange[UTC time:] ", now_utc.strftime(format))
+
+# Convert to Asia/Kolkata time zone
+now_local = now_utc.astimezone(timezone(timezone_local))
+st.write(":orange[Local time:] ", now_local.strftime(format))
