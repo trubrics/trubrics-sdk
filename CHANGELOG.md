@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Make UTC default for saving feedback responses
 
+### Fixed
+- Use default factory for Feedback object `created_on`
+
 ## [1.4.1] - 2023-06-30
 ### Changed
 - Refactored all feedback docs to fit new trubrics feedback API

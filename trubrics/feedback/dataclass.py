@@ -1,7 +1,7 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Response(BaseModel):
@@ -45,7 +45,7 @@ class Feedback(BaseModel):
     component_name: str
     model: str
     response: Response
-    created_on: datetime = datetime.now(timezone.utc).replace(tzinfo=None)
+    created_on: datetime = Field(default_factory=datetime.utcnow)
     user_id: Optional[str] = None
     tags: list = []
     metadata: dict = {}

@@ -41,7 +41,7 @@ class FeedbackCollector:
         metadata: dict = {},
         response: Optional[Response] = None,
         user_id: Optional[str] = None,
-        created_on: datetime = datetime.now(),
+        created_on: Optional[datetime] = None,
         key: Optional[str] = None,
         open_feedback_label: Optional[str] = None,
         save_to_trubrics: bool = True,
@@ -116,7 +116,7 @@ class FeedbackCollector:
         user_id: Optional[str] = None,
         tags: list = [],
         metadata: dict = {},
-        created_on: datetime = datetime.now(),
+        created_on: Optional[datetime] = None,
         save_to_trubrics: bool = True,
     ) -> Optional[dict]:
         feedback = Feedback(
@@ -126,8 +126,9 @@ class FeedbackCollector:
             metadata=metadata,
             tags=tags,
             user_id=user_id,
-            created_on=created_on,
         )
+        if created_on:
+            feedback.created_on = created_on
         if save_to_trubrics:
             res = save(trubrics_config=self.trubrics_config, feedback=feedback)
             if "error" in res:
@@ -146,7 +147,7 @@ class FeedbackCollector:
         user_id: Optional[str] = None,
         tags: list = [],
         metadata: dict = {},
-        created_on: datetime = datetime.now(),
+        created_on: Optional[datetime] = None,
         save_to_trubrics: bool = True,
     ) -> Optional[dict]:
         if f"{key}_state" not in st.session_state:
