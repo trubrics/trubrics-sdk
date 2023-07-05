@@ -1,4 +1,4 @@
-pymdown-extensions==9.10
+pymdown-extensions==10.0
 mkdocs==1.2.4
 mkdocs-autorefs==0.4.1
 mkdocs-git-revision-date-localized-plugin==1.2.0
