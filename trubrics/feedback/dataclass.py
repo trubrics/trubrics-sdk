@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from pydantic import BaseModel
@@ -36,7 +36,7 @@ class Feedback(BaseModel):
         component_name: the name of the component that the feedback response is saved to
         model: the model name / version
         response: the user response, with a type, score and text
-        created_on: datetime of response
+        created_on: datetime of response (in UTC)
         user_id: an optional user id
         tags: optional tags
         metadata: optional metadata, such as model prompts & predictions
@@ -45,7 +45,7 @@ class Feedback(BaseModel):
     component_name: str
     model: str
     response: Response
-    created_on: datetime = datetime.now()
+    created_on: datetime = datetime.now(timezone.utc).replace(tzinfo=None)
     user_id: Optional[str] = None
     tags: list = []
     metadata: dict = {}

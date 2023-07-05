@@ -1,9 +1,5 @@
 import streamlit as st
-from trubrics_utils import (
-    datetime_for_timezone,
-    trubrics_config,
-    trubrics_successful_feedback,
-)
+from trubrics_utils import trubrics_config, trubrics_successful_feedback
 
 from trubrics.context import DataContext
 from trubrics.example import get_titanic_data_and_model
@@ -30,8 +26,6 @@ def init_trubrics():
 
 if "wi_prediction" not in st.session_state:
     st.session_state["wi_prediction"] = None
-
-timezone_in_hours = st.secrets.get("TIMEZONE_IN_HOURS")  # use to feed correct timezone in Streamlit cloud
 
 model, data_context = init_trubrics()
 st.title("Titanic Demo App")
@@ -72,7 +66,6 @@ if st.session_state["wi_prediction"] is not None:
             model="your_model_name",
             open_feedback_label="[Optional] Provide additional feedback",
             metadata=metadata,
-            created_on=datetime_for_timezone(timezone_in_hours),
         )
         if feedback:
             trubrics_successful_feedback(feedback)

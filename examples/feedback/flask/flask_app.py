@@ -1,5 +1,4 @@
 import os
-from datetime import datetime
 
 from flask import Flask, flash, redirect, render_template, request
 
@@ -45,7 +44,6 @@ def submit_feedback():
                 "score": user_response,
                 "text": "A comment / textual feedback from the user.",
             },
-            created_on=datetime.now(),
         )
         trubrics.save(config, feedback)
         flash(f"{feedback_type} feedback saved to Trubrics.")
