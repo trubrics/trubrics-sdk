@@ -1,18 +1,12 @@
 import openai
 import streamlit as st
-from trubrics_utils import (
-    datetime_for_timezone,
-    trubrics_config,
-    trubrics_successful_feedback,
-)
+from trubrics_utils import trubrics_config, trubrics_successful_feedback
 
 if "response" not in st.session_state:
     st.session_state["response"] = ""
 
 
 st.title("LLM User Feedback with Trubrics")
-
-timezone_in_hours = st.secrets.get("TIMEZONE_IN_HOURS")  # use to feed correct timezone in Streamlit cloud
 
 with st.sidebar:
     email, password = trubrics_config()
@@ -52,7 +46,6 @@ if st.session_state["response"]:
             model=model,
             open_feedback_label="[Optional] Provide additional feedback",
             metadata={"response": st.session_state["response"], "prompt": prompt},
-            created_on=datetime_for_timezone(timezone_in_hours),
         )
 
         if feedback:
