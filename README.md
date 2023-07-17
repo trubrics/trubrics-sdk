@@ -14,6 +14,8 @@ Trubrics enables AI teams to **collect, analyse and manage user feedback** on th
 
     [<img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg"  width="200">](https://trubrics-llm-example.streamlit.app/)
 
+Or watch a step by step video of integrating Trubrics into the LLM Streamlit app [here](https://www.youtube.com/watch?v=2Qt54qGwIdQ).
+
 ## Collect user feedback with the Python SDK
 
 The python SDK allows you to collect user feedback from your ML apps from any python backend or web framework. Install it with:
