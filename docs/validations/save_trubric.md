@@ -1,5 +1,11 @@
 # Save validations as a trubric
 
+!!!warning "trubrics>1.4.2"
+    Validations in Trubrics will soon be moved to another repository. For trubrics>1.4.2 users, please install all validations dependencies with:
+    ```
+    pip install "trubrics[validations]"
+    ```
+
 A `Trubric` is a list of validations that represents the gold standard a model must conform to. It also holds metadata about the [model](models.md) and [DataContext](data_context.md) that it has been run against. Once a `Trubric` has been saved (as .json), it can then be rerun against any other [model](models.md) and [DataContext](data_context.md) combination.
 
 ## 1. Save a Trubric

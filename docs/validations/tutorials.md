@@ -1,3 +1,10 @@
+
+!!!warning "trubrics>1.4.2"
+    Validations in Trubrics will soon be moved to another repository. For trubrics>1.4.2 users, please install all validations dependencies with:
+    ```
+    pip install "trubrics[validations]"
+    ```
+
 A number of different tutorials are available with examples of how to apply validations to [classification](#classification) or [regression](#regression) models:
 
 ## Classification

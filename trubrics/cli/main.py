@@ -3,9 +3,6 @@ from pathlib import Path
 import typer
 from rich import print as rprint
 
-from trubrics.cli.run import validate_trubric_run_context
-from trubrics.trubrics_platform.trubrics_config import TrubricsDefaults
-
 app = typer.Typer(pretty_exceptions_show_locals=False)
 
 
@@ -41,6 +38,9 @@ def run(
         trubric_output_file_path: path to save your output trubric file
         raise_on_failure: raise an exception on failure of trubric
     """
+    from trubrics.cli.run import validate_trubric_run_context
+    from trubrics.trubrics_platform.trubrics_config import TrubricsDefaults
+
     trubric_run_path = None
     if run_context_path != "example":
         trubric_run_path = Path(run_context_path).absolute()
