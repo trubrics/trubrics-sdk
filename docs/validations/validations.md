@@ -1,4 +1,11 @@
 # Out-of-the-box model validations
+
+!!!warning "trubrics>1.4.2"
+    Validations in Trubrics will soon be moved to another repository. For trubrics>1.4.2 users, please install all validations dependencies with:
+    ```
+    pip install "trubrics[validations]"
+    ```
+
 The trubrics library comes with [out-of-the-box validations](validations.md) that you can test against your models in a
 couple of lines of code. These validations are held in the `ModelValidator` object, that can be instantiated
 with a [DataContext](data_context.md) and a [model](models.md). This object can also be used to build [custom validations](custom_validations.md).

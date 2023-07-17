@@ -32,6 +32,10 @@ The code for these apps can be viewed in the [trubrics-sdk](https://github.com/t
 
 === "Titanic"
 
+    ```
+    pip install scikit-learn==1.1.0
+    ```
+
     ```console
     streamlit run examples/feedback/streamlit/titanic_app.py
     ```

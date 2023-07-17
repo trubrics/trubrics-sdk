@@ -1,5 +1,11 @@
 # The Trubrics CLI
 
+!!!warning "trubrics>1.4.2"
+    Validations in Trubrics will soon be moved to another repository. For trubrics>1.4.2 users, please install all validations dependencies with:
+    ```
+    pip install "trubrics[validations]"
+    ```
+
 The CLI tool allows users to:
 
 1. Connect to the Trubrics platform with [`trubrics init`](#1-trubrics-init). Once connected, all feedback and validations may be saved directly to the platform.

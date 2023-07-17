@@ -1,5 +1,11 @@
 # The DataContext
 
+!!!warning "trubrics>1.4.2"
+    Validations in Trubrics will soon be moved to another repository. For trubrics>1.4.2 users, please install all validations dependencies with:
+    ```
+    pip install "trubrics[validations]"
+    ```
+
 Data sits at the heart of all ML projects, thus also playing a central role in using the trubrics-sdk. We have decided to group all ML datasets and metadata into a single object: the `DataContext`. Initialising this object is the first step to [building validations with `ModelValidator`](validations.md), and can also be used to track data in the `FeedbackCollector`.
 
 ## Getting started with the DataContext

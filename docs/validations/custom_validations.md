@@ -1,4 +1,11 @@
 # Building custom validations
+
+!!!warning "trubrics>1.4.2"
+    Validations in Trubrics will soon be moved to another repository. For trubrics>1.4.2 users, please install all validations dependencies with:
+    ```
+    pip install "trubrics[validations]"
+    ```
+
 All ML projects are unique, and custom validations should strongly be considered from the start. They
 allow you to tailor trubrics to your needs, and transform user feedback into meaningful validations.
 The `ModelValidator` object can be used to build your own custom validations, by creating a class that inherits from
