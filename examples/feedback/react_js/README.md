@@ -15,3 +15,8 @@ To get started, clone the [trubrics-sdk](https://github.com/trubrics/trubrics-sd
 The page will reload when you make changes. You may also see any lint errors in the console.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+
+## View the code
+
+The React components can be seen [here](https://github.com/trubrics/trubrics-sdk/blob/main/examples/feedback/react_js).
