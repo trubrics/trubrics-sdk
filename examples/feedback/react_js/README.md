@@ -1,14 +1,17 @@
 # React example with Trubrics
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The following example shows how you can collect Trubrics feedback directly from your React.js application. We will be using React MUI components that displays thumbs up/down feedback buttons. Upon clicking, users will be able to provide extra additional feedback through a popup window.
+
+![img](../../../assets/react-example.png)
 
 ## Setup
-Copy .env_example to a .env and add Trubrics email & password.
 
-## `npm start`
+To get started, clone the [trubrics-sdk](https://github.com/trubrics/trubrics-sdk). Copy & rename `.env_example` to a `.env` file and add your Trubrics email & password.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Run the example app
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+`npm start` runs the app in the development mode. Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+
+The page will reload when you make changes. You may also see any lint errors in the console.
+
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
