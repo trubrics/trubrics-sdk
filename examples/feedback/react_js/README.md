@@ -10,7 +10,7 @@ To get started, clone the [trubrics-sdk](https://github.com/trubrics/trubrics-sd
 
 ## Run the example app
 
-`npm start` runs the app in the development mode. Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+`npm start` runs the app in the development mode from the directory `examples/feedback/react_js`. Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
 The page will reload when you make changes. You may also see any lint errors in the console.
 
