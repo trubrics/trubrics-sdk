@@ -82,6 +82,10 @@ collector.st_feedback(
 )
 ```
 
+## Collect user feedback from a React.js app
+
+We have developed an [example](https://github.com/trubrics/trubrics-sdk/blob/main/examples/feedback/react_js) showing how you can collect feedback from a React app.
+
 ## Why should you monitor usage of your models?
 
 - **🚨 Identify bugs** - users are constantly running inference on your models, and may be more likely to find bugs than your ML monitoring system
