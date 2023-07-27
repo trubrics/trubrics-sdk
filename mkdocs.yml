@@ -56,8 +56,8 @@ nav:
     - Streamlit: integrations/streamlit.md
     # - Gradio: integrations/gradio.md
     # - Dash: integrations/dash.md
-    - React JS: integrations/react_js.md
-    - Flask: integrations/flask_example.md
+    - React JS: react_js.md
+    - Flask: flask_example.md
     - MLflow (validations): integrations/mlflow.md
   - ML Validations:
     - DataContext: validations/data_context.md
