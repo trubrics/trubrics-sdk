@@ -1,1 +1,1 @@
---8<-- "examples/feedback/flask/README.md"
+--8<-- "../examples/feedback/flask/README.md"
