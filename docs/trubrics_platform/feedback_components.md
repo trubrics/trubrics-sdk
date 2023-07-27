@@ -87,3 +87,7 @@ Take a look at our [demo LLM app](https://trubrics-llm-example.streamlit.app/) f
 ### 3. With Flask
 
 [Here](../integrations/flask_example.md) is an example of how the python SDK can be used with a Flask app.
+
+### 4. With React
+
+[Here](../integrations/react_js.md) is an example showing how to collect feedback from a React app.
