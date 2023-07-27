@@ -6,7 +6,7 @@ The following example shows how you can collect Trubrics feedback directly from 
 
 ## Setup
 
-To get started, clone the [trubrics-sdk](https://github.com/trubrics/trubrics-sdk). Copy & rename `.env_example` to a `.env` file and add your Trubrics email & password.
+To get started, clone the [trubrics-sdk](https://github.com/trubrics/trubrics-sdk). Copy & rename `.env_example` to a `.env` file and add your Trubrics email & password. Add a feedback component name, using `REACT_APP_TRUBRICS_COMPONENT=default` if you having created one yet.
 
 ## Run the example app
 

@@ -39,7 +39,7 @@ export const save = async (email, score, text, componentName) => {
         },
         created_on: date,
         user_id: null,
-        tags: [],
+        tags: ["react"],
         metadata: {},
       },
   );

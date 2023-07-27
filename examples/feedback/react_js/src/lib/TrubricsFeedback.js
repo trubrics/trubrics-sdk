@@ -11,6 +11,7 @@ import TextField from '@mui/material/TextField';
 
 const trubricsEmail = process.env.REACT_APP_TRUBRICS_EMAIL
 const trubricsPassword = process.env.REACT_APP_TRUBRICS_PASSWORD
+const trubricsComponent = process.env.REACT_APP_TRUBRICS_COMPONENT
 
 export function TrubricsFeedback() {
     const [thumbScore, setThumbScore] = useState(null);
@@ -19,7 +20,7 @@ export function TrubricsFeedback() {
     const [submit, setSubmit] = useState(false);
     useEffect(() => {
         if (open) {
-            save(trubricsEmail, thumbScore === "up" ? "👍" : "👎", text, "react_test");
+            save(trubricsEmail, thumbScore === "up" ? "👍" : "👎", text, trubricsComponent);
             setOpen(false)
             setSubmit(false)
             setText("")
