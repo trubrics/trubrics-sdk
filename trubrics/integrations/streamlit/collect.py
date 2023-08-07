@@ -67,6 +67,8 @@ class FeedbackCollector:
             open_feedback_label: label of optional text_input for "faces" or "thumbs" feedback_type
             save_to_trubrics: whether to save the feedback to Trubrics, or just to return the feedback object
             align: where to align the feedback component ["flex-end", "center", "flex-start"]
+            single_submit: Disables re-submission. This prevents users re-submitting feedback for a given prediction
+                e.g. for a chatbot.
         """
         if key is None:
             key = feedback_type
