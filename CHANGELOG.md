@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [1.4.4] - 2023-08-08
+### Changed
+- Replaced streamlit python feedback components with React components
+
 ## [1.4.3] - 2023-07-17
 ### Changed
 - Move all validations dependencies to "pip install trubrics[validations]"
