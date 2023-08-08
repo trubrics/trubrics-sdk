@@ -1,4 +1,4 @@
-trubrics
+trubrics==1.4.4
 openai
 scikit-learn==1.1.0
 streamlit-feedback
