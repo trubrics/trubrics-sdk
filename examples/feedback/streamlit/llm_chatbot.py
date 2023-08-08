@@ -6,10 +6,6 @@ from trubrics.integrations.streamlit import FeedbackCollector
 
 with st.sidebar:
     email, password = trubrics_config()
-    st.markdown("---")
-    openai_api_key = st.text_input(
-        "OpenAI API Key", key="chatbot_api_key", type="password", value=st.secrets.get("OPENAI_API_KEY")
-    )
 
 st.title("💬 Trubrics - Chat with user feedback")
 if "messages" not in st.session_state:
@@ -17,12 +13,14 @@ if "messages" not in st.session_state:
 
 model = "gpt-3.5-turbo"
 
+openai_api_key = st.secrets.get("OPENAI_API_KEY")
 if prompt := st.chat_input():
     if not openai_api_key:
         st.info("Please add your OpenAI API key to continue.")
         st.stop()
+    else:
+        openai.api_key = openai_api_key
 
-    openai.api_key = openai_api_key
     st.session_state.messages.append({"role": "user", "content": prompt})
     response = openai.ChatCompletion.create(model=model, messages=st.session_state.messages)
     msg = response.choices[0].message

@@ -11,7 +11,8 @@ pip install "trubrics[streamlit]"
 ## Streamlit Example Apps
 Once you have created an account with [Trubrics](https://trubrics.streamlit.app/), you can try two deployed example Streamlit apps that use the integration to save feedback:
 
-- [LLM](https://trubrics-llm-example.streamlit.app/): An LLM app that queries OpenAI's API and allows users to leave feedback on text generations.
+- [LLM Chat Completion](https://trubrics-llm-example.streamlit.app/): A chatbot that queries OpenAI's API and allows users to leave feedback.
+- [LLM Completion](https://trubrics-llm-example.streamlit.app/): An LLM app that queries OpenAI's API and allows users to leave feedback on single text generations.
 - [Titanic](https://trubrics-titanic-example.streamlit.app/): An app that allows users to give feedback on a classifier that predicts whether passengers will survive the titanic.
 
 The code for these apps can be viewed in the [trubrics-sdk](https://github.com/trubrics/trubrics-sdk/tree/main/examples), and may be run by cloning the repo and running:

@@ -12,7 +12,7 @@ Trubrics enables AI teams to **collect, analyse and manage user feedback** on th
 
 2. Save feedback to Trubrics from our **demo LLM app**:
 
-    [<img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg"  width="200">](https://trubrics-llm-example.streamlit.app/)
+    [<img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg"  width="200">](https://trubrics-llm-example-chatbot.streamlit.app/)
 
 Or watch a step by step video of integrating Trubrics into the LLM Streamlit app [here](https://www.youtube.com/watch?v=2Qt54qGwIdQ).
 
