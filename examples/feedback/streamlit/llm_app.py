@@ -46,6 +46,8 @@ if st.session_state["response"]:
             model=model,
             open_feedback_label="[Optional] Provide additional feedback",
             metadata={"response": st.session_state["response"], "prompt": prompt},
+            align="flex-start",
+            single_submit=False,
         )
 
         if feedback:

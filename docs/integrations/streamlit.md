@@ -16,7 +16,21 @@ Once you have created an account with [Trubrics](https://trubrics.streamlit.app/
 
 The code for these apps can be viewed in the [trubrics-sdk](https://github.com/trubrics/trubrics-sdk/tree/main/examples), and may be run by cloning the repo and running:
 
-=== "LLM"
+=== "LLM Chat Completion"
+    !!!tip OpenAI
+        To run this app, you are required to have your own [OpenAI](https://platform.openai.com/overview) API key.
+
+    Install openai:
+    ```console
+    pip install openai
+    ```
+
+    Then save your OpenAI API key with `OPENAI_API_KEY='your_openai_key'` in [st.secrets](https://blog.streamlit.io/secrets-in-sharing-apps/), and run:
+    ```console
+    streamlit run examples/feedback/streamlit/llm_chatbot.py
+    ```
+
+=== "LLM Completion"
     !!!tip OpenAI
         To run this app, you are required to have your own [OpenAI](https://platform.openai.com/overview) API key.
 
@@ -73,13 +87,3 @@ What's going on here? Let's break down this snippet:
 
 !!!Note
     Each feedback component holds a unique type of feedback. You should create multiple `FeedbackCollector` for collecting different types of feedback in the same app.
-
-## Trubrics UI components
-All of the UI components that you can see here are also available as standalone visual components without the saving functionality. For example, generate the faces UI component with:
-
-```py
-output = collector.st_faces_ui(disable_on_click=True)
-st.write(output)
-```
-
-The `disable_on_click=True` parameter disables other buttons that are not clicked. Users can re-click the button to reverse this behaviour.
