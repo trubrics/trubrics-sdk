@@ -48,6 +48,7 @@ class FeedbackCollector:
         save_to_trubrics: bool = True,
         align: str = "flex-end",
         single_submit: bool = True,
+        success_fail_message: bool = True,
     ) -> Optional[dict]:
         """
         Collect ML model user feedback with UI components from a Streamlit app.
@@ -67,8 +68,9 @@ class FeedbackCollector:
             open_feedback_label: label of optional text_input for "faces" or "thumbs" feedback_type
             save_to_trubrics: whether to save the feedback to Trubrics, or just to return the feedback object
             align: where to align the feedback component ["flex-end", "center", "flex-start"]
-            single_submit: Disables re-submission. This prevents users re-submitting feedback for a given prediction
+            single_submit: disables re-submission. This prevents users re-submitting feedback for a given prediction
                 e.g. for a chatbot.
+            success_fail_message: whether to display a st.success / st.error message on feedback submission.
         """
         if key is None:
             key = feedback_type
@@ -86,6 +88,7 @@ class FeedbackCollector:
                     metadata=metadata,
                     created_on=created_on,
                     save_to_trubrics=save_to_trubrics,
+                    success_fail_message=success_fail_message,
                 )
         elif feedback_type in ("thumbs", "faces"):
             if response:
@@ -108,6 +111,7 @@ class FeedbackCollector:
                     metadata=metadata,
                     created_on=created_on,
                     save_to_trubrics=save_to_trubrics,
+                    success_fail_message=success_fail_message,
                 )
         elif feedback_type == "custom":
             raise NotImplementedError(
@@ -130,6 +134,7 @@ class FeedbackCollector:
         metadata: dict = {},
         created_on: Optional[datetime] = None,
         save_to_trubrics: bool = True,
+        success_fail_message: bool = True,
     ) -> Optional[dict]:
         feedback = Feedback(
             component_name=self.component_name,
@@ -145,9 +150,11 @@ class FeedbackCollector:
             res = save(trubrics_config=self.trubrics_config, feedback=feedback)
             if "error" in res:
                 error_msg = f"Error in pushing feedback issue to Trubrics: {res}"
-                st.error(error_msg)
+                if success_fail_message:
+                    st.error(error_msg)
             else:
-                st.success(config.PLATFORM_SAVE)
+                if success_fail_message:
+                    st.success(config.PLATFORM_SAVE)
         return feedback.dict()
 
     @staticmethod
