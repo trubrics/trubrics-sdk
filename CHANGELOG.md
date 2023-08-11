@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [1.4.5] - 2023-08-11
+### Changed
+- Added option to skip success or error message upon saving feedback to Trubrics
+
 ## [1.4.4] - 2023-08-08
 ### Changed
 - Replaced streamlit python feedback components with React components
