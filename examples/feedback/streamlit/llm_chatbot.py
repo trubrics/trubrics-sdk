@@ -7,6 +7,16 @@ from trubrics.integrations.streamlit import FeedbackCollector
 with st.sidebar:
     email, password = trubrics_config()
 
+
+@st.cache_data
+def init_trubrics(email, password):
+    collector = FeedbackCollector(email=email, password=password, project="default")
+    return collector
+
+
+collector = init_trubrics(email, password)
+
+
 st.title("💬 Trubrics - Chat with user feedback")
 if "messages" not in st.session_state:
     st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
@@ -32,13 +42,8 @@ for n, msg in enumerate(st.session_state.messages):
 
     if msg["role"] == "assistant" and msg["content"] != "How can I help you?":
         if email and password:
-            collector = FeedbackCollector(
-                component_name="default",
-                email=email,
-                password=password,
-            )
-
             feedback = collector.st_feedback(
+                component="default",
                 feedback_type="thumbs",
                 model=model,
                 open_feedback_label="[Optional] Provide additional feedback",

@@ -6,7 +6,10 @@ from typing import Dict, Optional
 import requests  # type: ignore
 from loguru import logger
 
-from trubrics.trubrics_platform.firestore import get_trubrics_firestore_api_url
+from trubrics.trubrics_platform.firestore import (
+    get_trubrics_firestore_api_url,
+    list_projects_in_organisation,
+)
 from trubrics.trubrics_platform.trubrics_config import TrubricsConfig, TrubricsDefaults
 
 
@@ -76,6 +79,7 @@ def get_trubrics_auth_token(firebase_api_key, email, password, rerun=None) -> Di
 def init(
     email: str,
     password: str,
+    project: str,
     firebase_api_key: Optional[str] = None,
     firebase_project_id: Optional[str] = None,
 ) -> TrubricsConfig:
@@ -93,15 +97,15 @@ def init(
     else:
         firestore_api_url = get_trubrics_firestore_api_url(auth, defaults.firebase_project_id)
 
-    if "error" in auth:
-        error_msg = f"Error in pushing feedback issue with email '{email}' to the Trubrics UI: {auth['error']}"
-        logger.error(error_msg)
-        raise Exception(error_msg)
-    else:
-        return TrubricsConfig(
-            email=email,
-            password=password,  # type: ignore
-            username=auth["displayName"],
-            firebase_api_key=defaults.firebase_api_key,
-            firestore_api_url=firestore_api_url,
-        )
+    projects = list_projects_in_organisation(firestore_api_url, auth)
+    if project not in projects:
+        raise KeyError(f"Project '{project}' not found. Please select one of {projects}.")
+
+    return TrubricsConfig(
+        email=email,
+        password=password,  # type: ignore
+        project=project,
+        username=auth["displayName"],
+        firebase_api_key=defaults.firebase_api_key,
+        firestore_api_url=firestore_api_url,
+    )

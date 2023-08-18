@@ -19,16 +19,15 @@ def save_to_trubrics(trubrics_config: TrubricsConfig, feedback: Feedback) -> dic
         trubrics_config.password.get_secret_value(),
         rerun=expire_after_n_seconds(),
     )
-    components = list_components_in_organisation(firestore_api_url=trubrics_config.firestore_api_url, auth=auth)
+    components = list_components_in_organisation(
+        firestore_api_url=trubrics_config.firestore_api_url, auth=auth, project=trubrics_config.project
+    )
     if feedback.component_name not in components:
-        logger.error(
-            f"Component '{feedback.component_name}' not found in organisation"
-            f" '{trubrics_config.firestore_api_url.split('/')[-1]}'. Components currently available: {components}."
-        )
-        raise ValueError("Component doesn't exist.")
+        raise ValueError(f"Component '{feedback.component_name}' not found. Please select one of: {components}.")
     res = record_feedback(
         auth,
         firestore_api_url=trubrics_config.firestore_api_url,
+        project=trubrics_config.project,
         document_dict=feedback.dict(),
     )
     if "error" in res:

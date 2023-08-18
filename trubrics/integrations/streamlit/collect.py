@@ -13,9 +13,9 @@ from trubrics.trubrics_platform.auth import init
 class FeedbackCollector:
     def __init__(
         self,
-        component_name: str,
         email: Optional[str],
         password: Optional[str],
+        project: str,
         firebase_api_key: Optional[str] = None,
         firebase_project_id: Optional[str] = None,
     ):
@@ -25,17 +25,18 @@ class FeedbackCollector:
             email: a Trubrics account email
             password: a Trubrics account password
         """
-        self.component_name = component_name
         if email and password:
             self.trubrics_config = init(
                 email=email,
                 password=password,
+                project=project,
                 firebase_api_key=firebase_api_key,
                 firebase_project_id=firebase_project_id,
             )
 
     def st_feedback(
         self,
+        component: str,
         feedback_type: str,
         model: str,
         tags: list = [],
@@ -81,6 +82,7 @@ class FeedbackCollector:
             if text:
                 response = Response(type=feedback_type, score=None, text=text)
                 return self._save_feedback(
+                    component=component,
                     model=model,
                     response=response,
                     user_id=user_id,
@@ -104,6 +106,7 @@ class FeedbackCollector:
             )
             if response:
                 return self._save_feedback(
+                    component=component,
                     model=model,
                     response=Response(**response),
                     user_id=user_id,
@@ -127,6 +130,7 @@ class FeedbackCollector:
 
     def _save_feedback(
         self,
+        component: str,
         model: str,
         response: Response,
         user_id: Optional[str] = None,
@@ -137,7 +141,7 @@ class FeedbackCollector:
         success_fail_message: bool = True,
     ) -> Optional[dict]:
         feedback = Feedback(
-            component_name=self.component_name,
+            component_name=component,
             response=response,
             model=model,
             metadata=metadata,

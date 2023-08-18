@@ -45,7 +45,7 @@ def dict_to_firestore_document(python_dict):
     return firestore_compatible
 
 
-def get_trubrics_firestore_api_url(auth, project_id):
+def get_trubrics_firestore_api_url(auth, gcp_project_id):
     structured_query = {
         "structuredQuery": {
             "from": [{"collectionId": "organisations"}],
@@ -62,7 +62,7 @@ def get_trubrics_firestore_api_url(auth, project_id):
     }
     organisation_route = json.loads(
         requests.post(
-            f"https://firestore.googleapis.com/v1/projects/{project_id}/databases/(default)/documents:runQuery",
+            f"https://firestore.googleapis.com/v1/projects/{gcp_project_id}/databases/(default)/documents:runQuery",
             headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
             data=json.dumps(structured_query),
         ).text
@@ -70,9 +70,25 @@ def get_trubrics_firestore_api_url(auth, project_id):
     return f"https://firestore.googleapis.com/v1/{organisation_route}"
 
 
-def list_components_in_organisation(firestore_api_url, auth):
+def list_projects_in_organisation(firestore_api_url, auth):
     r = requests.get(
-        firestore_api_url + "/feedback" + "?pageSize=50",
+        firestore_api_url + "/projects" + "?pageSize=50",
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
+    )
+    r.raise_for_status()
+    projects_res = json.loads(r.text)
+
+    all_projects = []
+    if len(projects_res) != 0:
+        for component in projects_res["documents"]:
+            if component.get("fields", {}).get("archived", {}).get("booleanValue", {}) is False:
+                all_projects.append(component["name"].split("/")[-1])
+    return all_projects
+
+
+def list_components_in_organisation(firestore_api_url, auth, project):
+    r = requests.get(
+        firestore_api_url + f"/projects/{project}/feedback" + "?pageSize=50",
         headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
     )
     r.raise_for_status()
@@ -86,8 +102,8 @@ def list_components_in_organisation(firestore_api_url, auth):
     return all_components
 
 
-def record_feedback(auth, firestore_api_url, document_dict):
-    url = firestore_api_url + f"/feedback/{document_dict['component_name']}/responses"
+def record_feedback(auth, firestore_api_url, project, document_dict):
+    url = firestore_api_url + f"/projects/{project}/feedback/{document_dict['component_name']}/responses"
     res = json.loads(
         requests.post(
             url,
@@ -108,19 +124,3 @@ def add_document_to_project_subcollection(auth, firestore_api_url, project, subc
         ).text
     )
     return res
-
-
-def list_projects_in_organisation(firestore_api_url, auth):
-    r = requests.get(
-        firestore_api_url + "/projects" + "?pageSize=50",
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
-    )
-    r.raise_for_status()
-    projects_res = json.loads(r.text)
-
-    all_projects = []
-    if len(projects_res) != 0:
-        for project in projects_res["documents"]:
-            if project.get("fields", {}).get("archived", {}).get("booleanValue", {}) is False:
-                all_projects.append(project["name"].split("/")[-1])
-    return all_projects
