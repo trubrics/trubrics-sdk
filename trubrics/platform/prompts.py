@@ -26,7 +26,8 @@ class Prompt(BaseModel):
         model: the model name / version
     """
 
-    model_config: str
+    id: Optional[str] = None
+    model_config: ModelConfig
     prompt: str
     generation: str
     created_on: datetime = Field(default_factory=datetime.utcnow)

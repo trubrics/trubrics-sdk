@@ -1,11 +1,10 @@
-from datetime import datetime
 from typing import Optional
 
 import streamlit as st
 from streamlit_feedback import streamlit_feedback
 
-from trubrics import init, save
-from trubrics.platform.feedback import Feedback, Response
+from trubrics import Trubrics
+from trubrics.platform.feedback import Response
 
 
 class FeedbackCollector:
@@ -24,7 +23,7 @@ class FeedbackCollector:
             password: a Trubrics account password
         """
         if email and password and project:
-            self.trubrics_config = init(
+            self.trubrics = Trubrics(
                 email=email,
                 password=password,
                 project=project,
@@ -37,11 +36,11 @@ class FeedbackCollector:
         component: str,
         feedback_type: str,
         model: str,
+        prompt_id: Optional[str] = None,
         tags: list = [],
         metadata: dict = {},
-        response: Optional[Response] = None,
+        user_response: Optional[Response] = None,
         user_id: Optional[str] = None,
-        created_on: Optional[datetime] = None,
         key: Optional[str] = None,
         open_feedback_label: Optional[str] = None,
         save_to_trubrics: bool = True,
@@ -60,8 +59,9 @@ class FeedbackCollector:
                 - faces: 😞 / 🙁 / 😐 / 🙂 / 😀 UI buttons
             model: the model used - can be a model version, a link to the saved model artifact in cloud storage, etc
             tags: a list of tags for the feedback
+            prompt_id: id of the prompt object
             metadata: any data to save with the feedback
-            response: a dict of user responses to save with the feedback for feedback_type='custom'
+            user_response: a dict of user response to save with the feedback for feedback_type='custom'
             user_id: an optional reference to a user, for example a username if there is a login, a cookie ID, etc
             key: a key for the streamlit components (necessary if calling this method multiple times with the same type)
             open_feedback_label: label of optional text_input for "faces" or "thumbs" feedback_type
@@ -74,43 +74,45 @@ class FeedbackCollector:
         if key is None:
             key = feedback_type
         if feedback_type == "textbox":
-            if response:
-                raise ValueError("For feedback_type='textbox', response is set inside the component (must be None).")
+            if user_response:
+                raise ValueError(
+                    "For feedback_type='textbox', user_response is set inside the component (must be None)."
+                )
             text = self.st_textbox_ui(key, label=open_feedback_label)
             if text:
-                response = Response(type=feedback_type, score=None, text=text)
+                user_response = Response(type=feedback_type, score=None, text=text)
                 return self._save_feedback(
                     component=component,
                     model=model,
-                    response=response,
+                    user_response=user_response,
+                    prompt_id=prompt_id,
                     user_id=user_id,
                     tags=tags,
                     metadata=metadata,
-                    created_on=created_on,
                     save_to_trubrics=save_to_trubrics,
                     success_fail_message=success_fail_message,
                 )
         elif feedback_type in ("thumbs", "faces"):
-            if response:
+            if user_response:
                 raise ValueError(
-                    f"For feedback_type='{feedback_type}', response is set inside the component (must be None)."
+                    f"For feedback_type='{feedback_type}', user_response is set inside the component (must be None)."
                 )
-            response = streamlit_feedback(
+            user_response = streamlit_feedback(
                 feedback_type=feedback_type,
                 optional_text_label=open_feedback_label,
                 single_submit=single_submit,
                 align=align,
                 key=key,
             )
-            if response:
+            if user_response:
                 return self._save_feedback(
                     component=component,
                     model=model,
-                    response=Response(**response),
+                    user_response=Response(**user_response),
+                    prompt_id=prompt_id,
                     user_id=user_id,
                     tags=tags,
                     metadata=metadata,
-                    created_on=created_on,
                     save_to_trubrics=save_to_trubrics,
                     success_fail_message=success_fail_message,
                 )
@@ -118,7 +120,7 @@ class FeedbackCollector:
             raise NotImplementedError(
                 "This is currently not implemented. Get in touch to understand how to save custom feedback."
             )
-            # if response:
+            # if user_response:
             #     return self._save_feedback(...)
             # else:
             #     raise ValueError("For feedback_type='custom', title and description parameters must be specified.")
@@ -130,34 +132,33 @@ class FeedbackCollector:
         self,
         component: str,
         model: str,
-        response: Response,
+        user_response: Response,
+        prompt_id: Optional[str] = None,
         user_id: Optional[str] = None,
         tags: list = [],
         metadata: dict = {},
-        created_on: Optional[datetime] = None,
         save_to_trubrics: bool = True,
         success_fail_message: bool = True,
     ) -> Optional[dict]:
-        feedback = Feedback(
-            component_name=component,
-            response=response,
-            model=model,
-            metadata=metadata,
-            tags=tags,
-            user_id=user_id,
-        )
-        if created_on:
-            feedback.created_on = created_on
         if save_to_trubrics:
-            res = save(trubrics_config=self.trubrics_config, feedback=feedback)
-            if "error" in res:
-                error_msg = f"Error in pushing feedback issue to Trubrics: {res}"
+            feedback = self.trubrics.log_feedback(
+                component=component,
+                user_response=user_response,
+                model=model,
+                prompt_id=prompt_id,
+                metadata=metadata,
+                tags=tags,
+                user_id=user_id,
+            )
+            if feedback is None:
+                error_msg = "Error in pushing feedback issue to Trubrics."
                 if success_fail_message:
                     st.error(error_msg)
             else:
                 if success_fail_message:
                     st.success("Feedback saved to Trubrics.")
-        return feedback.dict()
+                return feedback.dict()
+        return None
 
     @staticmethod
     def st_textbox_ui(key: Optional[str] = None, label: Optional[str] = None) -> Optional[str]:

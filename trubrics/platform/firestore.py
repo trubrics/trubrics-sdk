@@ -5,11 +5,6 @@ import json
 from datetime import datetime
 
 import requests  # type: ignore
-from loguru import logger
-
-from trubrics.platform.auth import expire_after_n_seconds, get_trubrics_auth_token
-from trubrics.platform.config import TrubricsConfig
-from trubrics.platform.feedback import Feedback
 
 
 def dict_to_firestore_document(python_dict):
@@ -107,42 +102,19 @@ def list_components_in_organisation(firestore_api_url, auth, project):
     return all_components
 
 
-def record_feedback(auth, firestore_api_url, project, document):
-    url = firestore_api_url + f"/projects/{project}/feedback/{document.component_name}/responses"
+def save_document_to_collection(auth, firestore_api_url, project, collection, document):
+    url = firestore_api_url + f"/projects/{project}/{collection}"
+    document_dict = document.dict()
+    if "id" in document_dict.keys():
+        document_dict.pop("id")
     res = json.loads(
         requests.post(
             url,
             headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth['idToken']}"},
-            data=json.dumps(dict_to_firestore_document(document.dict())),
+            data=json.dumps(dict_to_firestore_document(document_dict)),
         ).text
     )
-    from loguru import logger
 
-    logger.info(res["name"].split("/")[-1])
-    return res
-
-
-def save_to_trubrics(trubrics_config: TrubricsConfig, feedback: Feedback) -> dict:
-    auth = get_trubrics_auth_token(
-        trubrics_config.firebase_api_key,
-        trubrics_config.email,
-        trubrics_config.password.get_secret_value(),
-        rerun=expire_after_n_seconds(),
-    )
-    components = list_components_in_organisation(
-        firestore_api_url=trubrics_config.firestore_api_url, auth=auth, project=trubrics_config.project
-    )
-    if feedback.component_name not in components:
-        raise ValueError(f"Component '{feedback.component_name}' not found. Please select one of: {components}.")
-    res = record_feedback(
-        auth,
-        firestore_api_url=trubrics_config.firestore_api_url,
-        project=trubrics_config.project,
-        document=feedback.dict(),
-    )
-    if "error" in res:
-        logger.error(res["error"])
-    else:
-        logger.info("Feedback response saved to Trubrics.")
-
+    if "name" in res:
+        res["doc_id"] = res["name"].split("/")[-1]
     return res

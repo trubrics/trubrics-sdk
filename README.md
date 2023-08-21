@@ -35,24 +35,30 @@ and push some feedback to the `default` feedback component:
 
 ```python
 import os
-import trubrics
+from trubrics import Trubrics
 
-config = trubrics.init(
-    email=os.environ["TRUBRICS_EMAIL"],  # read your Trubrics secrets from environment variables
-    password=os.environ["TRUBRICS_PASSWORD"]
+trubrics = Trubrics(
+    project="default",
+    email=os.environ["TRUBRICS_EMAIL"],
+    password=os.environ["TRUBRICS_PASSWORD"],
 )
 
-feedback = trubrics.collect(
-    component_name="default",
-    model="default_model",
-    response={
+user_prompt = trubrics.log_prompt(
+    model_config={"model": "gpt-3.5-turbo"},
+    prompt="Tell me a joke",
+    generation="No I won't",
+)
+
+user_feedback = trubrics.log_feedback(
+    component="default",
+    model=user_prompt.model_config.model,
+    prompt_id=user_prompt.id,
+    user_response={
         "type": "thumbs",
         "score": "👎",
-        "text": "A comment / textual feedback from the user."
-    },
+        "text": "poor",
+    }
 )
-
-trubrics.save(config, feedback)
 ```
 
 ## Collect user feedback from a Streamlit app

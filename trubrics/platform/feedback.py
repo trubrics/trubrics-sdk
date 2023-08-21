@@ -19,9 +19,9 @@ class Feedback(BaseModel):
         import trubrics
 
         feedback = trubrics.collect(
-            component_name="default",
-            model="default_model",
-            response={
+            component="default",
+            model="gpt-3.5-turbo",
+            user_response={
                 "type": "thumbs",
                 "score": "👎",
                 "text": "A comment / textual feedback from the user."
@@ -33,19 +33,20 @@ class Feedback(BaseModel):
         ```
 
     Attributes:
-        component_name: the name of the component that the feedback response is saved to
-        model: the model name / version
-        response: the user response, with a type, score and text
+        component: the name of the component that the feedback response is saved to
+        prompt_id: id of the prompt object
+        user_response: the user response, with a type, score and text
         created_on: datetime of response (in UTC)
         user_id: an optional user id
         tags: optional tags
         metadata: optional metadata, such as model prompts & predictions
     """
 
-    component_name: str
+    component: str
     model: str
-    response: Response
+    user_response: Response
     created_on: datetime = Field(default_factory=datetime.utcnow)
+    prompt_id: Optional[str] = None
     user_id: Optional[str] = None
     tags: list = []
     metadata: dict = {}
