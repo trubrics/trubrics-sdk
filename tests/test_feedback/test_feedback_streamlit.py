@@ -14,7 +14,8 @@ from trubrics.integrations.streamlit import FeedbackCollector
     ],
 )
 def test_st_feedback_raises(kwargs):
-    collector = FeedbackCollector(component_name="random", email=None, password=None)
+    collector = FeedbackCollector(project="random", email=None, password=None)
     with pytest.raises(ValueError):
+        kwargs["component"] = "a component"
         kwargs["model"] = "a model"
         collector.st_feedback(**kwargs)

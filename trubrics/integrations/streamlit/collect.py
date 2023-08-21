@@ -4,10 +4,9 @@ from typing import Optional
 import streamlit as st
 from streamlit_feedback import streamlit_feedback
 
-from trubrics.feedback import config
-from trubrics.feedback.dataclass import Feedback, Response
-from trubrics.feedback.save_to_trubrics import save_to_trubrics as save
-from trubrics.trubrics_platform.auth import init
+from trubrics import init, save
+from trubrics.integrations import config
+from trubrics.platform.feedback import Feedback, Response
 
 
 class FeedbackCollector:

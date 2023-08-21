@@ -32,12 +32,6 @@ docs/models
 # tests
 .coverage
 
-# example data
-examples/validations/timeseries_store_sales/store-sales-time-series-forecasting
-
-# mlruns
-examples/validations/mlflow/mlruns/
-
 # env variables
 .env
 

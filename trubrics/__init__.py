@@ -1,6 +1,6 @@
-from trubrics.feedback import Feedback as collect
-from trubrics.feedback import save_to_trubrics as save
-from trubrics.trubrics_platform import init
+from trubrics.platform import init
+from trubrics.platform.feedback import Feedback as collect
+from trubrics.platform.firestore import save_to_trubrics as save
 
 try:
     from importlib.metadata import version  # type: ignore
