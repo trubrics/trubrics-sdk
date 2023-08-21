@@ -5,26 +5,25 @@ import streamlit as st
 from streamlit_feedback import streamlit_feedback
 
 from trubrics import init, save
-from trubrics.integrations import config
 from trubrics.platform.feedback import Feedback, Response
 
 
 class FeedbackCollector:
     def __init__(
         self,
+        project: Optional[str],
         email: Optional[str],
         password: Optional[str],
-        project: str,
         firebase_api_key: Optional[str] = None,
         firebase_project_id: Optional[str] = None,
     ):
         """
         Args:
-            component_name: the component name that has been created in Trubrics
+            project: a Trubrics project name
             email: a Trubrics account email
             password: a Trubrics account password
         """
-        if email and password:
+        if email and password and project:
             self.trubrics_config = init(
                 email=email,
                 password=password,
@@ -157,7 +156,7 @@ class FeedbackCollector:
                     st.error(error_msg)
             else:
                 if success_fail_message:
-                    st.success(config.PLATFORM_SAVE)
+                    st.success("Feedback saved to Trubrics.")
         return feedback.dict()
 
     @staticmethod
@@ -187,7 +186,7 @@ class FeedbackCollector:
             key=f"{key}_title",
         )
         if title:
-            st.button(config.FEEDBACK_SAVE_BUTTON, on_click=clear_session_state, key=f"{key}_save_button")
+            st.button("Save feedback", on_click=clear_session_state, key=f"{key}_save_button")
         if st.session_state[f"{key}_save_button"]:
             return st.session_state[f"previous_{key}_state"]
         else:
