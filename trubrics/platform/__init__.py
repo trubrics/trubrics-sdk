@@ -33,7 +33,7 @@ class Trubrics:
 
         auth = get_trubrics_auth_token(defaults.firebase_api_key, email, password, rerun=expire_after_n_seconds())
         if "error" in auth:
-            raise Exception(f"Error in login email '{email}' to the Trubrics UI: {auth['error']}")
+            raise Exception(f"Error while authenticating '{email}' with Trubrics: {auth['error']}")
         else:
             firestore_api_url = get_trubrics_firestore_api_url(auth, defaults.firebase_project_id)
 
@@ -56,6 +56,7 @@ class Trubrics:
         prompt: str,
         generation: str,
         user_id: Optional[str] = None,
+        session_id: Optional[str] = None,
         tags: list = [],
         metadata: dict = {},
     ) -> Optional[Prompt]:
@@ -64,6 +65,7 @@ class Trubrics:
             prompt=prompt,
             generation=generation,
             user_id=user_id,
+            session_id=session_id,
             tags=tags,
             metadata=metadata,
         )
@@ -84,7 +86,7 @@ class Trubrics:
             logger.error(res["error"])
             return None
         else:
-            logger.info("Feedback response saved to Trubrics.")
+            logger.info("User prompt saved to Trubrics.")
             prompt.id = res["name"].split("/")[-1]
             return prompt
 
@@ -92,7 +94,7 @@ class Trubrics:
         self,
         component: str,
         model: str,
-        user_response: Response,
+        user_response: dict,
         prompt_id: Optional[str] = None,
         user_id: Optional[str] = None,
         tags: list = [],
@@ -101,6 +103,7 @@ class Trubrics:
         """
         Log user feedback to Trubrics.
         """
+        user_response = Response(**user_response)
         feedback = Feedback(
             component=component,
             model=model,
@@ -132,5 +135,5 @@ class Trubrics:
             logger.error(res["error"])
             return None
         else:
-            logger.info("Feedback response saved to Trubrics.")
+            logger.info("User feedback saved to Trubrics.")
             return feedback

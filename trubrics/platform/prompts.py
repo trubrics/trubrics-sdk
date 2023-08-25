@@ -32,5 +32,6 @@ class Prompt(BaseModel):
     generation: str
     created_on: datetime = Field(default_factory=datetime.utcnow)
     user_id: Optional[str] = None
+    session_id: Optional[str] = None
     tags: list = []
     metadata: dict = {}

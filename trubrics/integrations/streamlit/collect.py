@@ -7,7 +7,7 @@ from trubrics import Trubrics
 from trubrics.platform.feedback import Response
 
 
-class FeedbackCollector:
+class FeedbackCollector(Trubrics):
     def __init__(
         self,
         project: Optional[str],
@@ -22,8 +22,9 @@ class FeedbackCollector:
             email: a Trubrics account email
             password: a Trubrics account password
         """
+
         if email and password and project:
-            self.trubrics = Trubrics(
+            super().__init__(
                 email=email,
                 password=password,
                 project=project,
@@ -39,7 +40,7 @@ class FeedbackCollector:
         prompt_id: Optional[str] = None,
         tags: list = [],
         metadata: dict = {},
-        user_response: Optional[Response] = None,
+        user_response: Optional[dict] = None,
         user_id: Optional[str] = None,
         key: Optional[str] = None,
         open_feedback_label: Optional[str] = None,
@@ -81,17 +82,6 @@ class FeedbackCollector:
             text = self.st_textbox_ui(key, label=open_feedback_label)
             if text:
                 user_response = Response(type=feedback_type, score=None, text=text)
-                return self._save_feedback(
-                    component=component,
-                    model=model,
-                    user_response=user_response,
-                    prompt_id=prompt_id,
-                    user_id=user_id,
-                    tags=tags,
-                    metadata=metadata,
-                    save_to_trubrics=save_to_trubrics,
-                    success_fail_message=success_fail_message,
-                )
         elif feedback_type in ("thumbs", "faces"):
             if user_response:
                 raise ValueError(
@@ -104,44 +94,11 @@ class FeedbackCollector:
                 align=align,
                 key=key,
             )
-            if user_response:
-                return self._save_feedback(
-                    component=component,
-                    model=model,
-                    user_response=Response(**user_response),
-                    prompt_id=prompt_id,
-                    user_id=user_id,
-                    tags=tags,
-                    metadata=metadata,
-                    save_to_trubrics=save_to_trubrics,
-                    success_fail_message=success_fail_message,
-                )
-        elif feedback_type == "custom":
-            raise NotImplementedError(
-                "This is currently not implemented. Get in touch to understand how to save custom feedback."
-            )
-            # if user_response:
-            #     return self._save_feedback(...)
-            # else:
-            #     raise ValueError("For feedback_type='custom', title and description parameters must be specified.")
         else:
-            raise ValueError("feedback_type must be one of ['textbox', 'faces', 'thumbs', 'custom'].")
-        return None
+            raise ValueError("feedback_type must be one of ['textbox', 'faces', 'thumbs'].")
 
-    def _save_feedback(
-        self,
-        component: str,
-        model: str,
-        user_response: Response,
-        prompt_id: Optional[str] = None,
-        user_id: Optional[str] = None,
-        tags: list = [],
-        metadata: dict = {},
-        save_to_trubrics: bool = True,
-        success_fail_message: bool = True,
-    ) -> Optional[dict]:
-        if save_to_trubrics:
-            feedback = self.trubrics.log_feedback(
+        if user_response and save_to_trubrics:
+            feedback = self.log_feedback(
                 component=component,
                 user_response=user_response,
                 model=model,
