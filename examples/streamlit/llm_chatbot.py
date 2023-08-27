@@ -1,3 +1,5 @@
+import uuid
+
 import openai
 import streamlit as st
 from trubrics_utils import trubrics_config, trubrics_successful_feedback
@@ -20,8 +22,12 @@ collector = init_trubrics(email, password)
 st.title("💬 Trubrics - Chat with user feedback")
 if "messages" not in st.session_state:
     st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
+if "prompt_ids" not in st.session_state:
+    st.session_state["prompt_ids"] = []
+if "session_id" not in st.session_state:
+    st.session_state["session_id"] = str(uuid.uuid4())
 
-model = "gpt-3.5-turbo"
+model = "gpt-4"
 
 openai_api_key = st.secrets.get("OPENAI_API_KEY")
 if prompt := st.chat_input():
@@ -34,6 +40,10 @@ if prompt := st.chat_input():
     st.session_state.messages.append({"role": "user", "content": prompt})
     response = openai.ChatCompletion.create(model=model, messages=st.session_state.messages)
     msg = response.choices[0].message
+    logged_prompt = collector.log_prompt(
+        model_config={"model": model}, prompt=prompt, generation=msg["content"], session_id=st.session_state.session_id
+    )
+    st.session_state.prompt_ids.append(logged_prompt.id)
     st.session_state.messages.append(msg)
 
 feedback = None
@@ -46,8 +56,8 @@ for n, msg in enumerate(st.session_state.messages):
                 component="default",
                 feedback_type="thumbs",
                 model=model,
+                prompt_id=st.session_state.prompt_ids[int(n / 2) - 1],
                 open_feedback_label="[Optional] Provide additional feedback",
-                metadata={"chat": st.session_state.messages[: n + 1]},
                 align="flex-end",
                 single_submit=True,
                 key=f"feedback_{int(n/2)}",
