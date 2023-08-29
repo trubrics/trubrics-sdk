@@ -23,7 +23,7 @@ if email and password:
 else:
     st.warning("To save some feedback to Trubrics, add your account details in the sidebar.")
 
-models = ("text-davinci-003", "text-davinci-002")
+models = ("gpt-3.5-turbo",)
 model = st.selectbox(
     "Choose your GPT-3.5 LLM",
     models,
@@ -38,10 +38,10 @@ prompt = st.text_area(label="Prompt", label_visibility="collapsed", placeholder=
 button = st.button(f"Ask {model}")
 
 if button:
-    response = openai.Completion.create(model=model, prompt=prompt, temperature=0.5, max_tokens=200)
-    response_text = response.choices[0].text.replace("\n", "")
+    response = openai.ChatCompletion.create(model=model, messages=[{"role": "user", "content": prompt}])
+    response_text = response.choices[0].message["content"]
     st.session_state.logged_prompt = collector.log_prompt(
-        model_config={"model": model}, prompt=prompt, generation=response_text
+        model_config={"model": model}, prompt=prompt, generation=response_text, tags=["llm_app.py"]
     )
     st.session_state.response = response_text
 
@@ -56,6 +56,7 @@ if st.session_state.response:
         model=model,
         align="flex-start",
         single_submit=False,
+        tags=["llm_app.py"],
     )
 
     if feedback:

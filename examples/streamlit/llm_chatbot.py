@@ -27,7 +27,7 @@ if "prompt_ids" not in st.session_state:
 if "session_id" not in st.session_state:
     st.session_state["session_id"] = str(uuid.uuid4())
 
-model = "gpt-4"
+model = "gpt-3.5-turbo"
 
 openai_api_key = st.secrets.get("OPENAI_API_KEY")
 if prompt := st.chat_input():
@@ -41,7 +41,11 @@ if prompt := st.chat_input():
     response = openai.ChatCompletion.create(model=model, messages=st.session_state.messages)
     msg = response.choices[0].message
     logged_prompt = collector.log_prompt(
-        model_config={"model": model}, prompt=prompt, generation=msg["content"], session_id=st.session_state.session_id
+        model_config={"model": model},
+        prompt=prompt,
+        generation=msg["content"],
+        session_id=st.session_state.session_id,
+        tags=["llm_chatbot.py"],
     )
     st.session_state.prompt_ids.append(logged_prompt.id)
     st.session_state.messages.append(msg)
@@ -61,6 +65,7 @@ for n, msg in enumerate(st.session_state.messages):
                 align="flex-end",
                 single_submit=True,
                 key=f"feedback_{int(n/2)}",
+                tags=["llm_chatbot.py"],
             )
 
         else:
