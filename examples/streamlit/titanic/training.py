@@ -10,7 +10,7 @@ import examples.streamlit.titanic as tc
 
 
 def get_titanic_data_and_model():
-    df = pd.read_csv("./titanic_data.csv")
+    df = pd.read_csv("examples/streamlit/titanic/titanic_data.csv")
     preprocessed_train = df.pipe(preprocess)
 
     numerical_cols = [col for col in preprocessed_train.columns if col not in tc.CATEGORICAL_COLUMNS + [tc.TARGET]]

@@ -5,6 +5,9 @@ from examples.streamlit.titanic.experiment import generate_what_if_streamlit
 from examples.streamlit.titanic.training import get_titanic_data_and_model
 from trubrics.integrations.streamlit import FeedbackCollector
 
+st.error("Titanic app is currently under maintenance.")
+st.stop()
+
 
 @st.cache_resource
 def init_trubrics():
