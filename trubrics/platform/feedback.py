@@ -16,9 +16,10 @@ class Feedback(BaseModel):
 
     Attributes:
         component: the name of the component that the feedback response is saved to
-        prompt_id: id of the prompt object
+        model: the model name / version
         user_response: the user response, with a type, score and text
         created_on: datetime of response (in UTC)
+        prompt_id: id of the prompt object
         user_id: an optional user id
         tags: optional tags
         metadata: optional metadata, such as model prompts & predictions
