@@ -85,6 +85,7 @@ collector.st_feedback(
     feedback_type="thumbs",
     open_feedback_label="[Optional] Provide additional feedback",
     model="gpt-3.5-turbo",
+    prompt_id=None,  # see log_prompt to log user prompts from Streamlit
 )
 ```
 
