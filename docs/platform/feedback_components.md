@@ -12,7 +12,7 @@ In the \`✏️ Feedback components\` page, the tab `Create a component` allows 
 Each feedback response in a component must be of a particular type, as seen in the `response` field of the Feedback data object.
 
 !!!note "Feedback object"
-    :::trubrics.feedback.dataclass.Feedback
+    :::trubrics.platform.feedback.Feedback
 There are three out-of-the-box types of feedback:
 
 - `thumbs` feedback (👍, 👎), with an optional open text box
