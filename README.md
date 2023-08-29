@@ -46,7 +46,7 @@ trubrics = Trubrics(
 user_prompt = trubrics.log_prompt(
     model_config={"model": "gpt-3.5-turbo"},
     prompt="Tell me a joke",
-    generation="No I won't",
+    generation="Why did the chicken cross the road? To get to the other side.",
 )
 
 user_feedback = trubrics.log_feedback(
@@ -56,7 +56,7 @@ user_feedback = trubrics.log_feedback(
     user_response={
         "type": "thumbs",
         "score": "👎",
-        "text": "poor",
+        "text": "Not a very funny joke...",
     }
 )
 ```
@@ -76,15 +76,15 @@ import streamlit as st
 from trubrics.integrations.streamlit import FeedbackCollector
 
 collector = FeedbackCollector(
-    component_name="default",
-    email=st.secrets["TRUBRICS_EMAIL"], # Store your Trubrics credentials in st.secrets:
-    password=st.secrets["TRUBRICS_PASSWORD"], # https://blog.streamlit.io/secrets-in-sharing-apps/
+    email=st.secrets.TRUBRICS_EMAIL,
+    password=st.secrets.TRUBRICS_PASSWORD,
+    project="default"
 )
 
 collector.st_feedback(
     feedback_type="thumbs",
-    model="your_model_name",
     open_feedback_label="[Optional] Provide additional feedback",
+    model="gpt-3.5-turbo",
 )
 ```
 
