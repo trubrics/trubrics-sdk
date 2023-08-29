@@ -14,16 +14,16 @@ class Prompt(BaseModel):
     """
     The Prompt object represents all data contained as a prompt / model request from a user.
 
-    Example:
-        ```py
-        import trubrics
-
-        feedback = trubrics.collect(
-        )
-        ```
-
     Attributes:
-        model: the model name / version
+        id: prompt id
+        model_config: model configuration. See ModelConfig data model.
+        prompt: a user prompt
+        generation: a model generation
+        created_on: the UTC created time of the prompt log
+        user_id: a user id
+        session_id: a session id, for example for chat generations
+        tags: prompt tags
+        metadata: prompt metadata
     """
 
     id: Optional[str] = None
