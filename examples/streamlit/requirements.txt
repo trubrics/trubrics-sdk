@@ -1,3 +1,3 @@
-trubrics[streamlit]==1.5.0
+trubrics[streamlit]==1.5.1
 openai
 scikit-learn==1.1.0
