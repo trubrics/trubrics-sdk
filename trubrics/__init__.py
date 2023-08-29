@@ -1,6 +1,4 @@
-from trubrics.feedback import Feedback as collect
-from trubrics.feedback import save_to_trubrics as save
-from trubrics.trubrics_platform import init
+from trubrics.platform import Trubrics
 
 try:
     from importlib.metadata import version  # type: ignore
@@ -10,4 +8,4 @@ except ImportError:
 
 __version__ = version("trubrics")
 
-__all__ = ["collect", "init", "save"]
+__all__ = ["Trubrics"]

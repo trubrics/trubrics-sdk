@@ -35,24 +35,30 @@ and push some feedback to the `default` feedback component:
 
 ```python
 import os
-import trubrics
+from trubrics import Trubrics
 
-config = trubrics.init(
-    email=os.environ["TRUBRICS_EMAIL"],  # read your Trubrics secrets from environment variables
-    password=os.environ["TRUBRICS_PASSWORD"]
+trubrics = Trubrics(
+    project="default",
+    email=os.environ["TRUBRICS_EMAIL"],
+    password=os.environ["TRUBRICS_PASSWORD"],
 )
 
-feedback = trubrics.collect(
-    component_name="default",
-    model="default_model",
-    response={
+user_prompt = trubrics.log_prompt(
+    model_config={"model": "gpt-3.5-turbo"},
+    prompt="Tell me a joke",
+    generation="Why did the chicken cross the road? To get to the other side.",
+)
+
+user_feedback = trubrics.log_feedback(
+    component="default",
+    model=user_prompt.model_config.model,
+    prompt_id=user_prompt.id,
+    user_response={
         "type": "thumbs",
         "score": "👎",
-        "text": "A comment / textual feedback from the user."
-    },
+        "text": "Not a very funny joke...",
+    }
 )
-
-trubrics.save(config, feedback)
 ```
 
 ## Collect user feedback from a Streamlit app
@@ -70,15 +76,17 @@ import streamlit as st
 from trubrics.integrations.streamlit import FeedbackCollector
 
 collector = FeedbackCollector(
-    component_name="default",
-    email=st.secrets["TRUBRICS_EMAIL"], # Store your Trubrics credentials in st.secrets:
-    password=st.secrets["TRUBRICS_PASSWORD"], # https://blog.streamlit.io/secrets-in-sharing-apps/
+    project="default",
+    email=st.secrets.TRUBRICS_EMAIL,
+    password=st.secrets.TRUBRICS_PASSWORD,
 )
 
 collector.st_feedback(
+    component="default",
     feedback_type="thumbs",
-    model="your_model_name",
     open_feedback_label="[Optional] Provide additional feedback",
+    model="gpt-3.5-turbo",
+    prompt_id=None,  # see log_prompt to log user prompts from Streamlit
 )
 ```
 
@@ -96,7 +104,7 @@ We have developed an [example](https://github.com/trubrics/trubrics-sdk/blob/mai
 
 - If you haven't already, create a free account or sign in to [Trubrics](https://trubrics.streamlit.app/).
 - Get more technical information from our [docs](trubrics.github.io/trubrics-sdk/):
-    - **Collect** user feedback with ✏️ [Feedback components](https://trubrics.github.io/trubrics-sdk/trubrics_platform/feedback_components/)
-    - **Analyse** user feedback with 🪄 [Insights](https://trubrics.github.io/trubrics-sdk/trubrics_platform/insights/)
-    - **Manage** user feedback with ⚠️ [Issues](https://trubrics.github.io/trubrics-sdk/trubrics_platform/issues/)
+    - **Collect** user feedback with ✏️ [Feedback components](https://trubrics.github.io/trubrics-sdk/platform/feedback_components/)
+    - **Analyse** user feedback with 🪄 [Insights](https://trubrics.github.io/trubrics-sdk/platform/insights/)
+    - **Manage** user feedback with ⚠️ [Issues](https://trubrics.github.io/trubrics-sdk/platform/issues/)
 - Check out our [website](https://www.trubrics.com/home) for more information about Trubrics.

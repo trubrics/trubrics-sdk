@@ -7,14 +7,15 @@ from trubrics.integrations.streamlit import FeedbackCollector
     "kwargs",
     [
         ({"feedback_type": "random"}),
-        ({"feedback_type": "issue", "response": {"test": "test"}}),
+        ({"feedback_type": "issue", "user_response": {"test": "test"}}),
         ({"feedback_type": "issue", "open_feedback_label": "test"}),
-        ({"feedback_type": "faces", "response": "desc"}),
-        ({"feedback_type": "thumbs", "response": "desc"}),
+        ({"feedback_type": "faces", "user_response": "desc"}),
+        ({"feedback_type": "thumbs", "user_response": "desc"}),
     ],
 )
 def test_st_feedback_raises(kwargs):
-    collector = FeedbackCollector(component_name="random", email=None, password=None)
+    collector = FeedbackCollector(project="random", email=None, password=None)
     with pytest.raises(ValueError):
+        kwargs["component"] = "a component"
         kwargs["model"] = "a model"
         collector.st_feedback(**kwargs)

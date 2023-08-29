@@ -48,25 +48,13 @@ markdown_extensions:
 nav:
   - Getting Started: index.md
   - Trubrics platform:
-    - ⚙️ Account setup: trubrics_platform/account_setup.md
-    - ✏️ Feedback components: trubrics_platform/feedback_components.md
-    - 🪄 Insights: trubrics_platform/insights.md
-    - ⚠️ Issues: trubrics_platform/issues.md
+    - ⚙️ Account setup: platform/account_setup.md
+    - ✏️ Feedback components: platform/feedback_components.md
+    - 🪄 Insights: platform/insights.md
+    - ⚠️ Issues: platform/issues.md
   - Integrations:
     - Streamlit: integrations/streamlit.md
-    # - Gradio: integrations/gradio.md
-    # - Dash: integrations/dash.md
     - React JS: integrations/react_js.md
     - Flask: integrations/flask_example.md
-    - MLflow (validations): integrations/mlflow.md
-  - ML Validations:
-    - DataContext: validations/data_context.md
-    - Compatible models: validations/models.md
-    - Metrics: validations/metrics.md
-    - Out-of-the-box validations: validations/validations.md
-    - Custom validations: validations/custom_validations.md
-    - Save validations as a trubric: validations/save_trubric.md
-    - Run validations from CLI: validations/trubrics_cli.md
-    - Tutorials: validations/tutorials.md
 
 copyright: Copyright © 2022 Trubrics Ltd. All rights reserved. Trubrics and the Trubrics logo are trademarks of Trubrics Ltd.

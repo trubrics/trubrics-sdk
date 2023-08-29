@@ -1,6 +1,4 @@
 requests>=2.28.0
-typeguard>=2.13.3,<3.0.0
 pydantic>=1.9.1,<2.0
 typer>=0.6.1
 loguru>=0.6.0
-rich>=12.6.0
