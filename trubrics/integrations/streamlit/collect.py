@@ -53,14 +53,15 @@ class FeedbackCollector(Trubrics):
         Collect ML model user feedback with UI components from a Streamlit app.
 
         Args:
+            component: component name. Create a new component directly in Trubrics.
             feedback_type: type of feedback to be collected
 
                 - textbox: open textbox feedback
                 - thumbs: 👍 / 👎 UI buttons
                 - faces: 😞 / 🙁 / 😐 / 🙂 / 😀 UI buttons
             model: the model used - can be a model version, a link to the saved model artifact in cloud storage, etc
-            tags: a list of tags for the feedback
             prompt_id: id of the prompt object
+            tags: a list of tags for the feedback
             metadata: any data to save with the feedback
             user_response: a dict of user response to save with the feedback for feedback_type='custom'
             user_id: an optional reference to a user, for example a username if there is a login, a cookie ID, etc

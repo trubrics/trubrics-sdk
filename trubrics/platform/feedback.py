@@ -14,24 +14,6 @@ class Feedback(BaseModel):
     """
     The Feedback object represents all data contained as a feedback response from a user.
 
-    Example:
-        ```py
-        import trubrics
-
-        feedback = trubrics.collect(
-            component="default",
-            model="gpt-3.5-turbo",
-            user_response={
-                "type": "thumbs",
-                "score": "👎",
-                "text": "A comment / textual feedback from the user."
-            },
-            user_id="user_id",
-            tags=["satisfaction"],
-            metadata={"prompt": "What is the meaning of user feedback for AI?"}
-        )
-        ```
-
     Attributes:
         component: the name of the component that the feedback response is saved to
         prompt_id: id of the prompt object
