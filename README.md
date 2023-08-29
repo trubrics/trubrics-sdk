@@ -76,12 +76,13 @@ import streamlit as st
 from trubrics.integrations.streamlit import FeedbackCollector
 
 collector = FeedbackCollector(
+    project="default",
     email=st.secrets.TRUBRICS_EMAIL,
     password=st.secrets.TRUBRICS_PASSWORD,
-    project="default"
 )
 
 collector.st_feedback(
+    component="default",
     feedback_type="thumbs",
     open_feedback_label="[Optional] Provide additional feedback",
     model="gpt-3.5-turbo",
