@@ -16,7 +16,7 @@ class Prompt(BaseModel):
 
     Attributes:
         id: prompt id
-        model_config: model configuration. See ModelConfig data model.
+        config_model: model configuration. See ModelConfig data model.
         prompt: a user prompt
         generation: a model generation
         created_on: the UTC created time of the prompt log
@@ -27,7 +27,7 @@ class Prompt(BaseModel):
     """
 
     id: Optional[str] = None
-    model_config: ModelConfig
+    config_model: ModelConfig
     prompt: str
     generation: str
     created_on: datetime = Field(default_factory=datetime.utcnow)

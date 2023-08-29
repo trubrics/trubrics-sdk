@@ -41,7 +41,7 @@ if prompt := st.chat_input():
     response = openai.ChatCompletion.create(model=model, messages=st.session_state.messages)
     msg = response.choices[0].message
     logged_prompt = collector.log_prompt(
-        model_config={"model": model},
+        config_model={"model": model},
         prompt=prompt,
         generation=msg["content"],
         session_id=st.session_state.session_id,

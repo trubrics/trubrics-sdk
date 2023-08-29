@@ -9,7 +9,7 @@ collector = FeedbackCollector(email=st.secrets.TRUBRICS_EMAIL, password=st.secre
 
 if st.button("Predict"):
     st.session_state.logged_prompt = collector.log_prompt(
-        model_config={"model": "gpt-3.5-turbo"},
+        config_model={"model": "gpt-3.5-turbo"},
         prompt="Tell me a joke",
         generation="Why did the chicken cross the road? To get to the other side.",
     )
@@ -20,7 +20,7 @@ if st.session_state.logged_prompt:
         component="default",
         feedback_type="thumbs",
         open_feedback_label="[Optional] Provide additional feedback",
-        model=st.session_state.logged_prompt.model_config.model,
+        model=st.session_state.logged_prompt.config_model.model,
         prompt_id=st.session_state.logged_prompt.id,
         align="flex-start",
         single_submit=False,

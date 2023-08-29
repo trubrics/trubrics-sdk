@@ -41,7 +41,7 @@ if button:
     response = openai.ChatCompletion.create(model=model, messages=[{"role": "user", "content": prompt}])
     response_text = response.choices[0].message["content"]
     st.session_state.logged_prompt = collector.log_prompt(
-        model_config={"model": model}, prompt=prompt, generation=response_text, tags=["llm_app.py"]
+        config_model={"model": model}, prompt=prompt, generation=response_text, tags=["llm_app.py"]
     )
     st.session_state.response = response_text
 

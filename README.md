@@ -44,14 +44,14 @@ trubrics = Trubrics(
 )
 
 user_prompt = trubrics.log_prompt(
-    model_config={"model": "gpt-3.5-turbo"},
+    config_model={"model": "gpt-3.5-turbo"},
     prompt="Tell me a joke",
     generation="Why did the chicken cross the road? To get to the other side.",
 )
 
 user_feedback = trubrics.log_feedback(
     component="default",
-    model=user_prompt.model_config.model,
+    model=user_prompt.config_model.model,
     prompt_id=user_prompt.id,
     user_response={
         "type": "thumbs",

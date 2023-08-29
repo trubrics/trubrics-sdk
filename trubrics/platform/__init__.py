@@ -52,7 +52,7 @@ class Trubrics:
 
     def log_prompt(
         self,
-        model_config: dict,
+        config_model: dict,
         prompt: str,
         generation: str,
         user_id: Optional[str] = None,
@@ -60,9 +60,9 @@ class Trubrics:
         tags: list = [],
         metadata: dict = {},
     ) -> Optional[Prompt]:
-        model_config = ModelConfig(**model_config)
+        config_model = ModelConfig(**config_model)
         prompt = Prompt(
-            model_config=model_config,
+            config_model=config_model,
             prompt=prompt,
             generation=generation,
             user_id=user_id,
