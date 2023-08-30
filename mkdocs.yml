@@ -47,11 +47,10 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
 nav:
   - Getting Started: index.md
-  - Trubrics platform:
-    - ⚙️ Account setup: platform/account_setup.md
-    - ✏️ Feedback components: platform/feedback_components.md
-    - 🪄 Insights: platform/insights.md
-    - ⚠️ Issues: platform/issues.md
+  - Account Setup: platform/account_setup.md
+  - User Prompts: platform/user_prompts.md
+  - User Feedback: platform/user_feedback.md
+  - Issues: platform/issues.md
   - Integrations:
     - Streamlit: integrations/streamlit.md
     - React JS: integrations/react_js.md

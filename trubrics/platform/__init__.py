@@ -60,6 +60,18 @@ class Trubrics:
         tags: list = [],
         metadata: dict = {},
     ) -> Optional[Prompt]:
+        """
+        Log user prompts to Trubrics.
+
+        Parameters:
+            config_model: model configuration with fields "model", "prompt_template", "temperature"
+            prompt: user prompt to the model
+            generation: model generation
+            user_id: user id
+            session_id: session id, for example for a chatbot conversation
+            tags: feedback tags
+            metadata: any feedback metadata
+        """
         config_model = ModelConfig(**config_model)
         prompt = Prompt(
             config_model=config_model,
@@ -103,6 +115,15 @@ class Trubrics:
     ) -> Optional[Feedback]:
         """
         Log user feedback to Trubrics.
+
+        Parameters:
+            component: feedback component name created in Trubrics
+            model: model name
+            user_response: a user response dict that must contain these fields {"type": "", "score": "", "text": None}
+            prompt_id: an optional prompt_id for tracing feedback on a specific prompt / model generation
+            user_id: a user_id
+            tags: feedback tags
+            metadata: any feedback metadata
         """
         user_response = Response(**user_response)
         feedback = Feedback(

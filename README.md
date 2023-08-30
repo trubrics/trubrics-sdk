@@ -1,6 +1,10 @@
 # Welcome to the trubrics-sdk
 
-Trubrics enables AI teams to **collect, analyse and manage user feedback** on their models.
+Trubrics enables AI teams to **collect, analyse and manage user prompts & feedback** on models. This allows teams to:
+
+- **🚨 Identify bugs** - users are constantly running inference on models, and may be more likely to find bugs than an ML monitoring system
+- **🧑‍💻️ Fine tune** - users often hold domain knowledge that can be useful to fine tune models
+- **👥 Align** - identifying user preferences will help to align models to users
 
 <img src="./assets/trubrics-example.png"  width="800">
 
@@ -16,9 +20,9 @@ Trubrics enables AI teams to **collect, analyse and manage user feedback** on th
 
 Or watch a step by step video of integrating Trubrics into the LLM Streamlit app [here](https://www.youtube.com/watch?v=2Qt54qGwIdQ).
 
-## Collect user feedback with the Python SDK
+## Collect user prompts & feedback with the Python SDK
 
-The python SDK allows you to collect user feedback from your ML apps from any python backend or web framework. Install it with:
+The python SDK allows you to collect user prompts & feedback from your ML apps from any python backend or web framework. Install it with:
 
 ```console
 pip install trubrics
@@ -61,50 +65,58 @@ user_feedback = trubrics.log_feedback(
 )
 ```
 
-## Collect user feedback from a Streamlit app
+## Collect user prompts & feedback from a Streamlit app
 
-To start collecting feedback from your [Streamlit](https://streamlit.io/) app, install the additional dependency:
+To start collecting prompts & feedback from your [Streamlit](https://streamlit.io/) app, install the additional dependency:
 
 ```console
 pip install "trubrics[streamlit]"
 ```
 
-and add this code snippet directly to your streamlit app:
+and add test this code snippet:
 
 ```python
 import streamlit as st
 from trubrics.integrations.streamlit import FeedbackCollector
 
+if "logged_prompt" not in st.session_state:
+    st.session_state.logged_prompt = None
+
 collector = FeedbackCollector(
-    project="default",
     email=st.secrets.TRUBRICS_EMAIL,
     password=st.secrets.TRUBRICS_PASSWORD,
+    project="default"
 )
 
-collector.st_feedback(
-    component="default",
-    feedback_type="thumbs",
-    open_feedback_label="[Optional] Provide additional feedback",
-    model="gpt-3.5-turbo",
-    prompt_id=None,  # see log_prompt to log user prompts from Streamlit
-)
+if st.button("Predict"):
+    st.session_state.logged_prompt = collector.log_prompt(
+        config_model={"model": "gpt-3.5-turbo"},
+        prompt="Tell me a joke",
+        generation="Why did the chicken cross the road? To get to the other side.",
+    )
+
+if st.session_state.logged_prompt:
+    st.write("A model generation...")
+    user_feedback = collector.st_feedback(
+        component="default",
+        feedback_type="thumbs",
+        open_feedback_label="[Optional] Provide additional feedback",
+        model=st.session_state.logged_prompt.config_model.model,
+        prompt_id=st.session_state.logged_prompt.id,
+        align="flex-start",
+        single_submit=False
+    )
 ```
 
 ## Collect user feedback from a React.js app
 
 We have developed an [example](https://github.com/trubrics/trubrics-sdk/blob/main/examples/feedback/react_js) showing how you can collect feedback from a React app.
 
-## Why should you monitor usage of your models?
-
-- **🚨 Identify bugs** - users are constantly running inference on your models, and may be more likely to find bugs than your ML monitoring system
-- **🧑‍💻️ Fine tune** - users often hold domain knowledge that can be useful to fine tune models
-- **👥 Align** - identifying user preferences will help you to align models to your users
-
 ## What's next?
 
 - If you haven't already, create a free account or sign in to [Trubrics](https://trubrics.streamlit.app/).
 - Get more technical information from our [docs](trubrics.github.io/trubrics-sdk/):
-    - **Collect** user feedback with ✏️ [Feedback components](https://trubrics.github.io/trubrics-sdk/platform/feedback_components/)
-    - **Analyse** user feedback with 🪄 [Insights](https://trubrics.github.io/trubrics-sdk/platform/insights/)
-    - **Manage** user feedback with ⚠️ [Issues](https://trubrics.github.io/trubrics-sdk/platform/issues/)
+    - Collect & analyse [user prompts](https://trubrics.github.io/trubrics-sdk/platform/user_prompts/)
+    - Collect & analyse [user feedback](https://trubrics.github.io/trubrics-sdk/platform/user_feedback/)
+    - Manage user feedback with [Issues](https://trubrics.github.io/trubrics-sdk/platform/issues/)
 - Check out our [website](https://www.trubrics.com/home) for more information about Trubrics.
