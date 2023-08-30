@@ -38,7 +38,7 @@ prompt = trubrics.log_prompt(
 ```
 
 !!!note "`trubrics.log_prompt()` arguments"
-    :::trubrics.Trubrics.log_prompt
+    <!-- :::trubrics.Trubrics.log_prompt -->
 
 ## Analyse prompts in Trubrics
 

@@ -40,7 +40,7 @@ user_feedback = trubrics.log_feedback(
 ```
 
 !!!note "`trubrics.log_feedback()` arguments"
-    :::trubrics.Trubrics.log_feedback
+    <!-- :::trubrics.Trubrics.log_feedback -->
 
 ### 2. With Streamlit
 Trubrics has an out-of-the-box [integration with Streamlit](../integrations/streamlit.md):
@@ -82,7 +82,7 @@ Take a look at our [demo LLM app](https://trubrics-llm-example.streamlit.app/) f
 Each feedback response in a component must be of a particular type, as seen in the `user_response` field of the Feedback data object.
 
 !!!note "Feedback object"
-    :::trubrics.platform.feedback.Feedback
+    <!-- :::trubrics.platform.feedback.Feedback -->
 
 There are three out-of-the-box types of feedback:
 
