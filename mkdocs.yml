@@ -47,13 +47,13 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
 nav:
   - Getting Started: index.md
-  - Account Setup: platform/account_setup.md
-  - User Prompts: platform/user_prompts.md
-  - User Feedback: platform/user_feedback.md
-  - Issues: platform/issues.md
-  - Integrations:
-    - Streamlit: integrations/streamlit.md
-    - React JS: integrations/react_js.md
-    - Flask: integrations/flask_example.md
+  # - Account Setup: platform/account_setup.md
+  # - User Prompts: platform/user_prompts.md
+  # - User Feedback: platform/user_feedback.md
+  # - Issues: platform/issues.md
+  # - Integrations:
+  #   - Streamlit: integrations/streamlit.md
+  #   - React JS: integrations/react_js.md
+  #   - Flask: integrations/flask_example.md
 
 copyright: Copyright © 2022 Trubrics Ltd. All rights reserved. Trubrics and the Trubrics logo are trademarks of Trubrics Ltd.
