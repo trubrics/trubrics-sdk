@@ -9,7 +9,7 @@ pip install "trubrics[streamlit]"
 ```
 
 ## Streamlit Example Apps
-Once you have created an account with [Trubrics](https://trubrics.streamlit.app/), you can try two deployed example Streamlit apps that use the integration to save feedback:
+Once you have created an account with [Trubrics](https://trubrics.streamlit.app/), you can try our deployed example Streamlit apps that use the integration to save feedback:
 
 - [LLM Chat Completion](https://trubrics-llm-example-chatbot.streamlit.app/): A chatbot that queries OpenAI's API and allows users to leave feedback.
 - [LLM Completion](https://trubrics-llm-example.streamlit.app/): An LLM app that queries OpenAI's API and allows users to leave feedback on single text generations.

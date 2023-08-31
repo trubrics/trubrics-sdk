@@ -1,5 +1,5 @@
 ## Saving prompts to Trubrics
-Analysing the prompts of users is essential to building AI models that align. Upon creating an account with [Trubrics](https://trubrics.streamlit.app/), users can start logging prompts & model generations to the `default` project. Create different projects to organise your prompts.
+Analysing user prompts is essential to building AI models that aligns with your users. Upon creating an account with [Trubrics](https://trubrics.streamlit.app/), you can start logging prompts & model generations to the `default` project. Create different projects to organise your prompts (we recommend one project per use case).
 
 Install Trubrics with:
 
@@ -14,7 +14,7 @@ export TRUBRICS_EMAIL="trubrics_email"
 export TRUBRICS_PASSWORD="trubrics_password"
 ```
 
-and push some feedback to the `default` feedback component:
+and push some user prompts to the `default` project:
 
 ```python
 import os

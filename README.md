@@ -35,7 +35,7 @@ export TRUBRICS_EMAIL="trubrics_email"
 export TRUBRICS_PASSWORD="trubrics_password"
 ```
 
-and push some feedback to the `default` feedback component:
+and push some user prompts & feedback to the `default` project & feedback component:
 
 ```python
 import os
@@ -73,7 +73,7 @@ To start collecting prompts & feedback from your [Streamlit](https://streamlit.i
 pip install "trubrics[streamlit]"
 ```
 
-and add test this code snippet:
+and test this code snippet in your app:
 
 ```python
 import streamlit as st
@@ -110,12 +110,12 @@ if st.session_state.logged_prompt:
 
 ## Collect user feedback from a React.js app
 
-We have developed an [example](https://github.com/trubrics/trubrics-sdk/blob/main/examples/feedback/react_js) showing how you can collect feedback from a React app.
+To collect user feedback from a React application, check out [this example](https://github.com/trubrics/trubrics-sdk/tree/main/examples/react_js).
 
 ## What's next?
 
 - If you haven't already, create a free account or sign in to [Trubrics](https://trubrics.streamlit.app/).
-- Get more technical information from our [docs](trubrics.github.io/trubrics-sdk/):
+- Get more technical information from our [docs](https://trubrics.github.io/trubrics-sdk/):
     - Collect & analyse [user prompts](https://trubrics.github.io/trubrics-sdk/platform/user_prompts/)
     - Collect & analyse [user feedback](https://trubrics.github.io/trubrics-sdk/platform/user_feedback/)
     - Manage user feedback with [Issues](https://trubrics.github.io/trubrics-sdk/platform/issues/)

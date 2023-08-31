@@ -1,5 +1,5 @@
 ## Saving feedback to Trubrics
-Upon creating a feedback component in [Trubrics](https://trubrics.streamlit.app/), a code snippet is generated for users to incorporate quickly into their apps. There are several ways to save feedback:
+Upon creating a feedback component in [Trubrics](https://trubrics.streamlit.app/), a code snippet is generated for users to incorporate into their apps. There are several ways to save feedback:
 
 ### 1. With the Python SDK
 Install Trubrics with:
@@ -68,7 +68,7 @@ collector.st_feedback(
 )
 ```
 
-Take a look at our [demo LLM app](https://trubrics-llm-example.streamlit.app/) for an example.
+Take a look at our [demo LLM app](https://trubrics-llm-example-chatbot.streamlit.app/) for an example.
 
 ### 3. With Flask
 
@@ -105,7 +105,7 @@ Various filters allow AI teams to:
 
 ## Review user comments
 
-User comments are collected in the `text` field of the [Feedback](../feedback_components/#types-of-feedback) response. All comments are listed in the `Comments` tab, and may be grouped together to create an [issue](issues.md).
+User comments are collected in the `text` field of `user_response`. All comments are listed in the `Comments` tab, and may be grouped together to create an [issue](issues.md).
 
 ## Export all raw data
 

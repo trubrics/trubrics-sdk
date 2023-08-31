@@ -2,7 +2,7 @@
 
 The following example shows how you can collect Trubrics feedback directly from your React.js application. We will be using React MUI components that displays thumbs up/down feedback buttons. Upon clicking, users will be able to provide extra additional feedback through a popup window.
 
-![img](../../../assets/react-example.png)
+![img](../../assets/react-example.png)
 
 ## Setup
 
