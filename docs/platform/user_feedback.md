@@ -40,7 +40,7 @@ user_feedback = trubrics.log_feedback(
 ```
 
 !!!note "`trubrics.log_feedback()` arguments"
-    <!-- :::trubrics.Trubrics.log_feedback -->
+    :::trubrics.Trubrics.log_feedback
 
 ### 2. With Streamlit
 Trubrics has an out-of-the-box [integration with Streamlit](../integrations/streamlit.md):

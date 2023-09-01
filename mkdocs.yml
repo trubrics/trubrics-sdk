@@ -51,7 +51,7 @@ nav:
   - User Prompts: platform/user_prompts.md
   - User Feedback: platform/user_feedback.md
   - Issues: platform/issues.md
-  - Integrations:
+  - Integrations & Examples:
     - Streamlit: integrations/streamlit.md
     - React JS: integrations/react_js.md
     - Flask: integrations/flask_example.md

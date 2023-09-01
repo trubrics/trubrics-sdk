@@ -79,12 +79,12 @@ What's going on here? Let's break down this snippet:
 1. The FeedbackCollector holds Trubrics account information
 
     !!!tip "FeedbackCollector object"
-        <!-- :::trubrics.integrations.streamlit.FeedbackCollector.__init__ -->
+        :::trubrics.integrations.streamlit.FeedbackCollector.__init__
 
 2. Its st_feeedback() method allows users to embed UI widgets in their apps
 
     !!!tip ".st_feedback() parameters"
-        <!-- :::trubrics.integrations.streamlit.FeedbackCollector.st_feedback -->
+        :::trubrics.integrations.streamlit.FeedbackCollector.st_feedback
 
 !!!Note
     Each feedback component holds a unique type of feedback. You should create multiple `FeedbackCollector` for collecting different types of feedback in the same app.
