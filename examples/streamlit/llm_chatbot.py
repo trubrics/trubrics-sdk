@@ -27,7 +27,7 @@ if "prompt_ids" not in st.session_state:
 if "session_id" not in st.session_state:
     st.session_state["session_id"] = str(uuid.uuid4())
 
-model = "gpt-4"
+model = st.secrets.get("OPENAI_API_MODEL") or "gpt-3.5-turbo"
 
 openai_api_key = st.secrets.get("OPENAI_API_KEY")
 if prompt := st.chat_input():

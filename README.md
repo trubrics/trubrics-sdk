@@ -1,5 +1,9 @@
 # Welcome to the trubrics-sdk
 
+[![](https://dcbadge.vercel.app/api/server/jJ9YDE7qmt)](https://discord.gg/jJ9YDE7qmt)
+[<img src="./assets/trubricsdocs.png"  width="170">](https://trubrics.github.io/trubrics-sdk/)
+
+
 Trubrics enables AI teams to **collect, analyse and manage user prompts & feedback** on models. This allows teams to:
 
 - **🚨 Identify bugs** - users are constantly running inference on models, and may be more likely to find bugs than an ML monitoring system
