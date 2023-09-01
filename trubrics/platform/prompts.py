@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 class ModelConfig(BaseModel):
     model: str
     prompt_template: str = "{prompt}"
-    temperature: Optional[str] = None
+    temperature: Optional[float] = None
 
 
 class Prompt(BaseModel):
