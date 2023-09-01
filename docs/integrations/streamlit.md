@@ -96,23 +96,20 @@ if st.session_state.logged_prompt:
 
 What's going on here? Let's break down this snippet:
 
-1. `collector = FeedbackCollector()` allows you to authenticate with Trubrics
+### 1. `FeedbackCollector()`
 
-    !!!tip
-        The authentication token is cached already, but to optimise your app further, wrap the `FeedbackCollector` in [@st.cache_data](https://docs.streamlit.io/library/api-reference/performance/st.cache_data).
+!!!tip
+    The authentication token is cached already, but to optimise your app further, wrap the `FeedbackCollector` in [@st.cache_data](https://docs.streamlit.io/library/api-reference/performance/st.cache_data).
 
-    !!!note "FeedbackCollector object"
-        :::trubrics.integrations.streamlit.FeedbackCollector.__init__
+!!!note "FeedbackCollector object"
+    :::trubrics.integrations.streamlit.FeedbackCollector.__init__
 
-2. `collector.log_prompt()` allows you to log all user prompts and model generations
+### 2. `collector.log_prompt()`
 
-    !!!note ".log_prompt() parameters"
-        :::trubrics.Trubrics.log_prompt
+!!!note ".log_prompt() parameters"
+    :::trubrics.Trubrics.log_prompt
 
-3.  `collector.log_feedback()` allows users to embed UI widgets to collect feedback from users
+### 3. `collector.st_feedback()`
 
-    !!!note ".st_feedback() parameters"
-        :::trubrics.integrations.streamlit.FeedbackCollector.st_feedback
-
-!!!Note
-    Each feedback component holds a unique type of feedback. You should create multiple `FeedbackCollector` for collecting different types of feedback in the same app.
+!!!note ".st_feedback() parameters"
+    :::trubrics.integrations.streamlit.FeedbackCollector.st_feedback

@@ -40,6 +40,10 @@ prompt = trubrics.log_prompt(
 !!!note "`trubrics.log_prompt()` arguments"
     :::trubrics.Trubrics.log_prompt
 
+### Saving prompts from Streamlit apps
+
+The `FeedbackCollector` Streamlit integration inherits from the `Trubrics` object, meaning that you can log prompts in the same way directly from the `FeedbackCollector`. For more information on this, see the [Streamlit integration](../integrations/streamlit.md) docs.
+
 ## Analyse prompts in Trubrics
 
 Various filters allow AI teams to explore user prompts in Trubrics, and export them to csv.
