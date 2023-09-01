@@ -56,34 +56,62 @@ The code for these apps can be viewed in the [trubrics-sdk](https://github.com/t
     ```
 
 ## Add the FeedbackCollector to your App
-To get started with the bare bones code, you can add this code snippet directly to your streamlit app:
+To get started, you can add this code snippet directly to your streamlit app:
 ```py
 import streamlit as st
 from trubrics.integrations.streamlit import FeedbackCollector
 
+if "logged_prompt" not in st.session_state:
+    st.session_state.logged_prompt = None
+
+# 1. authenticate with trubrics
 collector = FeedbackCollector(
-    component_name="default",
-    email=st.secrets["TRUBRICS_EMAIL"], # Store your Trubrics credentials in st.secrets:
-    password=st.secrets["TRUBRICS_PASSWORD"], # https://blog.streamlit.io/secrets-in-sharing-apps/
+    email=st.secrets.TRUBRICS_EMAIL,
+    password=st.secrets.TRUBRICS_PASSWORD,
+    project="default"
 )
 
-collector.st_feedback(
-    feedback_type="thumbs",
-    model="your_model_name",
-    open_feedback_label="[Optional] Provide additional feedback",
-)
+if st.button("Predict"):
+    # 2. log a user prompt & model response
+    st.session_state.logged_prompt = collector.log_prompt(
+        config_model={"model": "gpt-3.5-turbo"},
+        prompt="Tell me a joke",
+        generation="Why did the chicken cross the road? To get to the other side.",
+    )
+
+if st.session_state.logged_prompt:
+    st.write("A model generation...")
+
+    # 3. log some user feedback
+    user_feedback = collector.st_feedback(
+        component="default",
+        feedback_type="thumbs",
+        open_feedback_label="[Optional] Provide additional feedback",
+        model=st.session_state.logged_prompt.config_model.model,
+        prompt_id=st.session_state.logged_prompt.id,
+        align="flex-start",
+        single_submit=False
+    )
 ```
 
 What's going on here? Let's break down this snippet:
 
-1. The FeedbackCollector holds Trubrics account information
+1. `collector = FeedbackCollector()` allows you to authenticate with Trubrics
 
-    !!!tip "FeedbackCollector object"
+    !!!tip
+        The authentication token is cached already, but to optimise your app further, wrap the `FeedbackCollector` in [@st.cache_data](https://docs.streamlit.io/library/api-reference/performance/st.cache_data).
+
+    !!!note "FeedbackCollector object"
         :::trubrics.integrations.streamlit.FeedbackCollector.__init__
 
-2. Its st_feeedback() method allows users to embed UI widgets in their apps
+2. `collector.log_prompt()` allows you to log all user prompts and model generations
 
-    !!!tip ".st_feedback() parameters"
+    !!!note ".log_prompt() parameters"
+        :::trubrics.Trubrics.log_prompt
+
+3.  `collector.log_feedback()` allows users to embed UI widgets to collect feedback from users
+
+    !!!note ".st_feedback() parameters"
         :::trubrics.integrations.streamlit.FeedbackCollector.st_feedback
 
 !!!Note
