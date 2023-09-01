@@ -4,7 +4,6 @@ import streamlit as st
 from streamlit_feedback import streamlit_feedback
 
 from trubrics import Trubrics
-from trubrics.platform.feedback import Response
 
 
 class FeedbackCollector(Trubrics):
@@ -82,7 +81,7 @@ class FeedbackCollector(Trubrics):
                 )
             text = self.st_textbox_ui(key, label=open_feedback_label)
             if text:
-                user_response = Response(type=feedback_type, score=None, text=text)
+                user_response = {"type": feedback_type, "score": None, "text": text}
         elif feedback_type in ("thumbs", "faces"):
             if user_response:
                 raise ValueError(
