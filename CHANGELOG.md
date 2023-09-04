@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - `user_response` is dict rather than `Response` for feedback_type="text"
+- `collector.st_feedback(..., save_to_trubrics=False)` returns a python dict
+- pydantic dependency updated and `.dict()` updated to `.model_dump()`
 
 ## [1.5.1] - 2023-08-29
 ### Changed

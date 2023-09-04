@@ -4,6 +4,7 @@ import streamlit as st
 from streamlit_feedback import streamlit_feedback
 
 from trubrics import Trubrics
+from trubrics.platform.feedback import Feedback, Response
 
 
 class FeedbackCollector(Trubrics):
@@ -97,24 +98,37 @@ class FeedbackCollector(Trubrics):
         else:
             raise ValueError("feedback_type must be one of ['textbox', 'faces', 'thumbs'].")
 
-        if user_response and save_to_trubrics:
-            feedback = self.log_feedback(
-                component=component,
-                user_response=user_response,
-                model=model,
-                prompt_id=prompt_id,
-                metadata=metadata,
-                tags=tags,
-                user_id=user_id,
-            )
-            if feedback is None:
-                error_msg = "Error in pushing feedback issue to Trubrics."
-                if success_fail_message:
-                    st.error(error_msg)
+        if user_response:
+            if save_to_trubrics:
+                feedback = self.log_feedback(
+                    component=component,
+                    user_response=user_response,
+                    model=model,
+                    prompt_id=prompt_id,
+                    metadata=metadata,
+                    tags=tags,
+                    user_id=user_id,
+                )
+                if feedback is None:
+                    error_msg = "Error in pushing feedback issue to Trubrics."
+                    if success_fail_message:
+                        st.error(error_msg)
+                else:
+                    if success_fail_message:
+                        st.success("Feedback saved to Trubrics.")
+                    return feedback.model_dump()
             else:
-                if success_fail_message:
-                    st.success("Feedback saved to Trubrics.")
-                return feedback.dict()
+                user_response = Response(**user_response)
+                feedback = Feedback(
+                    component=component,
+                    model=model,
+                    user_response=user_response,
+                    prompt_id=prompt_id,
+                    user_id=user_id,
+                    tags=tags,
+                    metadata=metadata,
+                )
+                return feedback.model_dump()
         return None
 
     @staticmethod
