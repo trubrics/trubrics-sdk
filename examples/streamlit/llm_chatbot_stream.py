@@ -6,7 +6,7 @@ from trubrics_utils import trubrics_config, trubrics_successful_feedback
 
 from trubrics.integrations.streamlit import FeedbackCollector
 
-st.title("💬 Trubrics - Chat with user feedback")
+st.title("💬 Trubrics - Streaming chat with user feedback")
 
 with st.sidebar:
     email, password = trubrics_config()
@@ -51,7 +51,7 @@ feedback_kwargs = {
     "tags": ["llm_chatbot.py"],
 }
 
-for n, msg in enumerate(messages):
+for n, msg in enumerate(st.session_state.messages):
     st.chat_message(msg["role"]).write(msg["content"])
 
     if msg["role"] == "assistant" and n > 1:
@@ -71,35 +71,41 @@ for n, msg in enumerate(messages):
         if feedback:
             trubrics_successful_feedback(feedback)
 
-
-if prompt := st.chat_input():
-    messages.append({"role": "user", "content": prompt})
-    st.chat_message("user").write(prompt)
-    if not openai_api_key:
-        st.info("Please add your OpenAI API key to continue.")
-        st.stop()
-    else:
-        openai.api_key = openai_api_key
-    response = openai.ChatCompletion.create(model=model, messages=messages)
-    generation = response.choices[0].message.content
-
+if prompt := st.chat_input("What is up?"):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
     with st.chat_message("assistant"):
-        logged_prompt = collector.log_prompt(
-            config_model={"model": model},
-            prompt=prompt,
-            generation=generation,
-            session_id=st.session_state.session_id,
-            tags=["llm_chatbot.py"],
-            user_id=email,
-        )
-        st.session_state.prompt_ids.append(logged_prompt.id)
-        messages.append({"role": "assistant", "content": generation})
-        st.write(generation)
+        message_placeholder = st.empty()
+        full_response = ""
+        if not openai_api_key:
+            st.info("Please add your OpenAI API key to continue.")
+            st.stop()
+        else:
+            openai.api_key = openai_api_key
 
+        for response in openai.ChatCompletion.create(
+            model=model,
+            messages=[{"role": m["role"], "content": m["content"]} for m in st.session_state.messages],
+            stream=True,
+        ):
+            full_response += response.choices[0].delta.get("content", "")
+            message_placeholder.markdown(full_response + "▌")
+        message_placeholder.markdown(full_response)
+    st.session_state.messages.append({"role": "assistant", "content": full_response})
+    logged_prompt = collector.log_prompt(
+        config_model={"model": model},
+        prompt=prompt,
+        generation=full_response,
+        session_id=st.session_state.session_id,
+        tags=["llm_chatbot.py"],
+        user_id=email,
+    )
+    st.session_state.prompt_ids.append(logged_prompt.id)
     feedback = collector.st_feedback(
         **feedback_kwargs,
         key=f"feedback_{int(len(messages)/2)}",
-        prompt_id=st.session_state.prompt_ids[int(len(messages) / 2) - 1],
+        prompt_id=logged_prompt.id,
         user_id=email,
     )
     if feedback:
