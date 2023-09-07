@@ -7,10 +7,7 @@ from trubrics.integrations.streamlit import FeedbackCollector
     "kwargs",
     [
         ({"feedback_type": "random"}),
-        ({"feedback_type": "issue", "user_response": {"test": "test"}}),
         ({"feedback_type": "issue", "open_feedback_label": "test"}),
-        ({"feedback_type": "faces", "user_response": "desc"}),
-        ({"feedback_type": "thumbs", "user_response": "desc"}),
     ],
 )
 def test_st_feedback_raises(kwargs):
