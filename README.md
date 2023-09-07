@@ -108,7 +108,6 @@ if st.session_state.logged_prompt:
         model=st.session_state.logged_prompt.config_model.model,
         prompt_id=st.session_state.logged_prompt.id,
         align="flex-start",
-        single_submit=False
     )
 ```
 

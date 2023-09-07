@@ -62,7 +62,6 @@ if st.session_state["wi_prediction"] is not None:
             open_feedback_label="[Optional] Provide additional feedback",
             metadata=metadata,
             align="flex-start",
-            single_submit=False,
         )
         if feedback:
             trubrics_successful_feedback(feedback)
