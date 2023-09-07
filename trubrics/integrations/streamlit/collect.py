@@ -40,13 +40,12 @@ class FeedbackCollector(Trubrics):
         prompt_id: Optional[str] = None,
         tags: list = [],
         metadata: dict = {},
-        user_response: Optional[dict] = None,
         user_id: Optional[str] = None,
         key: Optional[str] = None,
         open_feedback_label: Optional[str] = None,
         save_to_trubrics: bool = True,
         align: str = "flex-end",
-        single_submit: bool = True,
+        disable_with_score: Optional[str] = None,
         success_fail_message: bool = True,
     ) -> Optional[dict]:
         """
@@ -64,13 +63,13 @@ class FeedbackCollector(Trubrics):
             tags: a list of tags for the feedback
             metadata: any data to save with the feedback
             user_id: an optional reference to a user, for example a username if there is a login, a cookie ID, etc
-            key: a key for the streamlit components (necessary if calling this method multiple times with the same type)
+            key: a key for the streamlit components (necessary if calling this method multiple times)
             open_feedback_label: label of optional text_input for "faces" or "thumbs" feedback_type
             save_to_trubrics: whether to save the feedback to Trubrics, or just to return the feedback object
+            disable_with_score: an optional score to disable the component. Must be a "thumbs" emoji or a "faces" emoji.
+                Can be used to pass state from one component to another.
             align: where to align the feedback component ["flex-end", "center", "flex-start"]
-            single_submit: disables re-submission. This prevents users re-submitting feedback for a given prediction
-                e.g. for a chatbot.
-            success_fail_message: whether to display a st.success / st.error message on feedback submission.
+            success_fail_message: whether to display an st.toast message on feedback submission.
         """
         if key is None:
             key = feedback_type
@@ -78,37 +77,64 @@ class FeedbackCollector(Trubrics):
             text = self.st_textbox_ui(key, label=open_feedback_label)
             if text:
                 user_response = {"type": feedback_type, "score": None, "text": text}
+                if save_to_trubrics:
+                    feedback = self.log_feedback(
+                        component=component,
+                        user_response=user_response,
+                        model=model,
+                        prompt_id=prompt_id,
+                        metadata=metadata,
+                        tags=tags,
+                        user_id=user_id,
+                    )
+                    if feedback is None:
+                        error_msg = "Error in pushing feedback issue to Trubrics."
+                        if success_fail_message:
+                            st.error(error_msg)
+                    else:
+                        if success_fail_message:
+                            st.success("Feedback saved to Trubrics.")
+                        return feedback.model_dump()
+                else:
+                    user_response = Response(**user_response)
+                    feedback = Feedback(
+                        component=component,
+                        model=model,
+                        user_response=user_response,
+                        prompt_id=prompt_id,
+                        user_id=user_id,
+                        tags=tags,
+                        metadata=metadata,
+                    )
+                    return feedback.model_dump()
         elif feedback_type in ("thumbs", "faces"):
+
+            def _log_feedback_trubrics(user_response, **kwargs):
+                feedback = self.log_feedback(user_response=user_response, **kwargs)
+                if success_fail_message:
+                    if feedback:
+                        st.toast("Feedback saved to [Trubrics](https://trubrics.streamlit.app/).", icon="✅")
+                        return feedback.model_dump()
+                    else:
+                        st.toast("Error in saving feedback to [Trubrics](https://trubrics.streamlit.app/).", icon="❌")
+
             user_response = streamlit_feedback(
                 feedback_type=feedback_type,
                 optional_text_label=open_feedback_label,
-                single_submit=single_submit,
+                disable_with_score=disable_with_score,
+                on_submit=_log_feedback_trubrics if save_to_trubrics else None,
+                kwargs={
+                    "component": component,
+                    "model": model,
+                    "prompt_id": prompt_id,
+                    "metadata": metadata,
+                    "tags": tags,
+                    "user_id": user_id,
+                },
                 align=align,
                 key=key,
             )
-        else:
-            raise ValueError("feedback_type must be one of ['textbox', 'faces', 'thumbs'].")
-
-        if user_response:
-            if save_to_trubrics:
-                feedback = self.log_feedback(
-                    component=component,
-                    user_response=user_response,
-                    model=model,
-                    prompt_id=prompt_id,
-                    metadata=metadata,
-                    tags=tags,
-                    user_id=user_id,
-                )
-                if feedback is None:
-                    error_msg = "Error in pushing feedback issue to Trubrics."
-                    if success_fail_message:
-                        st.error(error_msg)
-                else:
-                    if success_fail_message:
-                        st.success("Feedback saved to Trubrics.")
-                    return feedback.model_dump()
-            else:
+            if save_to_trubrics is False and user_response:
                 user_response = Response(**user_response)
                 feedback = Feedback(
                     component=component,
@@ -120,6 +146,9 @@ class FeedbackCollector(Trubrics):
                     metadata=metadata,
                 )
                 return feedback.model_dump()
+            return user_response
+        else:
+            raise ValueError("feedback_type must be one of ['textbox', 'faces', 'thumbs'].")
         return None
 
     @staticmethod

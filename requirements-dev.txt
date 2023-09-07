@@ -24,7 +24,7 @@ pytest-cov>=3.0.0
 
 #extras (Note: in setup.cfg)
 streamlit>=1.21.0
-streamlit-feedback>=0.1.0
+streamlit-feedback==0.1.1
 numpy>=1.21.6
 pandas>=1.3.5
 scikit-learn>=1.0.0,<1.1.0
