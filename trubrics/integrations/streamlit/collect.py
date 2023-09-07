@@ -63,7 +63,6 @@ class FeedbackCollector(Trubrics):
             prompt_id: id of the prompt object
             tags: a list of tags for the feedback
             metadata: any data to save with the feedback
-            user_response: a dict of user response to save with the feedback for feedback_type='custom'
             user_id: an optional reference to a user, for example a username if there is a login, a cookie ID, etc
             key: a key for the streamlit components (necessary if calling this method multiple times with the same type)
             open_feedback_label: label of optional text_input for "faces" or "thumbs" feedback_type
@@ -76,18 +75,10 @@ class FeedbackCollector(Trubrics):
         if key is None:
             key = feedback_type
         if feedback_type == "textbox":
-            if user_response:
-                raise ValueError(
-                    "For feedback_type='textbox', user_response is set inside the component (must be None)."
-                )
             text = self.st_textbox_ui(key, label=open_feedback_label)
             if text:
                 user_response = {"type": feedback_type, "score": None, "text": text}
         elif feedback_type in ("thumbs", "faces"):
-            if user_response:
-                raise ValueError(
-                    f"For feedback_type='{feedback_type}', user_response is set inside the component (must be None)."
-                )
             user_response = streamlit_feedback(
                 feedback_type=feedback_type,
                 optional_text_label=open_feedback_label,
