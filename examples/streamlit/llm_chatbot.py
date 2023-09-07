@@ -25,7 +25,7 @@ def init_trubrics(email, password):
         collector = FeedbackCollector(email=email, password=password, project="default")
         return collector
     except Exception:
-        st.error(f"Error authenticating '{email}'. Please try again.")
+        st.error(f"Error authenticating '{email}' with [Trubrics](https://trubrics.streamlit.app/). Please try again.")
         st.stop()
 
 
@@ -67,6 +67,7 @@ for n, msg in enumerate(messages):
                 key=feedback_key,
                 disable_with_score=disable_with_score,
                 prompt_id=st.session_state.prompt_ids[int(n / 2) - 1],
+                user_id=email,
             )
             if feedback:
                 trubrics_successful_feedback(feedback)
@@ -90,6 +91,7 @@ if prompt := st.chat_input():
             generation=generation,
             session_id=st.session_state.session_id,
             tags=["llm_chatbot.py"],
+            user_id=email,
         )
         st.session_state.prompt_ids.append(logged_prompt.id)
         messages.append({"role": "assistant", "content": generation})
@@ -99,6 +101,7 @@ if prompt := st.chat_input():
         **feedback_kwargs,
         key=f"feedback_{int(len(messages)/2)}",
         prompt_id=st.session_state.prompt_ids[int(len(messages) / 2) - 1],
+        user_id=email,
     )
     if feedback:
         trubrics_successful_feedback(feedback)
