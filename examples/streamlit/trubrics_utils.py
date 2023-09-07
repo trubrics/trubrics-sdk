@@ -14,7 +14,6 @@ def trubrics_config(default_component: bool = True):
         type="password",
         value=st.secrets.get("TRUBRICS_PASSWORD", ""),
     )
-    st.write("Don't have an account yet? Create one [here](https://trubrics.streamlit.app/)!")
 
     if default_component:
         return email, password
