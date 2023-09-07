@@ -1,5 +1,5 @@
 site_name: trubrics-sdk
-site_description: Combine data science knowledge with business user feedback to validate machine learning
+site_description: The first user analytics platform for AI.
 repo_url: https://github.com/trubrics/trubrics-sdk.git
 repo_name: trubrics/trubrics-sdk
 plugins:

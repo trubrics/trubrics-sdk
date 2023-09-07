@@ -6,6 +6,8 @@ from trubrics.integrations.streamlit import FeedbackCollector
 
 if "response" not in st.session_state:
     st.session_state.response = ""
+if "feedback_key" not in st.session_state:
+    st.session_state.feedback_key = 0
 if "logged_prompt" not in st.session_state:
     st.session_state.logged_prompt = ""
 
@@ -15,13 +17,17 @@ with st.sidebar:
     email, password = trubrics_config()
 
 if email and password:
-    collector = FeedbackCollector(
-        project="default",
-        email=email,
-        password=password,
-    )
+    try:
+        collector = FeedbackCollector(email=email, password=password, project="default")
+    except Exception:
+        st.error(f"Error authenticating '{email}' with [Trubrics](https://trubrics.streamlit.app/). Please try again.")
+        st.stop()
 else:
-    st.warning("To save some feedback to Trubrics, add your account details in the sidebar.")
+    st.info(
+        "To ask a question to an LLM and save your feedback to Trubrics, add your email and password in the sidebar."
+        " Don't have an account yet? Create one for free [here](https://trubrics.streamlit.app/)!"
+    )
+    st.stop()
 
 models = ("gpt-3.5-turbo",)
 model = st.selectbox(
@@ -32,7 +38,8 @@ model = st.selectbox(
 
 openai.api_key = st.secrets.get("OPENAI_API_KEY")
 if openai.api_key is None:
-    raise ValueError("OpenAI key is missing. Set OPENAI_API_KEY in st.secrets")
+    st.info("Please add your OpenAI API key to continue.")
+    st.stop()
 
 prompt = st.text_area(label="Prompt", label_visibility="collapsed", placeholder="What would you like to know?")
 button = st.button(f"Ask {model}")
@@ -41,9 +48,10 @@ if button:
     response = openai.ChatCompletion.create(model=model, messages=[{"role": "user", "content": prompt}])
     response_text = response.choices[0].message["content"]
     st.session_state.logged_prompt = collector.log_prompt(
-        config_model={"model": model}, prompt=prompt, generation=response_text, tags=["llm_app.py"]
+        config_model={"model": model}, prompt=prompt, generation=response_text, tags=["llm_app.py"], user_id=email
     )
     st.session_state.response = response_text
+    st.session_state.feedback_key += 1
 
 if st.session_state.response:
     st.markdown(f"#### :violet[{st.session_state.response}]")
@@ -55,8 +63,9 @@ if st.session_state.response:
         prompt_id=st.session_state.logged_prompt.id,
         model=model,
         align="flex-start",
-        single_submit=False,
         tags=["llm_app.py"],
+        key=f"feedback_{st.session_state.feedback_key}",  # overwrite with new key
+        user_id=email,
     )
 
     if feedback:
