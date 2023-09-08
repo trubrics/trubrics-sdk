@@ -15,7 +15,6 @@ flake8>=4.0.1
 
 #typing
 mypy>=0.982
-pandas-stubs>=1.2.0.58
 types-requests>=2.27.25
 
 #tests
@@ -25,6 +24,3 @@ pytest-cov>=3.0.0
 #extras (Note: in setup.cfg)
 streamlit>=1.21.0
 streamlit-feedback==0.1.2
-numpy>=1.21.6
-pandas>=1.3.5
-scikit-learn>=1.0.0,<1.1.0

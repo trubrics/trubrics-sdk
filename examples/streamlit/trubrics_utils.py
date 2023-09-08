@@ -29,11 +29,3 @@ def trubrics_config(default_component: bool = True):
     )
 
     return email, password, feedback_component, feedback_type
-
-
-def trubrics_successful_feedback(feedback):
-    st.write(
-        ":green[You can now view your feedback] [here](https://trubrics.streamlit.app/), :green[and see the raw"
-        " feedback response data here:]"
-    )
-    st.write(feedback)
