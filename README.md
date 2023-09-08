@@ -82,7 +82,7 @@ user_feedback = trubrics.log_feedback(
 
 ## Collect user prompts & feedback from a Streamlit app
 
-To start collecting prompts & feedback from your [Streamlit](https://streamlit.io/) app, install the additional dependency:
+To start collecting user feedback from your [Streamlit](https://streamlit.io/) app, install the additional dependency:
 
 ```console
 pip install "trubrics[streamlit]"
@@ -94,33 +94,26 @@ and test this code snippet in your app:
 import streamlit as st
 from trubrics.integrations.streamlit import FeedbackCollector
 
-if "logged_prompt" not in st.session_state:
-    st.session_state.logged_prompt = None
-
 collector = FeedbackCollector(
     email=st.secrets.TRUBRICS_EMAIL,
     password=st.secrets.TRUBRICS_PASSWORD,
     project="default"
 )
 
-if st.button("Predict"):
-    st.session_state.logged_prompt = collector.log_prompt(
-        config_model={"model": "gpt-3.5-turbo"},
-        prompt="Tell me a joke",
-        generation="Why did the chicken cross the road? To get to the other side.",
-    )
+user_feedback = collector.st_feedback(
+    component="default",
+    feedback_type="thumbs",
+    open_feedback_label="[Optional] Provide additional feedback",
+    model="gpt-3.5-turbo",
+    prompt_id=None,  # checkout collector.log_prompt() to log your user prompts
+)
 
-if st.session_state.logged_prompt:
-    st.write("A model generation...")
-    user_feedback = collector.st_feedback(
-        component="default",
-        feedback_type="thumbs",
-        open_feedback_label="[Optional] Provide additional feedback",
-        model=st.session_state.logged_prompt.config_model.model,
-        prompt_id=st.session_state.logged_prompt.id,
-        align="flex-start",
-    )
+if user_feedback:
+    st.write("#### Raw feedback saved to Trubrics:")
+    st.write(user_feedback)
 ```
+
+For a full examples logging user prompts and feedback in Streamlit, see our [Streamlit integration docs](https://trubrics.github.io/trubrics-sdk/integrations/streamlit/).
 
 ## Collect user feedback from a React.js app
 
