@@ -1,8 +1,19 @@
 # Welcome to the trubrics-sdk
+<center>
 
 [![](https://dcbadge.vercel.app/api/server/jJ9YDE7qmt)](https://discord.gg/jJ9YDE7qmt)
 [<img src="./assets/trubricsdocs.png"  width="170">](https://trubrics.github.io/trubrics-sdk/)
 
+</center>
+
+<center>
+
+[![](https://github.com/trubrics/trubrics-sdk/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/trubrics/trubrics-sdk/actions/workflows/test.yml)
+[![](https://github.com/trubrics/trubrics-sdk/actions/workflows/docs.yml/badge.svg?branch=main)](https://github.com/trubrics/trubrics-sdk/actions/workflows/docs.yml)
+[![](https://img.shields.io/github/v/release/trubrics/trubrics-sdk)](https://github.com/trubrics/trubrics-sdk/releases)
+[![](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/trubrics/trubrics-sdk/blob/main/LICENSE)
+
+</center>
 
 Trubrics enables AI teams to **collect, analyse and manage user prompts & feedback** on models. This allows teams to:
 
