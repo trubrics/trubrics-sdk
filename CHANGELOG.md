@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2023-09-08
+[streamlit-feedback](https://github.com/trubrics/streamlit-feedback/stargazers) has been revamped for tighter integration with st chat elements
+### Changed
+- fix dependency with `streamlit-feedback==0.1.2`
+- `single_submit` has been removed from `.st_feedback()`, and replaced with `disable_with_score`
+
+### Added
+- new streamlit chatbot streaming example
+
+### Fixed
+- streamlit llm examples
+
 ## [1.5.2] - 2023-09-04
 ### Fixed
 - `user_response` is dict rather than `Response` for feedback_type="text"
