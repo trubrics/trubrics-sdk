@@ -37,7 +37,7 @@ class FeedbackCollector(Trubrics):
         component: str,
         feedback_type: str,
         model: str,
-        textbox_type: str = None,
+        textbox_type: str = "text-input",
         prompt_id: Optional[str] = None,
         tags: list = [],
         metadata: dict = {},
@@ -154,7 +154,9 @@ class FeedbackCollector(Trubrics):
         return None
 
     @staticmethod
-    def st_textbox_ui(type: str = "text-area", key: Optional[str] = None, label: Optional[str] = None) -> Optional[str]:
+    def st_textbox_ui(
+        type: str = "text-input", key: Optional[str] = None, label: Optional[str] = None
+    ) -> Optional[str]:
         """
         Trubrics 'textbox' UI component.
 
@@ -185,10 +187,7 @@ class FeedbackCollector(Trubrics):
                     key=f"{key}_title",
                 )
             elif type == "text-area":
-                title = st.text_area(
-                    label=label or "Provide some feedback",
-                    key=f"{key}_title"
-                )
+                title = st.text_area(label=label or "Provide some feedback", key=f"{key}_title")
         if title:
             st.button("Save feedback", on_click=clear_session_state, key=f"{key}_save_button")
         if st.session_state[f"{key}_save_button"]:
