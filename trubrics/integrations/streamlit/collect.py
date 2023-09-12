@@ -94,7 +94,7 @@ class FeedbackCollector(Trubrics):
                     else:
                         if success_fail_message:
                             st.success("Feedback saved to Trubrics.")
-                        return feedback.model_dump()
+                        return self._pydantic_to_dict(feedback)
                 else:
                     user_response = Response(**user_response)
                     feedback = Feedback(
@@ -106,7 +106,7 @@ class FeedbackCollector(Trubrics):
                         tags=tags,
                         metadata=metadata,
                     )
-                    return feedback.model_dump()
+                    return self._pydantic_to_dict(feedback)
         elif feedback_type in ("thumbs", "faces"):
 
             def _log_feedback_trubrics(user_response, **kwargs):
@@ -114,7 +114,7 @@ class FeedbackCollector(Trubrics):
                 if success_fail_message:
                     if feedback:
                         st.toast("Feedback saved to [Trubrics](https://trubrics.streamlit.app/).", icon="✅")
-                        return feedback.model_dump()
+                        return self._pydantic_to_dict(feedback)
                     else:
                         st.toast("Error in saving feedback to [Trubrics](https://trubrics.streamlit.app/).", icon="❌")
 
@@ -145,11 +145,19 @@ class FeedbackCollector(Trubrics):
                     tags=tags,
                     metadata=metadata,
                 )
-                return feedback.model_dump()
+                return self._pydantic_to_dict(feedback)
             return user_response
         else:
             raise ValueError("feedback_type must be one of ['textbox', 'faces', 'thumbs'].")
         return None
+
+    @staticmethod
+    def _pydantic_to_dict(feedback: Feedback) -> dict:
+        """Support for pydantic v1 and v2."""
+        try:
+            return feedback.model_dump()
+        except AttributeError:
+            return feedback.dict()
 
     @staticmethod
     def st_textbox_ui(key: Optional[str] = None, label: Optional[str] = None) -> Optional[str]:
