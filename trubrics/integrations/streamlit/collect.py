@@ -37,6 +37,7 @@ class FeedbackCollector(Trubrics):
         component: str,
         feedback_type: str,
         model: str,
+        textbox_type: str = "text-input",
         prompt_id: Optional[str] = None,
         tags: list = [],
         metadata: dict = {},
@@ -58,6 +59,7 @@ class FeedbackCollector(Trubrics):
                 - textbox: open textbox feedback
                 - thumbs: 👍 / 👎 UI buttons
                 - faces: 😞 / 🙁 / 😐 / 🙂 / 😀 UI buttons
+            textbox_type: if textbox selected as feedback_type, the type of textbox to use ["text-input", "text-area"]
             model: the model used - can be a model version, a link to the saved model artifact in cloud storage, etc
             prompt_id: id of the prompt object
             tags: a list of tags for the feedback
@@ -74,7 +76,7 @@ class FeedbackCollector(Trubrics):
         if key is None:
             key = feedback_type
         if feedback_type == "textbox":
-            text = self.st_textbox_ui(key, label=open_feedback_label)
+            text = self.st_textbox_ui(type=textbox_type, key=key, label=open_feedback_label)
             if text:
                 user_response = {"type": feedback_type, "score": None, "text": text}
                 if save_to_trubrics:
@@ -160,11 +162,14 @@ class FeedbackCollector(Trubrics):
             return feedback.dict()
 
     @staticmethod
-    def st_textbox_ui(key: Optional[str] = None, label: Optional[str] = None) -> Optional[str]:
+    def st_textbox_ui(
+        type: str = "text-input", key: Optional[str] = None, label: Optional[str] = None
+    ) -> Optional[str]:
         """
         Trubrics 'textbox' UI component.
 
         Args:
+            type: type of textbox to use (should be one of ['text-area', 'text-input'])
             key: a key for the streamlit components (necessary if calling this method multiple times with the same type)
             label: the textbox's streamlit label
         """
@@ -181,10 +186,17 @@ class FeedbackCollector(Trubrics):
             st.session_state[f"previous_{key}_state"] = st.session_state[f"{key}_title"]
             st.session_state[f"{key}_title"] = ""
 
-        title = st.text_input(
-            label=label or "Provide some feedback",
-            key=f"{key}_title",
-        )
+        if type not in ("text-input", "text-area"):
+            raise ValueError("textbox_type must be one of ['text-area', 'text-input'].")
+        else:
+            if type == "text-input":
+                title = st.text_input(
+                    label=label or "Provide some feedback",
+                    key=f"{key}_title",
+                )
+            elif type == "text-area":
+                title = st.text_area(label=label or "Provide some feedback", key=f"{key}_title")
+
         if title:
             st.button("Save feedback", on_click=clear_session_state, key=f"{key}_save_button")
         if st.session_state[f"{key}_save_button"]:
