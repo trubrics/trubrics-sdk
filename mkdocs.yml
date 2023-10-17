@@ -53,6 +53,7 @@ nav:
   - Issues: platform/issues.md
   - Integrations & Examples:
     - Streamlit: integrations/streamlit.md
+    - 🦜️🔗 LangChain: integrations/langchain.md
     - React JS: integrations/react_js.md
     - Flask: integrations/flask_example.md
 
