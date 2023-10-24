@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [1.6.2] - 2023-10-24
+### Added
+- Option to user text_area for textual feedback collection in Streamlit. Thanks @hamdan-27
+
 ## [1.6.1] - 2023-09-12
 ### Fixed
 - Now compatible for pydantic>=1.5 (v1 and v2)
