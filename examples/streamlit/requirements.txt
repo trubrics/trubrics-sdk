@@ -1,2 +1,2 @@
-trubrics[streamlit]==1.6.0
+trubrics[streamlit]
 openai
