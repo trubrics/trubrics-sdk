@@ -1,6 +1,6 @@
-import openai
 import streamlit as st
-from trubrics_utils import trubrics_config, trubrics_successful_feedback
+from openai import OpenAI
+from trubrics_utils import trubrics_config
 
 from trubrics.integrations.streamlit import FeedbackCollector
 
@@ -36,17 +36,19 @@ model = st.selectbox(
     help="Consult https://platform.openai.com/docs/models/gpt-3-5 for model info.",
 )
 
-openai.api_key = st.secrets.get("OPENAI_API_KEY")
-if openai.api_key is None:
+openai_api_key = st.secrets.get("OPENAI_API_KEY")
+if openai_api_key is None:
     st.info("Please add your OpenAI API key to continue.")
     st.stop()
+
+client = OpenAI(api_key=openai_api_key)
 
 prompt = st.text_area(label="Prompt", label_visibility="collapsed", placeholder="What would you like to know?")
 button = st.button(f"Ask {model}")
 
 if button:
-    response = openai.ChatCompletion.create(model=model, messages=[{"role": "user", "content": prompt}])
-    response_text = response.choices[0].message["content"]
+    response = client.chat.completions.create(model=model, messages=[{"role": "user", "content": prompt}])
+    response_text = response.choices[0].message.content
     st.session_state.logged_prompt = collector.log_prompt(
         config_model={"model": model}, prompt=prompt, generation=response_text, tags=["llm_app.py"], user_id=email
     )
@@ -67,6 +69,3 @@ if st.session_state.response:
         key=f"feedback_{st.session_state.feedback_key}",  # overwrite with new key
         user_id=email,
     )
-
-    if feedback:
-        trubrics_successful_feedback(feedback)

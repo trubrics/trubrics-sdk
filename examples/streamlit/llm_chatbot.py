@@ -1,7 +1,7 @@
 import uuid
 
-import openai
 import streamlit as st
+from openai import OpenAI
 from trubrics_utils import trubrics_config
 
 from trubrics.integrations.streamlit import FeedbackCollector
@@ -78,18 +78,18 @@ if prompt := st.chat_input("Ask your question"):
         st.info("Please add your OpenAI API key to continue.")
         st.stop()
     else:
-        openai.api_key = openai_api_key
+        client = OpenAI(api_key=openai_api_key)
 
     with st.chat_message("assistant"):
         if stream:
             message_placeholder = st.empty()
             generation = ""
-            for response in openai.ChatCompletion.create(model=model, messages=messages, stream=True):
-                generation += response.choices[0].delta.get("content", "")
+            for part in client.chat.completions.create(model=model, messages=messages, stream=True):
+                generation += part.choices[0].delta.content or ""
                 message_placeholder.markdown(generation + "▌")
             message_placeholder.markdown(generation)
         else:
-            response = openai.ChatCompletion.create(model=model, messages=messages)
+            response = client.chat.completions.create(model=model, messages=messages)
             generation = response.choices[0].message.content
             st.write(generation)
 
@@ -103,4 +103,4 @@ if prompt := st.chat_input("Ask your question"):
         )
         st.session_state.prompt_ids.append(logged_prompt.id)
         messages.append({"role": "assistant", "content": generation})
-        st.experimental_rerun()  # force rerun of app, to load last feedback component
+        st.rerun()  # force rerun of app, to load last feedback component
