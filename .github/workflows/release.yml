@@ -11,34 +11,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Extract release notes
+      uses: actions/checkout@v3
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        version: "0.5.26"
+
+    - name: Install and setup uv
+      run: |
+        uv venv && source .venv/bin/activate && make install_dev_requirements
+
+    - name: Build with uv
+      run: uv build
+
+    - name: Extract release notes from CHANGELOG.md
       id: extract-release-notes
-      uses: ffurrer2/extract-release-notes@v1
+      uses: ffurrer2/extract-release-notes@v2
+
     - name: Create github release
       if: startsWith(github.ref, 'refs/tags')
       uses: softprops/action-gh-release@v1
       with:
         body: ${{ steps.extract-release-notes.outputs.release_notes }}
         files: dist/*.whl
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-    - name: Install pypa/build
-      run: >-
-        python -m
-        pip install
-        build
-        --user
-    - name: Build a binary wheel and a source tarball
-      run: >-
-        python -m
-        build
-        --sdist
-        --wheel
-        --outdir dist/
-        .
+
     - name: Publish distribution 📦 to PyPI
       if: startsWith(github.ref, 'refs/tags')
       uses: pypa/gh-action-pypi-publish@master
