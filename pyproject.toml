@@ -18,7 +18,7 @@ dependencies = [
 [tool.uv]
 package = true
 dev-dependencies = [
-    "pre-commit==3.6.0",
+    "pre-commit==4.5.0",
     "mypy==1.8.0",
     "ruff==0.9.4",
 ]
