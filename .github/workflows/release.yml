@@ -84,7 +84,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh release create v${{ env.VERSION }} dist/* --title v${{ env.VERSION }} --generate-notes
+        gh release create v${{ env.VERSION }}
 
 
     - name: Create GitHub Release
