@@ -50,6 +50,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
         WITH_V: true
         CUSTOM_TAG: ${{ env.VERSION }}
+        VERBOSE: true
 
     # - name: Create tag
     #   run: |
