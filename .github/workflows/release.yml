@@ -39,12 +39,17 @@ jobs:
 
     - name: Create tag
       run: |
-        git config user.name "Sacha Lasry"
-        git config user.email "lasry.sacha@gmail.com"
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
         git tag -a "v${{ env.VERSION }}" -m "Release version ${{ env.VERSION }}"
-        git push origin "v${{ env.VERSION }}"
+      # git push origin "v${{ env.VERSION }}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push tag
+      uses: actions-ecosystem/action-push-tag@v1
+      with:
+        tag: v${{ env.VERSION }}
 
     # - name: Bump version and push tag
     #   uses: anothrNick/github-tag-action@v1 # Don't use @master or @v1 unless you're happy to test the latest version
