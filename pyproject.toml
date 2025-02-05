@@ -1,14 +1,31 @@
-[build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+[project]
+name = "trubrics"
+version = "0.4.0"
+requires-python = ">=3.10"
+authors = [
+  { name="Jeff Kayne", email="jeff.kayne@trubrics.com" },
+]
+description = "Python SDK to track events in Trubrics."
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "requests>=2.31.0",
+]
 
-[tool.black]
+[tool.uv]
+package = true
+dev-dependencies = [
+    "pre-commit==3.6.0",
+    "mypy==1.8.0",
+    "ruff==0.9.4",
+]
+
+[tool.ruff]
 line-length = 120
+target-version = "py310"
 
 [tool.mypy]
-mypy_path = "trubrics"
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = 'streamlit.*'
-ignore_errors = true
+mypy_path = ["trubrics"]

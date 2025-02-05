@@ -1,11 +1,6 @@
-from trubrics.platform import Trubrics
+from importlib.metadata import version
 
-try:
-    from importlib.metadata import version  # type: ignore
-except ImportError:
-    # for python<3.8
-    from importlib_metadata import version  # type: ignore
+from trubrics_beta.main import Trubrics
 
-__version__ = version("trubrics")
-
+__version__ = version("trubrics-beta")
 __all__ = ["Trubrics"]

@@ -1,23 +1,16 @@
-upgrade-pip:
-	@python3 -m pip install --upgrade pip
+.PHONY: help install_requirements install_dev_requirements
 
-lint:
-	@pre-commit run --all-files
+help:
+	@echo "Available commands:"
+	@echo "  install_requirements     Install production dependencies using uv"
+	@echo "  install_dev_requirements Install development dependencies using uv"
 
-local-build:
-	@pip install -e .
+install_requirements:
+	@echo "Installing production dependencies..."
+	uv pip compile pyproject.toml -o requirements.txt
+	uv sync --no-dev
 
-docs-serve:
-	@mkdocs serve
-
-install: upgrade-pip
-	@pip install -r requirements.txt
-
-install-dev: upgrade-pip local-build
-	@pip install -r requirements-dev.txt
-
-test:
-	@pytest
-
-test-coverage:
-	@pytest --cov=trubrics tests
+install_dev_requirements:
+	@echo "Installing development dependencies..."
+	uv pip compile pyproject.toml -o requirements.txt
+	uv sync
