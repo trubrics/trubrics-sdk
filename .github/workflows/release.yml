@@ -52,14 +52,14 @@ jobs:
     #     CUSTOM_TAG: ${{ env.VERSION }}
     #     VERBOSE: true
 
-    # - name: Create tag
-    #   run: |
-    #     git config user.name github-actions
-    #     git config user.email github-actions@github.com
-    #     git tag -a "v${{ env.VERSION }}" -m "Release version ${{ env.VERSION }}"
-    #   # git push origin "v${{ env.VERSION }}"
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create tag
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git tag -a "v${{ env.VERSION }}" -m "Release version ${{ env.VERSION }}"
+        git push origin "v${{ env.VERSION }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     # - name: Push Version Tags
     #   uses: ovsds/push-version-tags-action@v1
@@ -77,15 +77,12 @@ jobs:
     #   env:
     #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
     #     WITH_V: true
-
-
-    - name: Create GitHub Release - BETA
-      id: create_release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        gh release create v${{ env.VERSION }}
-
+    # - name: Create GitHub Release - BETA
+    #   id: create_release
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   run: |
+    #     gh release create v${{ env.VERSION }}
 
     - name: Create GitHub Release
       uses: actions/create-release@v1
