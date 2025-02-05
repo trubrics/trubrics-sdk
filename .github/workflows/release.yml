@@ -19,7 +19,7 @@ jobs:
         version: "0.5.26"
 
     - name: Set up Python
-      run: uv python install
+      run: uv python install 3.10
 
     - name: Setup uv venv
       run: |
@@ -34,7 +34,7 @@ jobs:
 
     - name: Create github release
       if: startsWith(github.ref, 'refs/tags')
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         body: ${{ steps.extract-release-notes.outputs.release_notes }}
         files: dist/*.whl
