@@ -1,9 +1,6 @@
 name: release
 
-on:
-  tag:
-    types:
-      - created
+on: [push]
 
 jobs:
   details:
