@@ -49,7 +49,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
         WITH_V: true
-        PRERELEASE: true
         CUSTOM_TAG: ${{ env.VERSION }}
 
     # - name: Create tag
