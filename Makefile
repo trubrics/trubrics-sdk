@@ -5,6 +5,10 @@ help:
 	@echo "  install_requirements     Install production dependencies using uv"
 	@echo "  install_dev_requirements Install development dependencies using uv"
 
+setup_uv_venv:
+	@echo "Create uv virtual env"
+	uv venv
+
 install_requirements:
 	@echo "Installing production dependencies..."
 	uv pip compile pyproject.toml -o requirements.txt
