@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.7.2] - 2025-02-05
 ### Added
-- Brought back repository to PyPI
+- Brought back repository to PyPI, and uses uv to build and publish
+- Changed name to "trubrics" for easier installation
 
 ## [1.6.2] - 2023-10-24
 ### Added
