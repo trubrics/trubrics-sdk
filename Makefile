@@ -1,5 +1,7 @@
 .PHONY: help install_requirements install_dev_requirements
 
+UV_VERSION=0.5.26
+
 help:
 	@echo "Available commands:"
 	@echo "  install_requirements     Install production dependencies using uv"
@@ -7,6 +9,7 @@ help:
 
 setup_uv_venv:
 	@echo "Create uv virtual env"
+	pip install uv==${UV_VERSION}
 	uv venv
 
 install_requirements:
