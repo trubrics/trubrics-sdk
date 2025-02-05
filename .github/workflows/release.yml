@@ -1,46 +1,140 @@
-name: Release package
+name: release
 
 on:
-  push:
-    tags:
-      - v*
+  tag:
+    types:
+      - created
 
 jobs:
-  build-and-publish:
-    name: Build and publish Python dist to PyPI
+  details:
+    outputs:
+      new_version: ${{ steps.release.outputs.new_version }}
+      suffix: ${{ steps.release.outputs.suffix }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - name: Check Ref Type
+        if: github.ref_type != 'tag'
+        run: echo "This is not a tag; exiting"; exit 1
+
+      - name: Extract tag and Details
+        id: release
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          NEW_VERSION=$(echo $TAG_NAME | awk -F'-' '{print $1}')
+          SUFFIX=$(echo $TAG_NAME | grep -oP '[a-z]+[0-9]+' || echo "")
+          echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+          echo "suffix=$SUFFIX" >> "$GITHUB_OUTPUT"
+          echo "tag_name=$TAG_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Debug Outputs
+        if: env.RUNNER_DEBUG
+        run: |
+          echo "Version is $NEW_VERSION"
+          echo "Suffix is $SUFFIX"
+          echo "Tag name is $TAG_NAME"
+
+  check_pypi:
+    needs: details
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Fetch information from PyPI
+        run: |
+          response=$(curl -s https://pypi.org/pypi/${{ env.PACKAGE_NAME }}/json || echo "{}")
+          latest_previous_version=$(echo $response | grep -oP '"releases":\{"\K[^"]+' | sort -rV | head -n 1)
+          if [ -z "$latest_previous_version" ]; then
+            echo "Package not found on PyPI."
+            latest_previous_version="0.0.0"
+          fi
+          echo "Latest version on PyPI: $latest_previous_version"
+          echo "latest_previous_version=$latest_previous_version" >> $GITHUB_ENV
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v5
-      with:
-        version: "0.5.26"
+      - name: Compare versions and exit if not newer
+        run: |
+          NEW_VERSION=${{ needs.details.outputs.new_version }}
+          LATEST_VERSION=$latest_previous_version
+          if [ "$(printf '%s\n' "$LATEST_VERSION" "$NEW_VERSION" | sort -rV | head -n 1)" != "$NEW_VERSION" ] || [ "$NEW_VERSION" == "$LATEST_VERSION" ]; then
+            echo "The new version $NEW_VERSION is not greater than the latest version $LATEST_VERSION on PyPI."
+            exit 1
+          else
+            echo "The new version $NEW_VERSION is greater than the latest version $LATEST_VERSION on PyPI."
+          fi
 
-    - name: Set up Python
-      run: uv python install 3.10
+  setup_and_build:
+    needs: [details, check_pypi]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-    - name: Setup uv venv
-      run: |
-        uv venv && source .venv/bin/activate && make install_dev_requirements
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.5.26"
 
-    - name: Build with uv
-      run: uv build
+      - name: Set up Python
+        run: uv python install 3.10
 
-    - name: Extract release notes from CHANGELOG.md
-      id: extract-release-notes
-      uses: ffurrer2/extract-release-notes@v2
+      - name: Bump version
+        run: |
+          NEW_VERSION="${{ needs.details.outputs.new_version }}"
+          sed -i "s/version = \"[0-9]*\.[0-9]*\.[0-9]*\"/version = \"$NEW_VERSION\"/" $GITHUB_WORKSPACE/pyproject.toml
 
-    - name: Create github release
-      if: startsWith(github.ref, 'refs/tags')
-      uses: softprops/action-gh-release@v2
-      with:
-        body: ${{ steps.extract-release-notes.outputs.release_notes }}
-        files: dist/*.whl
+      - name: Install dependencies
+        run: uv sync
 
-    - name: Publish distribution 📦 to PyPI
-      if: startsWith(github.ref, 'refs/tags')
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        password: ${{ secrets.PYPI_API_TOKEN }}
+      - name: Build source and wheel distribution
+        run: uv build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  pypi_publish:
+    name: Upload release to PyPI
+    needs: [setup_and_build, details]
+    runs-on: ubuntu-latest
+    environment:
+      name: release
+    permissions:
+      id-token: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.5.26"
+
+      - name: Publish to PyPI
+        run: uv publish
+
+  github_release:
+    name: Create GitHub Release
+    needs: [setup_and_build, details]
+    runs-on: ubuntu-latest
+    env:
+      TAG_NAME: ${{ needs.details.outputs.tag_name }}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch full history to avoid issues with tags and branches
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Create GitHub Release
+        id: create_release
+        run: gh release create ${{ env.TAG_NAME }} dist/* --title ${{ env.TAG_NAME }} --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}
