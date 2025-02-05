@@ -9,8 +9,6 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.10", "3.11"]
-    env:
-      UV_PYTHON: ${{ matrix.python-version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -21,7 +19,7 @@ jobs:
           version: "0.5.26"
 
       - name: Set up Python
-        run: uv python install
+        run: uv python install ${{ matrix.python-version }}
 
       - name: Setup uv venv
         run: |
