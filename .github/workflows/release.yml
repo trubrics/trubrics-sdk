@@ -42,9 +42,15 @@ jobs:
         git config user.name github-actions
         git config user.email github-actions@github.com
         git tag -a "v${{ env.VERSION }}" -m "Release version ${{ env.VERSION }}"
-        git push origin "v${{ env.VERSION }}"
+      # git push origin "v${{ env.VERSION }}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push Version Tags
+      uses: ovsds/push-version-tags-action@v1
+      with:
+        version: v${{ env.VERSION }}
+
 
     # - name: Push tag
     #   uses: actions-ecosystem/action-push-tag@v1
