@@ -38,10 +38,11 @@ jobs:
         echo "VERSION=$(awk -F'"' '/^version/ {print $2}' pyproject.toml)" >> $GITHUB_ENV
 
     - name: Create tag
-      run: git tag -a "v${{ env.VERSION }}" -m "Release version ${{ env.VERSION }}"
-      #  git config user.name "github-actions[bot]"
-      #  git config user.email "github-actions[bot]@users.noreply.github.com"
-      #  git push origin "v${{ env.VERSION }}"
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git tag -a "v${{ env.VERSION }}" -m "Release version ${{ env.VERSION }}"
+    # git push origin "v${{ env.VERSION }}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
