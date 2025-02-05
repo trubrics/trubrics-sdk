@@ -63,3 +63,6 @@ jobs:
       #   TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         uv publish
+      permissions:
+        contents: write
+        id-token: write
