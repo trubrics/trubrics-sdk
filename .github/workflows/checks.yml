@@ -23,7 +23,7 @@ jobs:
 
       - name: Install and setup uv
         run: |
-          uv venv && source venv/bin/activate && make install_dev_requirements
+          uv venv && source .venv/bin/activate && make install_dev_requirements
 
       - name: Run pre-commit hooks
         uses: pre-commit/action@v3.0.1
