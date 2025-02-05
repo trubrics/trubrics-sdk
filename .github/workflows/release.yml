@@ -64,3 +64,5 @@ jobs:
       #   TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         uv publish
+      env:
+        UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
