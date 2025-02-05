@@ -26,6 +26,7 @@ dev-dependencies = [
 [tool.ruff]
 line-length = 120
 target-version = "py310"
+include = ["trubrics/**/*.py"]
 
 [tool.mypy]
 mypy_path = ["trubrics"]
