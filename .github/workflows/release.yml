@@ -54,8 +54,8 @@ jobs:
 
     - name: Create tag
       run: |
-        git config user.name github-actions
-        git config user.email github-actions@github.com
+        git config user.name "Sacha Lasry"
+        git config user.email "66633561+sacha-lasry@users.noreply.github.com"
         git tag -a "v${{ env.VERSION }}" -m "Release version ${{ env.VERSION }}"
         git push origin "v${{ env.VERSION }}"
       env:
