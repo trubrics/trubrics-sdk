@@ -38,19 +38,18 @@ jobs:
         echo "VERSION=$(awk -F'"' '/^version/ {print $2}' pyproject.toml)" >> $GITHUB_ENV
 
     - name: Create tag
-      id: "v${{ env.VERSION }}"
-      uses: mathieudutour/github-tag-action@v6.2
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+      run: git tag -a "v${{ env.VERSION }}" -m "Release version ${{ env.VERSION }}"
+      #  git config user.name "github-actions[bot]"
+      #  git config user.email "github-actions[bot]@users.noreply.github.com"
+      #  git push origin "v${{ env.VERSION }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # - name: Create tag
-    #   run: |
-    #     git config user.name "github-actions[bot]"
-    #     git config user.email "github-actions[bot]@users.noreply.github.com"
-    #     git tag -a "v${{ env.VERSION }}" -m "Release version ${{ env.VERSION }}"
-    #     git push origin "v${{ env.VERSION }}"
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Bump version and push tag
+      uses: anothrNick/github-tag-action@v1 # Don't use @master or @v1 unless you're happy to test the latest version
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # if you don't want to set write permissions use a PAT token
+        WITH_V: true
 
     - name: Create GitHub Release
       uses: actions/create-release@v1
