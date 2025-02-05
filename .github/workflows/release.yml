@@ -5,7 +5,7 @@ name: Release and Publish
 #     branches:
 #       - main
 
-on: [pull-request]
+on: [push]
 
 jobs:
   release:
