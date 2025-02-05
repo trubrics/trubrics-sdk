@@ -16,6 +16,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install uv
+        run: pip install uv
+
       - name: Install dependencies
         run: make install_dev_requirements
 
