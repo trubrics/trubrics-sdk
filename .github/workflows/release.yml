@@ -14,6 +14,8 @@ jobs:
       contents: write
       packages: write
       id-token: write
+      attestations: write
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -36,13 +38,19 @@ jobs:
         echo "VERSION=$(awk -F'"' '/^version/ {print $2}' pyproject.toml)" >> $GITHUB_ENV
 
     - name: Create tag
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        git tag -a "v${{ env.VERSION }}" -m "Release version ${{ env.VERSION }}"
-        git push origin "v${{ env.VERSION }}"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      id: "v${{ env.VERSION }}"
+      uses: mathieudutour/github-tag-action@v6.2
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    # - name: Create tag
+    #   run: |
+    #     git config user.name "github-actions[bot]"
+    #     git config user.email "github-actions[bot]@users.noreply.github.com"
+    #     git tag -a "v${{ env.VERSION }}" -m "Release version ${{ env.VERSION }}"
+    #     git push origin "v${{ env.VERSION }}"
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create GitHub Release
       uses: actions/create-release@v1
