@@ -101,13 +101,17 @@ make install_requirements     # Install production dependencies
 ## Publishing
 
 The package is automatically published to PyPI when a new version tag is pushed. To publish a new version:
-1. Update version in pyproject.toml
-2. Create and push a new tag:
-
-``` bash
-git tag v1.0.0
-git push origin v1.0.0
-```
+- Create a PR from the main branch for the desired changes
+- Update the version in `pyproject.toml`, and add changelog entry in `CHANGELOG.md`
+- Once the PR is merged, create a tag in the repo `trubrics-sdk` based on the version in `pyproject.toml`, and push it
+    ``` bash
+    git tag -a v1.0.0 -m "Release version v1.0.0"
+    git push origin v1.0.0
+    ```
+- Once the tag is pushed, a Github action `release.yml` will be triggered. It will:
+  - Create a release in the repo `trubrics-sdk` based on the `CHANGELOG.md` entry
+  - build the package with `uv`
+  - publish it to PyPI
 
 ## License
 
