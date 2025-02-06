@@ -7,11 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- ...
+
+## [1.7.13] - 2025-02-06
+### Added
 - Update logging, removing `is_verbose` parameter
 - Removed CONTRIBUTING.md, as info is now in README.md
-
-## [1.7.2] - 2025-02-05
-### Added
 - Brought back repository to PyPI, and uses uv to build and publish
 - Changed name to "trubrics" for easier installation
 
