@@ -73,16 +73,15 @@ client.close()
 
 The client uses python's `logging` library to log messages, by default at the `ERROR` level.
 
-To adjust the verbosity of the logs, specify the log level:
+To adjust the verbosity of the default logs, specify the log level:
 ``` python
-import logging
-logging.getLogger("trubrics").setLevel(logging.DEBUG)
+trubrics = Trubrics(api_key="your-api-key")
+trubrics.logger.setLevel(logging.DEBUG)
 ```
 
-Or disable logging completely:
+Or specify your own logger completely:
 ``` python
-import logging
-logging.getLogger("trubrics").disabled = True
+trubrics = Trubrics(api_key="your-api-key", logger=your_cool_logger)
 ```
 
 ## Configuration Options

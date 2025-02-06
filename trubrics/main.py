@@ -1,10 +1,11 @@
+import logging
 import threading
 import time
 from datetime import datetime, timedelta, timezone
 
 import requests
 
-from .logger import logger
+from trubrics.logger import trubrics_logger
 
 
 class Trubrics:
@@ -14,6 +15,7 @@ class Trubrics:
         host: str = "https://app.trubrics.com/api/ingestion",
         flush_interval: int = 10,
         flush_at: int = 20,
+        logger: logging.Logger = trubrics_logger,
     ):
         self.host = host
         self.api_key = api_key
@@ -26,6 +28,7 @@ class Trubrics:
         self._stop_event = threading.Event()
         self._thread = threading.Thread(target=self._periodic_flush, daemon=True)
         self._thread.start()
+        self.logger = logger
 
     def track(
         self,
@@ -44,7 +47,7 @@ class Trubrics:
         """
 
         if timestamp and not isinstance(timestamp, datetime):
-            logger.error("Timestamp must be a datetime object. Ignoring event.")
+            self.logger.error("Timestamp must be a datetime object. Ignoring event.")
             return
 
         event_dict = {
@@ -59,7 +62,9 @@ class Trubrics:
         }
         with self._lock:
             self.queue.append(event_dict)
-            logger.info(f"Event `{event}` by user `{user_id}` has been added to queue.")
+            self.logger.info(
+                f"Event `{event}` by user `{user_id}` has been added to queue."
+            )
 
     def track_llm(
         self,
@@ -111,7 +116,7 @@ class Trubrics:
         with self._lock:
             queue_len = len(self.queue)
             if queue_len and not self.is_flushing:
-                logger.info(f"Flushing {queue_len} events.")
+                self.logger.info(f"Flushing {queue_len} events.")
 
                 self.is_flushing = True
                 events = self.queue[:]
@@ -123,7 +128,7 @@ class Trubrics:
 
             if not success:
                 time.sleep(5)
-                logger.info(f"Retrying flush of {queue_len} events.")
+                self.logger.info(f"Retrying flush of {queue_len} events.")
 
                 self._post(events)
 
@@ -135,7 +140,7 @@ class Trubrics:
         self._stop_event.set()
         self._thread.join()
         self.flush()
-        logger.info("Background thread stopped and final flush completed.")
+        self.logger.info("Background thread stopped and final flush completed.")
 
     def _post(self, events: list[dict]):
         with requests.Session() as session:
@@ -149,10 +154,10 @@ class Trubrics:
                     json=events,
                 )
                 response.raise_for_status()
-                logger.info(f"{len(events)} events sent to Trubrics.")
+                self.logger.info(f"{len(events)} events sent to Trubrics.")
                 return True
             except Exception as e:
-                logger.error(f"Error flushing {len(events)} events: {e}")
+                self.logger.error(f"Error flushing {len(events)} events: {e}")
                 return False
 
     def _periodic_flush(self):
