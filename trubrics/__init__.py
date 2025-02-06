@@ -1,6 +1,6 @@
 from importlib.metadata import version
 
-from trubrics_beta.main import Trubrics
+from trubrics.main import Trubrics
 
-__version__ = version("trubrics-beta")
+__version__ = version("trubrics")
 __all__ = ["Trubrics"]
