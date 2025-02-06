@@ -29,15 +29,6 @@ jobs:
       run: |
         echo "VERSION=$(awk -F'"' '/^version/ {print $2}' pyproject.toml)" >> $GITHUB_ENV
 
-    # - name: Create tag
-    #   run: |
-    #     git config user.name "Sacha Lasry"
-    #     git config user.email "lasry.sacha@gmail.com"
-    #     git tag -a "v${{ env.VERSION }}" -m "Release version ${{ env.VERSION }}"
-    #     git push origin "v${{ env.VERSION }}"
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Extract release notes
       id: extract-release-notes
       uses: ffurrer2/extract-release-notes@v1
