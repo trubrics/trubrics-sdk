@@ -37,8 +37,7 @@ from trubrics import Trubrics
 client = Trubrics(
     api_key="your-api-key",
     flush_interval=10,  # seconds
-    flush_at=20,       # events
-    is_verbose=False
+    flush_at=20,        # events
 )
 ```
 
@@ -70,12 +69,27 @@ client.track_llm(
 client.close()
 ```
 
+### Logging
+
+The client uses python's `logging` library to log messages, by default at the `ERROR` level.
+
+To adjust the verbosity of the logs, specify the log level:
+``` python
+import logging
+logging.getLogger("trubrics").setLevel(logging.DEBUG)
+```
+
+Or disable logging completely:
+``` python
+import logging
+logging.getLogger("trubrics").disabled = True
+```
+
 ## Configuration Options
 
 - api_key: Your Trubrics API key
 - flush_interval: Time in seconds between automatic flushes (default: 10)
 - flush_at: Number of events that trigger a flush (default: 20)
-- is_verbose: Enable detailed logging (default: False)
 
 ## Development
 

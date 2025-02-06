@@ -2,9 +2,20 @@ import logging
 import threading
 import time
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 
 import requests
+
+logger = logging.getLogger("trubrics")
+if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.ERROR)
+
+logger.propagate = False
 
 
 class Trubrics:
@@ -14,7 +25,6 @@ class Trubrics:
         host: str = "https://app.trubrics.com/api/ingestion",
         flush_interval: int = 10,
         flush_at: int = 20,
-        is_verbose: bool = False,
     ):
         self.host = host
         self.api_key = api_key
@@ -23,8 +33,6 @@ class Trubrics:
         self.flush_at = flush_at
         self.last_flush_time = datetime.now(timezone.utc)
         self.is_flushing = False
-        self.is_verbose = is_verbose
-        self.logger = logging.getLogger()
         self._lock = threading.Lock()
         self._stop_event = threading.Event()
         self._thread = threading.Thread(target=self._periodic_flush, daemon=True)
@@ -43,10 +51,12 @@ class Trubrics:
             user_id (str): The ID of the user.
             event (str): The name of the event.
             properties (dict | None): Additional properties to track.
-            timestamp (datetime | None): The timestamp of event. If None, the current time in UTC is used.
+            timestamp (datetime | None): The timestamp of event. If None, the current time in UTC is used. If not a datetime object, the event is ignored.
         """
 
-        self._validate_request([user_id, event], [], [timestamp], [user_id, event])
+        if timestamp and not isinstance(timestamp, datetime):
+            logger.error("Timestamp must be a datetime object. Ignoring event.")
+            return
 
         event_dict = {
             "user_id": user_id,
@@ -60,6 +70,7 @@ class Trubrics:
         }
         with self._lock:
             self.queue.append(event_dict)
+            logger.info(f"Event `{event}` by user `{user_id}` has been added to queue.")
 
     def track_llm(
         self,
@@ -82,14 +93,6 @@ class Trubrics:
             timestamp (datetime | None): The timestamp of the generation event. If None, the current time in UTC is used.
             latency (int): The latency in milliseconds between the prompt and the generation. Defaults to 1.
         """
-
-        self._validate_request(
-            [user_id, prompt, assistant_id, generation],
-            [latency],
-            [timestamp],
-            [user_id, prompt, assistant_id, generation],
-        )
-
         generation_timestamp = timestamp or datetime.now(timezone.utc)
         prompt_timestamp = generation_timestamp - timedelta(milliseconds=latency)
 
@@ -119,8 +122,7 @@ class Trubrics:
         with self._lock:
             queue_len = len(self.queue)
             if queue_len and not self.is_flushing:
-                if self.is_verbose:
-                    self.logger.debug(f"Flushing {queue_len} events")
+                logger.info(f"Flushing {queue_len} events.")
 
                 self.is_flushing = True
                 events = self.queue[:]
@@ -132,8 +134,8 @@ class Trubrics:
 
             if not success:
                 time.sleep(5)
-                if self.is_verbose:
-                    self.logger.info(f"Retrying flush of {queue_len} events")
+                logger.info(f"Retrying flush of {queue_len} events.")
+
                 self._post(events)
 
         with self._lock:
@@ -144,8 +146,7 @@ class Trubrics:
         self._stop_event.set()
         self._thread.join()
         self.flush()
-        if self.is_verbose:
-            self.logger.info("Background thread stopped and final flush completed.")
+        logger.info("Background thread stopped and final flush completed.")
 
     def _post(self, events: list[dict]):
         with requests.Session() as session:
@@ -159,9 +160,10 @@ class Trubrics:
                     json=events,
                 )
                 response.raise_for_status()
+                logger.info(f"{len(events)} events sent to Trubrics.")
                 return True
             except Exception as e:
-                self.logger.error(f"Error flushing {len(events)} events: {e}")
+                logger.error(f"Error flushing {len(events)} events: {e}")
                 return False
 
     def _periodic_flush(self):
@@ -176,31 +178,3 @@ class Trubrics:
                 or time_since_last_flush >= self.flush_interval
             ):
                 self.flush()
-
-    def _validate_request(
-        self,
-        strings: list[Optional[str]],
-        integers: list[Optional[int]],
-        dates: list[Optional[datetime]],
-        mandatory: list,
-    ):
-        if any(item is None for item in mandatory):
-            raise ValueError("Mandatory fields cannot be None")
-
-        item_str: Optional[str]
-        for item_str in strings:
-            if item_str is not None:
-                if not isinstance(item_str, str) or item_str == "":
-                    raise ValueError("String fields must be non-empty strings")
-
-        item_int: Optional[int]
-        for item_int in integers:
-            if item_int is not None:
-                if not isinstance(item_int, int):
-                    raise ValueError("Integer fields must be integers")
-
-        item_date: Optional[datetime]
-        for item_date in dates:
-            if item_date is not None:
-                if not isinstance(item_date, datetime):
-                    raise ValueError("Datetime fields must be datetime")
