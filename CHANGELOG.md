@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- ...
+
+## [1.7.13] - 2025-02-06
+### Added
+- Update logging, removing `is_verbose` parameter
+- Removed CONTRIBUTING.md, as info is now in README.md
+- Brought back repository to PyPI, and uses uv to build and publish
+- Changed name to "trubrics" for easier installation
+
 ## [1.6.2] - 2023-10-24
 ### Added
 - Option to user text_area for textual feedback collection in Streamlit. Thanks @hamdan-27

@@ -1,23 +1,23 @@
-upgrade-pip:
-	@python3 -m pip install --upgrade pip
+.PHONY: help install_requirements install_dev_requirements
 
-lint:
-	@pre-commit run --all-files
+UV_VERSION=0.5.26
 
-local-build:
-	@pip install -e .
+help:
+	@echo "Available commands:"
+	@echo "  install_requirements     Install production dependencies using uv"
+	@echo "  install_dev_requirements Install development dependencies using uv"
 
-docs-serve:
-	@mkdocs serve
+setup_uv_venv:
+	@echo "Create uv virtual env"
+	pip install uv==${UV_VERSION}
+	uv venv
 
-install: upgrade-pip
-	@pip install -r requirements.txt
+install_requirements:
+	@echo "Installing production dependencies..."
+	uv pip compile pyproject.toml -o requirements.txt
+	uv sync --no-dev
 
-install-dev: upgrade-pip local-build
-	@pip install -r requirements-dev.txt
-
-test:
-	@pytest
-
-test-coverage:
-	@pytest --cov=trubrics tests
+install_dev_requirements:
+	@echo "Installing development dependencies..."
+	uv pip compile pyproject.toml -o requirements.txt
+	uv sync

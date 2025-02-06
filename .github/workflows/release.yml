@@ -1,4 +1,4 @@
-name: Release package
+name: Release and Publish
 
 on:
   push:
@@ -6,41 +6,50 @@ on:
       - v*
 
 jobs:
-  build-and-publish:
-    name: Build and publish Python dist to PyPI
+  release:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
+
+    - name: Install uv and setup Python version
+      uses: astral-sh/setup-uv@v5
+      with:
+        version: "0.5.26"
+
+    - name: Set up Python
+      run: uv python install 3.10
+
+    - name: Setup uv venv
+      run: |
+        uv venv && source .venv/bin/activate && make install_dev_requirements
+
+    - name: Get version from pyproject.toml
+      id: get_version
+      run: |
+        echo "VERSION=$(awk -F'"' '/^version/ {print $2}' pyproject.toml)" >> $GITHUB_ENV
+
     - name: Extract release notes
       id: extract-release-notes
       uses: ffurrer2/extract-release-notes@v1
-    - name: Create github release
-      if: startsWith(github.ref, 'refs/tags')
-      uses: softprops/action-gh-release@v1
+
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
       with:
+        tag_name: "v${{ env.VERSION }}"
         body: ${{ steps.extract-release-notes.outputs.release_notes }}
-        files: dist/*.whl
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.9"
-    - name: Install pypa/build
-      run: >-
-        python -m
-        pip install
-        build
-        --user
-    - name: Build a binary wheel and a source tarball
-      run: >-
-        python -m
-        build
-        --sdist
-        --wheel
-        --outdir dist/
-        .
-    - name: Publish distribution 📦 to PyPI
-      if: startsWith(github.ref, 'refs/tags')
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        password: ${{ secrets.PYPI_API_TOKEN }}
+        release_name: "Release ${{ env.VERSION }}"
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build package
+      run: |
+        uv build
+
+    - name: Publish to PyPI
+      run: |
+        uv publish
+      env:
+        UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}

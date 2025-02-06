@@ -1,0 +1,29 @@
+name: Checks code quality
+
+on: [push]
+
+jobs:
+  code-checks:
+    name: Checks quality of code
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install uv and setup Python version
+      uses: astral-sh/setup-uv@v5
+      with:
+        version: "0.5.26"
+
+    - name: Set up Python
+      run: uv python install ${{ matrix.python-version }}
+
+    - name: Setup uv venv
+      run: |
+        uv venv && source .venv/bin/activate && make install_dev_requirements
+
+    - name: Run pre-commit hooks
+      uses: pre-commit/action@v3.0.1
