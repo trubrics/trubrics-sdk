@@ -83,6 +83,12 @@ class Trubrics:
                 f"Event `{event}` by user `{user_id}` has been added to queue."
             )
 
+        if len(self.queue) >= self.flush_at:
+            self.logger.info(
+                f"Triggering flush as queue has reached {self.flush_at} events."
+            )
+            self.flush()
+
     def track_llm(
         self,
         user_id: str,
