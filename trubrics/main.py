@@ -6,6 +6,12 @@ from datetime import datetime, timedelta, timezone
 
 import requests
 
+from trubrics.config import (
+    DEFAULT_FLUSH_AT,
+    DEFAULT_FLUSH_INTERVAL,
+    MAX_FLUSH_AT,
+    MIN_FLUSH_INTERVAL,
+)
 from trubrics.logger import trubrics_logger
 
 
@@ -14,15 +20,25 @@ class Trubrics:
         self,
         api_key: str,
         host: str = "https://app.trubrics.com/api/ingestion",
-        flush_interval: int = 10,
-        flush_at: int = 20,
+        flush_interval: int = DEFAULT_FLUSH_INTERVAL,
+        flush_at: int = DEFAULT_FLUSH_AT,
         logger: logging.Logger = trubrics_logger,
     ):
+        f"""
+        Initialize the Trubrics client.
+        Args:
+            api_key (str): The API key for the Trubrics account.
+            host (str): The host URL for the Trubrics API.
+            flush_interval (int): The interval in seconds between flushes. Minimum possible value is {MIN_FLUSH_INTERVAL}.
+            flush_at (int): The number of events to flush at a time. Max possible value is {MAX_FLUSH_AT}.
+            logger (logging.Logger): The logger to use for logging.
+
+        """
         self.host = host
         self.api_key = api_key
         self.queue: list[dict] = []
-        self.flush_interval = flush_interval
-        self.flush_at = flush_at
+        self.flush_interval = max(flush_interval, MIN_FLUSH_INTERVAL)
+        self.flush_at = min(flush_at, MAX_FLUSH_AT)
         self.last_flush_time = datetime.now(timezone.utc)
         self.is_flushing = False
         self._lock = threading.Lock()
