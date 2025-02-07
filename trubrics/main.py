@@ -1,3 +1,4 @@
+import json
 import logging
 import threading
 import time
@@ -127,8 +128,8 @@ class Trubrics:
             self.last_flush_time = datetime.now(timezone.utc)
 
             if not success:
-                time.sleep(5)
                 self.logger.info(f"Retrying flush of {queue_len} events.")
+                time.sleep(5)
 
                 self._post(events)
 
@@ -156,8 +157,22 @@ class Trubrics:
                 response.raise_for_status()
                 self.logger.info(f"{len(events)} events sent to Trubrics.")
                 return True
+            except requests.exceptions.HTTPError as e:
+                error_message = response.text if response.status_code != 200 else str(e)
+                try:
+                    error_message = json.loads(error_message).get(
+                        "detail", error_message
+                    )
+                except json.JSONDecodeError:
+                    pass
+                self.logger.error(
+                    f"Error flushing {len(events)} events: {error_message}"
+                )
+                return False
             except Exception as e:
-                self.logger.error(f"Error flushing {len(events)} events: {e}")
+                self.logger.error(
+                    f"Unexpected error flushing {len(events)} events: {e}"
+                )
                 return False
 
     def _periodic_flush(self):
