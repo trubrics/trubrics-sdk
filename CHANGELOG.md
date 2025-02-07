@@ -6,10 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Added
-- ...
 
-## [1.7.13] - 2025-02-06
+
+## [1.8.1] - 2025-02-07
+### Fixed
+- Fixed error logging when flushing events
+
+## [1.8.0] - 2025-02-06
 ### Added
 - Update logging, removing `is_verbose` parameter
 - Removed CONTRIBUTING.md, as info is now in README.md
