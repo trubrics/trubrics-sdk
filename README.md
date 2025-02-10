@@ -37,7 +37,7 @@ from trubrics import Trubrics
 client = Trubrics(
     api_key="your-api-key",
     flush_interval=10,  # seconds
-    flush_at=20,        # events
+    flush_batch_size=20,        # events
 )
 ```
 
@@ -88,7 +88,7 @@ trubrics = Trubrics(api_key="your-api-key", logger=your_cool_logger)
 
 - api_key: Your Trubrics API key
 - flush_interval: Time in seconds between automatic flushes (default: 10)
-- flush_at: Number of events that trigger a flush (default: 20)
+- flush_batch_size: Number of events that trigger a flush (default: 20)
 
 ## Development
 

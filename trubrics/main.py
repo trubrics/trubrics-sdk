@@ -7,10 +7,10 @@ from datetime import datetime, timedelta, timezone
 import requests
 
 from trubrics.config import (
-    DEFAULT_FLUSH_AT,
+    DEFAULT_FLUSH_BATCH_SIZE,
     DEFAULT_FLUSH_INTERVAL,
     DEFAULT_PERIODIC_FLUSH_CHECK_INTERVAL,
-    MAX_FLUSH_AT,
+    MAX_FLUSH_BATCH_SIZE,
     MIN_FLUSH_INTERVAL,
 )
 from trubrics.logger import trubrics_logger
@@ -22,7 +22,7 @@ class Trubrics:
         api_key: str,
         host: str = "https://app.trubrics.com/api/ingestion",
         flush_interval: int = DEFAULT_FLUSH_INTERVAL,
-        flush_at: int = DEFAULT_FLUSH_AT,
+        flush_batch_size: int = DEFAULT_FLUSH_BATCH_SIZE,
         logger: logging.Logger = trubrics_logger,
         periodic_flush_check_interval: float = DEFAULT_PERIODIC_FLUSH_CHECK_INTERVAL,
     ):
@@ -32,7 +32,7 @@ class Trubrics:
             api_key (str): The API key for the Trubrics account.
             host (str): The host URL for the Trubrics API.
             flush_interval (int): The interval in seconds between flushes. Minimum possible value is {MIN_FLUSH_INTERVAL}.
-            flush_at (int): The number of events to flush at a time. Max possible value is {MAX_FLUSH_AT}.
+            flush_batch_size (int): The number of events to flush at a time. Max possible value is {MAX_FLUSH_BATCH_SIZE}.
             logger (logging.Logger): The logger to use for logging.
             periodic_flush_check_interval (float): The interval in seconds between periodic flush checks.
 
@@ -51,11 +51,11 @@ class Trubrics:
                 f"Flush interval {flush_interval} is too low. Setting it to minimum allowed value of {MIN_FLUSH_INTERVAL}."
             )
             flush_interval = MIN_FLUSH_INTERVAL
-        if flush_at > MAX_FLUSH_AT:
+        if flush_batch_size > MAX_FLUSH_BATCH_SIZE:
             self.logger.warning(
-                f"Flush at {flush_at} is too high. Setting to maximum allowed value of {MAX_FLUSH_AT}."
+                f"Flush batch size {flush_batch_size} is too high. Setting to maximum allowed value of {MAX_FLUSH_BATCH_SIZE}."
             )
-            flush_at = MAX_FLUSH_AT
+            flush_batch_size = MAX_FLUSH_BATCH_SIZE
         if periodic_flush_check_interval > flush_interval:
             self.logger.warning(
                 f"Periodic flush check interval {periodic_flush_check_interval} is higher than defined \
@@ -64,7 +64,7 @@ class Trubrics:
             periodic_flush_check_interval = flush_interval
 
         self.flush_interval = flush_interval
-        self.flush_at = flush_at
+        self.flush_batch_size = flush_batch_size
         self.periodic_flush_check_interval = periodic_flush_check_interval
 
         self._thread = threading.Thread(target=self._periodic_flush, daemon=True)
@@ -163,8 +163,8 @@ class Trubrics:
                 self.queue.clear()
 
         if events:
-            for batch_id in range(0, len(events), self.flush_at):
-                batch = events[batch_id : batch_id + self.flush_at]
+            for batch_id in range(0, len(events), self.flush_batch_size):
+                batch = events[batch_id : batch_id + self.flush_batch_size]
                 success = self._post(batch)
 
                 if not success:
@@ -227,7 +227,7 @@ class Trubrics:
             now = datetime.now(timezone.utc)
             time_since_last_flush = (now - self.last_flush_time).total_seconds()
             if (
-                queue_len >= self.flush_at
+                queue_len >= self.flush_batch_size
                 or time_since_last_flush >= self.flush_interval
             ):
                 self.logger.info(f"queue_len {queue_len}")
