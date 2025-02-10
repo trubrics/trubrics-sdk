@@ -9,6 +9,7 @@ import requests
 from trubrics.config import (
     DEFAULT_FLUSH_AT,
     DEFAULT_FLUSH_INTERVAL,
+    DEFAULT_PERIODIC_FLUSH_CHECK_INTERVAL,
     MAX_FLUSH_AT,
     MIN_FLUSH_INTERVAL,
 )
@@ -23,6 +24,7 @@ class Trubrics:
         flush_interval: int = DEFAULT_FLUSH_INTERVAL,
         flush_at: int = DEFAULT_FLUSH_AT,
         logger: logging.Logger = trubrics_logger,
+        periodic_flush_check_interval: float = DEFAULT_PERIODIC_FLUSH_CHECK_INTERVAL,
     ):
         f"""
         Initialize the Trubrics client.
@@ -32,6 +34,7 @@ class Trubrics:
             flush_interval (int): The interval in seconds between flushes. Minimum possible value is {MIN_FLUSH_INTERVAL}.
             flush_at (int): The number of events to flush at a time. Max possible value is {MAX_FLUSH_AT}.
             logger (logging.Logger): The logger to use for logging.
+            periodic_flush_check_interval (float): The interval in seconds between periodic flush checks.
 
         """
         self.host = host
@@ -41,8 +44,6 @@ class Trubrics:
         self.is_flushing = False
         self._lock = threading.Lock()
         self._stop_event = threading.Event()
-        self._thread = threading.Thread(target=self._periodic_flush, daemon=True)
-        self._thread.start()
         self.logger = logger
 
         if flush_interval < MIN_FLUSH_INTERVAL:
@@ -55,9 +56,19 @@ class Trubrics:
                 f"Flush at {flush_at} is too high. Setting to maximum allowed value of {MAX_FLUSH_AT}."
             )
             flush_at = MAX_FLUSH_AT
+        if periodic_flush_check_interval > flush_interval:
+            self.logger.warning(
+                f"Periodic flush check interval {periodic_flush_check_interval} is higher than defined \
+                    flush interval period. Setting it to Flush interval period {flush_interval}."
+            )
+            periodic_flush_check_interval = flush_interval
 
         self.flush_interval = flush_interval
         self.flush_at = flush_at
+        self.periodic_flush_check_interval = periodic_flush_check_interval
+
+        self._thread = threading.Thread(target=self._periodic_flush, daemon=True)
+        self._thread.start()
 
     def track(
         self,
@@ -152,14 +163,19 @@ class Trubrics:
                 self.queue.clear()
 
         if events:
-            success = self._post(events)
+            for batch_id in range(0, len(events), self.flush_at):
+                batch = events[batch_id : batch_id + self.flush_at]
+                success = self._post(batch)
+
+                if not success:
+                    self.logger.info(
+                        f"Retrying flush of batch {batch_id} of {len(batch)} events."
+                    )
+                    time.sleep(5)
+                    self._post(batch)
+
             self.last_flush_time = datetime.now(timezone.utc)
-
-            if not success:
-                self.logger.info(f"Retrying flush of {queue_len} events.")
-                time.sleep(5)
-
-                self._post(events)
+            self.logger.info(f"Flush of {len(events)} events completed.")
 
         with self._lock:
             self.is_flushing = False
@@ -205,7 +221,7 @@ class Trubrics:
 
     def _periodic_flush(self):
         while not self._stop_event.is_set():
-            time.sleep(0.5)
+            time.sleep(self.periodic_flush_check_interval)
 
             queue_len = len(self.queue)
             now = datetime.now(timezone.utc)
@@ -214,4 +230,6 @@ class Trubrics:
                 queue_len >= self.flush_at
                 or time_since_last_flush >= self.flush_interval
             ):
+                self.logger.info(f"queue_len {queue_len}")
+                self.logger.info(f"time_since_last_flush {time_since_last_flush}")
                 self.flush()
