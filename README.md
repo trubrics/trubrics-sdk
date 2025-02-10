@@ -4,41 +4,23 @@ A Python client for tracking and analyzing events and LLM interactions with Trub
 
 ## Overview
 
-Trubrics is a Python client that provides event tracking capabilities with a focus on LLM (Large Language Model) interactions. It features an efficient queuing system with automatic background flushing of events to the Trubrics API.
+Trubrics is a Python client that provides event tracking capabilities with a focus on LLM (Large Language Model) interactions. It is fast and non-blocking, meaning there will be no performance hits to your LLM app. It features an efficient queuing system with automatic background flushing of events to the Trubrics API.
 
 ## Installation
 
-Install using pip:
 ``` bash
 pip install trubrics
 ```
 
-Or using uv:
-
-``` bash
-pip install uv
-uv pip install trubrics
-```
-
-## Key Features
-
-- Event tracking with custom properties
-- Automatic background event flushing
-- Thread-safe implementation
-- Configurable flush intervals and batch sizes
-
 ## Usage
 
-### Basic Setup
+### Setup
 
+Get your project API key from settings in [Trubrics](https://app.trubrics.com/). This is a POST only API key. 
 ``` python
 from trubrics import Trubrics
 
-client = Trubrics(
-    api_key="your-api-key",
-    flush_interval=10,  # seconds
-    flush_at=20,        # events
-)
+client = Trubrics(api_key="your-api-key")
 ```
 
 ### Tracking Events
@@ -65,7 +47,7 @@ client.track_llm(
 ### Closing the Client
 
 ``` python
-# Ensure all events are flushed before shutting down
+# optional closing method to ensure all events are flushed from the queue before exiting your app
 client.close()
 ```
 
@@ -84,9 +66,18 @@ Or specify your own logger completely:
 trubrics = Trubrics(api_key="your-api-key", logger=your_cool_logger)
 ```
 
-## Configuration Options
+## Other Client Configuration Options
 
-- api_key: Your Trubrics API key
+``` python
+from trubrics import Trubrics
+
+client = Trubrics(
+    api_key="your-api-key",
+    flush_interval=20,
+    flush_at=10,
+)
+```
+
 - flush_interval: Time in seconds between automatic flushes (default: 10)
 - flush_at: Number of events that trigger a flush (default: 20)
 
