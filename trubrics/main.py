@@ -205,7 +205,7 @@ class Trubrics:
 
     def _periodic_flush(self):
         while not self._stop_event.is_set():
-            time.sleep(1)
+            time.sleep(0.5)
 
             queue_len = len(self.queue)
             now = datetime.now(timezone.utc)
