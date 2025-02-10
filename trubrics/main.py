@@ -232,6 +232,4 @@ class Trubrics:
                 queue_len >= self.flush_batch_size
                 or time_since_last_flush >= self.flush_interval
             ):
-                self.logger.info(f"queue_len {queue_len}")
-                self.logger.info(f"time_since_last_flush {time_since_last_flush}")
                 self.flush()
