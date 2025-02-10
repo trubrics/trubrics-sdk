@@ -9,7 +9,7 @@ import requests
 from trubrics.config import (
     DEFAULT_FLUSH_BATCH_SIZE,
     DEFAULT_FLUSH_INTERVAL,
-    DEFAULT_PERIODIC_FLUSH_CHECK_INTERVAL,
+    DEFAULT_FLUSH_PERIODIC_CHECK,
     MAX_FLUSH_BATCH_SIZE,
     MIN_FLUSH_INTERVAL,
 )
@@ -21,20 +21,20 @@ class Trubrics:
         self,
         api_key: str,
         host: str = "https://app.trubrics.com/api/ingestion",
-        flush_interval: int = DEFAULT_FLUSH_INTERVAL,
+        flush_interval: float = DEFAULT_FLUSH_INTERVAL,
         flush_batch_size: int = DEFAULT_FLUSH_BATCH_SIZE,
+        flush_periodic_check: float = DEFAULT_FLUSH_PERIODIC_CHECK,
         logger: logging.Logger = trubrics_logger,
-        periodic_flush_check_interval: float = DEFAULT_PERIODIC_FLUSH_CHECK_INTERVAL,
     ):
         f"""
         Initialize the Trubrics client.
         Args:
             api_key (str): The API key for the Trubrics account.
             host (str): The host URL for the Trubrics API.
-            flush_interval (int): The interval in seconds between flushes. Minimum possible value is {MIN_FLUSH_INTERVAL}.
+            flush_interval (int): The interval in seconds after which events should be flushed. Minimum possible value is {MIN_FLUSH_INTERVAL}.
             flush_batch_size (int): The number of events to flush at a time. Max possible value is {MAX_FLUSH_BATCH_SIZE}.
+            flush_periodic_check (float): The interval in seconds between periodic flush checks.
             logger (logging.Logger): The logger to use for logging.
-            periodic_flush_check_interval (float): The interval in seconds between periodic flush checks.
 
         """
         self.host = host
@@ -46,6 +46,15 @@ class Trubrics:
         self._stop_event = threading.Event()
         self.logger = logger
 
+        self._init_flush_parameters(
+            flush_interval, flush_batch_size, flush_periodic_check
+        )
+        self._thread = threading.Thread(target=self._periodic_flush, daemon=True)
+        self._thread.start()
+
+    def _init_flush_parameters(
+        self, flush_interval: float, flush_batch_size: int, flush_periodic_check: float
+    ):
         if flush_interval < MIN_FLUSH_INTERVAL:
             self.logger.warning(
                 f"Flush interval {flush_interval} is too low. Setting it to minimum allowed value of {MIN_FLUSH_INTERVAL}."
@@ -56,19 +65,16 @@ class Trubrics:
                 f"Flush batch size {flush_batch_size} is too high. Setting to maximum allowed value of {MAX_FLUSH_BATCH_SIZE}."
             )
             flush_batch_size = MAX_FLUSH_BATCH_SIZE
-        if periodic_flush_check_interval > flush_interval:
+        if flush_periodic_check > flush_interval:
             self.logger.warning(
-                f"Periodic flush check interval {periodic_flush_check_interval} is higher than defined \
+                f"Periodic flush check interval {flush_periodic_check} is higher than defined \
                     flush interval period. Setting it to Flush interval period {flush_interval}."
             )
-            periodic_flush_check_interval = flush_interval
+            flush_periodic_check = flush_interval
 
         self.flush_interval = flush_interval
         self.flush_batch_size = flush_batch_size
-        self.periodic_flush_check_interval = periodic_flush_check_interval
-
-        self._thread = threading.Thread(target=self._periodic_flush, daemon=True)
-        self._thread.start()
+        self.flush_periodic_check = flush_periodic_check
 
     def track(
         self,
@@ -85,10 +91,6 @@ class Trubrics:
             properties (dict | None): Additional properties to track.
             timestamp (datetime | None): The timestamp of event. If None, the current time in UTC is used. If not a datetime object, the event is ignored.
         """
-
-        if timestamp and not isinstance(timestamp, datetime):
-            self.logger.error("Timestamp must be a datetime object. Ignoring event.")
-            return
 
         event_dict = {
             "user_id": user_id,
@@ -168,7 +170,7 @@ class Trubrics:
                 success = self._post(batch)
 
                 if not success:
-                    self.logger.info(
+                    self.logger.warning(
                         f"Retrying flush of batch {batch_id} of {len(batch)} events."
                     )
                     time.sleep(5)
@@ -221,7 +223,7 @@ class Trubrics:
 
     def _periodic_flush(self):
         while not self._stop_event.is_set():
-            time.sleep(self.periodic_flush_check_interval)
+            time.sleep(self.flush_periodic_check)
 
             queue_len = len(self.queue)
             now = datetime.now(timezone.utc)
