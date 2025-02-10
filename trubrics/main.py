@@ -37,8 +37,6 @@ class Trubrics:
         self.host = host
         self.api_key = api_key
         self.queue: list[dict] = []
-        self.flush_interval = max(flush_interval, MIN_FLUSH_INTERVAL)
-        self.flush_at = min(flush_at, MAX_FLUSH_AT)
         self.last_flush_time = datetime.now(timezone.utc)
         self.is_flushing = False
         self._lock = threading.Lock()
@@ -46,6 +44,20 @@ class Trubrics:
         self._thread = threading.Thread(target=self._periodic_flush, daemon=True)
         self._thread.start()
         self.logger = logger
+
+        if flush_interval < MIN_FLUSH_INTERVAL:
+            self.logger.warning(
+                f"Flush interval {flush_interval} is too low. Setting it to minimum allowed value of {MIN_FLUSH_INTERVAL}."
+            )
+            flush_interval = MIN_FLUSH_INTERVAL
+        if flush_at > MAX_FLUSH_AT:
+            self.logger.warning(
+                f"Flush at {flush_at} is too high. Setting to maximum allowed value of {MAX_FLUSH_AT}."
+            )
+            flush_at = MAX_FLUSH_AT
+
+        self.flush_interval = flush_interval
+        self.flush_at = flush_at
 
     def track(
         self,
@@ -82,12 +94,6 @@ class Trubrics:
             self.logger.info(
                 f"Event `{event}` by user `{user_id}` has been added to queue."
             )
-
-        if len(self.queue) >= self.flush_at:
-            self.logger.info(
-                f"Triggering flush as queue has reached {self.flush_at} events."
-            )
-            self.flush()
 
     def track_llm(
         self,
