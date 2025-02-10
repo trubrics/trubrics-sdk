@@ -16,7 +16,7 @@ pip install trubrics
 
 ### Setup
 
-Get your project API key from settings in [Trubrics](https://app.trubrics.com/). This is a POST only API key. 
+Get your project API key from settings in [Trubrics](https://app.trubrics.com/). This is a POST only API key.
 ``` python
 from trubrics import Trubrics
 
