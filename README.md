@@ -77,7 +77,7 @@ from trubrics import Trubrics
 client = Trubrics(
     api_key="your-api-key",
     flush_interval=20,
-    flush_at=10,
+    flush_batch_size=10,
 )
 ```
 
