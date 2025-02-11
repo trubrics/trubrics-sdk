@@ -1,4 +1,5 @@
 import os
+
 from trubrics import Trubrics
 
 trubrics = Trubrics(api_key=os.environ["TRUBRICS_API_KEY"])
