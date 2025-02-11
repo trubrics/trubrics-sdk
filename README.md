@@ -40,7 +40,7 @@ client.track_llm(
     assistant_id="gpt-4",
     generation="The capital of France is Paris.",
     properties={"model": "gpt-4"},
-    latency=150  # milliseconds
+    latency=1.5  # seconds
 )
 ```
 
