@@ -86,7 +86,7 @@ class Trubrics:
             generation (str): The generated response from the LLM.
             properties (dict | None): Additional properties to track.
             timestamp (datetime | None): The timestamp of the generation event. If None, the current time in UTC is used.
-            latency (int | None): The latency in seconds between the prompt and the generation. Defaults to 1.
+            latency (float | None): The latency in seconds between the prompt and the generation. Defaults to 1.
         """
         generation_timestamp = timestamp or datetime.now(timezone.utc)
         prompt_timestamp = generation_timestamp - timedelta(seconds=latency or 1)
