@@ -116,7 +116,7 @@ class Trubrics:
         generation: str,
         properties: dict | None = None,
         timestamp: datetime | None = None,
-        latency: int = 1,
+        latency: float | None = None,
     ):
         """
         Track an LLM prompt and generation.
@@ -127,10 +127,10 @@ class Trubrics:
             generation (str): The generated response from the LLM.
             properties (dict | None): Additional properties to track.
             timestamp (datetime | None): The timestamp of the generation event. If None, the current time in UTC is used.
-            latency (int): The latency in milliseconds between the prompt and the generation. Defaults to 1.
+            latency (float | None): The latency in seconds between the prompt and the generation. Defaults to 1.
         """
         generation_timestamp = timestamp or datetime.now(timezone.utc)
-        prompt_timestamp = generation_timestamp - timedelta(milliseconds=latency)
+        prompt_timestamp = generation_timestamp - timedelta(seconds=latency or 1)
 
         self.track(
             event="Prompt",
@@ -146,7 +146,7 @@ class Trubrics:
                 "$text": generation,
                 "$assistant_id": assistant_id,
                 "$prompt": prompt,
-                "latency(ms)": latency,
+                "latency(s)": latency,
                 **(properties or {}),
             },
             timestamp=generation_timestamp,
